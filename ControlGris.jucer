@@ -3,11 +3,12 @@
 <JUCERPROJECT id="m50y5Z" name="ControlGris" projectType="audioplug" pluginFormats="buildAAX,buildAU,buildVST,buildVST3"
               version="2.0.0" bundleIdentifier="com.gris.umontreal.controlgris"
               companyName="UdeM" aaxIdentifier="com.udem.GRIS.ControlGris"
-              pluginManufacturer="UdeM" pluginManufacturerCode="UdeM" pluginCode="Xzz1"
+              pluginManufacturer="UdeM" pluginManufacturerCode="UdeM" pluginCode="Xzz2"
               pluginChannelConfigs="{1,1}, {1,2}, {1,4}, {1,6}, {1,8}, {1,12}, {1,16}, {2,2}, {2,4}, {2,6}, {2,8}, {2,12}, {2,16}, {4,4}, {4,6}, {4,8}, {4,12}, {4,16}, {6,6}, {6,8}, {6,12}, {6,16}, {8,8}, {8,12}, {8,16}"
               cppLanguageStandard="17" projectLineFeed="&#10;" jucerFormatVersion="1"
               companyWebsite="ca.umontreal.musique.gris.controlgris" addUsingNamespaceToJuceHeader="0"
-              displaySplashScreen="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1&#10;_USE_MATH_DEFINES=1">
+              displaySplashScreen="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1&#10;_USE_MATH_DEFINES=1"
+              pluginName="ControlGris2" pluginDesc="ControlGris2">
   <MAINGROUP id="gDqxm3" name="ControlGris">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
       <GROUP id="{84670BD1-D750-4129-B3DC-1ABD8B2CD51E}" name="SpatialParameters">
@@ -200,14 +201,14 @@
   </MAINGROUP>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" hardenedRuntime="1" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3"
-               vstLegacyFolder="../../SDKs/VST2_SDK" aaxFolder="../../SDKs/AAX_SDK_2-8-0">
+               applicationCategory="public.app-category.music">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris" osxArchitecture="Native"
+        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris2" osxArchitecture="Native"
                        auBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"
                        enablePluginBinaryCopyStep="0" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/macos/Debug" usePrecompiledHeaderFile="1"
                        precompiledHeaderFile="Source/PCH.h"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris" osxArchitecture="Native"
+        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris2" osxArchitecture="Native"
                        recommendedWarnings="LLVM" enablePluginBinaryCopyStep="0" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/macos/Release" usePrecompiledHeaderFile="1"
                        precompiledHeaderFile="Source/PCH.h"/>
@@ -230,8 +231,8 @@
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris2"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris2"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
@@ -253,10 +254,11 @@
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" enablePluginBinaryCopyStep="0" headerPath="..\..\Source\libs\include&#10;..\..\Source\libs\include\flucoma&#10;..\..\Source\libs\include\Eigen&#10;..\..\Source\libs\include\hisstools&#10;..\..\Source\libs\include\Spectra&#10;..\..\Source\libs\include\tl&#10;..\..\Source\libs\include\nlohmann&#10;..\..\Source\libs\include\fmt&#10;..\..\Source\libs\include\foonathan"
                        libraryPath="..\..\Source\libs\lib\flucoma\windows\Debug" usePrecompiledHeaderFile="1"
-                       precompiledHeaderFile="Source\PCH.h"/>
+                       precompiledHeaderFile="Source\PCH.h" targetName="ControlGris2"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="..\..\Source\libs\include&#10;..\..\Source\libs\include\flucoma&#10;..\..\Source\libs\include\Eigen&#10;..\..\Source\libs\include\hisstools&#10;..\..\Source\libs\include\Spectra&#10;..\..\Source\libs\include\tl&#10;..\..\Source\libs\include\nlohmann&#10;..\..\Source\libs\include\fmt&#10;..\..\Source\libs\include\foonathan"
                        libraryPath="..\..\Source\libs\lib\flucoma\windows\Release" usePrecompiledHeaderFile="1"
-                       precompiledHeaderFile="Source\PCH.h" enablePluginBinaryCopyStep="0"/>
+                       precompiledHeaderFile="Source\PCH.h" enablePluginBinaryCopyStep="0"
+                       targetName="ControlGris2"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics"/>
