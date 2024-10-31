@@ -84,6 +84,10 @@ protected:
     juce::Point<float> mCurrentTrajectoryPoint{};
     juce::Point<float> mLastRecordingPoint{};
 
+    std::atomic<double> mTrajectoryCurrentSpeed{ 1.0 };
+    std::atomic<double> mTrajectoryLastSpeed{ 1.0 };
+    double mAdjustNormailzedTimeBuffer{};
+
     Degrees mDegreeOfDeviationPerCycle{};
     Degrees mCurrentDegreeOfDeviation{};
     int mDeviationCycleCount{};
@@ -113,6 +117,7 @@ public:
     [[nodiscard]] juce::Point<float> getCurrentTrajectoryPoint() const;
 
     void setTrajectoryDeltaTime(double relativeTimeFromPlay);
+    void setTrajectoryCurrentSpeed(double speed);
     [[nodiscard]] std::optional<Trajectory> const & getTrajectory() const { return mTrajectory; }
 
     void setPositionBackAndForth(bool const newState) { mIsBackAndForth = newState; }

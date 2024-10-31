@@ -55,7 +55,8 @@ public:
         virtual void trajectoryDurationUnitChangedCallback(double duration, int mode) = 0;
         virtual void positionTrajectoryStateChangedCallback(bool value) = 0;
         virtual void elevationTrajectoryStateChangedCallback(bool value) = 0;
-        virtual void speedStateChangedCallback(double value) = 0;
+        virtual void positionTrajectoryCurrentSpeedChangedCallback(double value) = 0;
+        virtual void speedStateChangedCallback(double value) = 0; // for parameter speed change
     };
 
 private:

@@ -44,6 +44,7 @@ void TrajectoryManager::setPositionActivateState(bool const state)
         mCurrentPlaybackDuration = mPlaybackDuration;
         mCurrentDegreeOfDeviation = Degrees{ 0.0f };
         mDeviationCycleCount = 0;
+        mAdjustNormailzedTimeBuffer = 0.0;
     }
 }
 
@@ -70,10 +71,36 @@ juce::Point<float> TrajectoryManager::smoothRecordingPosition(juce::Point<float>
 }
 
 //==============================================================================
+void TrajectoryManager::setTrajectoryCurrentSpeed(double speed)
+{
+    mTrajectoryCurrentSpeed.store(speed);
+}
+
+//==============================================================================
 void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay)
 {
-    mTrajectoryDeltaTime = relativeTimeFromPlay / mCurrentPlaybackDuration;
-    mTrajectoryDeltaTime = std::fmod(mTrajectoryDeltaTime, 1.0);
+    auto trajectoryCurrentSpeed{ mTrajectoryCurrentSpeed.load() };
+    auto trajectoryLastSpeed{ mTrajectoryLastSpeed.load() };
+
+    // Calculate the normalized time based on the last speed (1 by default)
+    double normalizedTime = relativeTimeFromPlay * trajectoryLastSpeed / mCurrentPlaybackDuration;
+    normalizedTime = std::fmod(normalizedTime, 1.0);
+
+    // Calculate the normalized time based on the new current speed
+    double newNormalizedTime = relativeTimeFromPlay * trajectoryCurrentSpeed / mCurrentPlaybackDuration;
+    newNormalizedTime = std::fmod(newNormalizedTime, 1.0);
+
+    if (trajectoryCurrentSpeed != trajectoryLastSpeed) {
+        mAdjustNormailzedTimeBuffer += normalizedTime - newNormalizedTime;
+        mAdjustNormailzedTimeBuffer = std::fmod(mAdjustNormailzedTimeBuffer, 1.0);
+    }
+    auto deltaTimeAdjustement{ newNormalizedTime + mAdjustNormailzedTimeBuffer };
+    if (deltaTimeAdjustement < 0) {
+        deltaTimeAdjustement = 1.0 + deltaTimeAdjustement;
+    }
+    mTrajectoryDeltaTime = std::fmod(deltaTimeAdjustement, 1.0);
+    mTrajectoryLastSpeed.store(mTrajectoryCurrentSpeed.load());
+
     computeCurrentTrajectoryPoint();
     applyCurrentTrajectoryPointToPrimarySource();
 }

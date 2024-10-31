@@ -91,11 +91,16 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mCycleSpeedLabel.setText("Cycle Speed:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mCycleSpeedLabel);
 
-    mCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(-2.0f, 2.0f, 0.01f));
+    mCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1f, 10.0f, 0.1f));
+    mCycleSpeedSlider.setDoubleClickReturnValue(true, 1.0);
     mCycleSpeedSlider.setValue(1.0, juce::NotificationType::sendNotificationAsync);
     mCycleSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
     mCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mCycleSpeedSlider);
+    mCycleSpeedSlider.onValueChange = [this] {
+        mListeners.call(
+                        [&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(mCycleSpeedSlider.getValue()); });
+    };
 
     // Removed because this interacted with DAWs
     // mPositionActivateButton.addShortcut(juce::KeyPress('a', 0, 0));
@@ -434,7 +439,7 @@ void SectionAbstractSpatialization::resized()
     mRandomXYToggle.setBounds(181, 92, 88, 15);
     mRandomXYCombo.setBounds(211, 92, 78, 15);
 
-    mPositionActivateButton.setBounds(114, 112, 176, 20);
+    mPositionActivateButton.setBounds(114, 138, 176, 20);
 
     mTrajectoryTypeZLabel.setBounds(303, 7, 150, 10);
     mElevationTrajectoryTypeCombo.setBounds(320, 5, 175, 15);
@@ -447,7 +452,7 @@ void SectionAbstractSpatialization::resized()
     mRandomZToggle.setBounds(386, 92, 88, 15);
     mRandomZCombo.setBounds(416, 92, 78, 15);
 
-    mElevationActivateButton.setBounds(319, 112, 176, 20);
+    mElevationActivateButton.setBounds(319, 138, 176, 20);
 
     if (mSpatMode == SpatMode::cube) {
         mTrajectoryTypeXYLabel.setVisible(true);
@@ -481,9 +486,9 @@ void SectionAbstractSpatialization::resized()
 
     // Hide Cycle Speed slider until we found the good way to handle it!
     mCycleSpeedLabel.setBounds(5, 100, 150, 20);
-    mCycleSpeedSlider.setBounds(115, 100, 165, 20);
+    mCycleSpeedSlider.setBounds(114, 114, 165, 20);
     mCycleSpeedLabel.setVisible(false);
-    mCycleSpeedSlider.setVisible(false);
+    mCycleSpeedSlider.setVisible(true);
 }
 
 } // namespace gris
