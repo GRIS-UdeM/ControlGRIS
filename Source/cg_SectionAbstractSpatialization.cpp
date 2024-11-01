@@ -24,6 +24,12 @@
 
 namespace gris
 {
+namespace {
+    auto constexpr SPEED_SLIDER_MIN_VAL{ 0.1 };
+    auto constexpr SPEED_SLIDER_MAX_VAL{ 10.0 };
+    auto constexpr SPEED_SLIDER_MID_VAL{ 1.0 };
+}
+
 //==============================================================================
 SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
 {
@@ -91,26 +97,42 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mPositionCycleSpeedLabel.setText("Cycle Speed:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mPositionCycleSpeedLabel);
 
-    mPositionCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1, 10.0, 0.001));
-    mPositionCycleSpeedSlider.setDoubleClickReturnValue(true, 1.0);
-    mPositionCycleSpeedSlider.setValue(1.0, juce::NotificationType::sendNotificationAsync);
+    mPositionCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
+    mPositionCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
+    mPositionCycleSpeedSlider.setValue(0.5, juce::NotificationType::sendNotificationAsync);
+    mPositionCycleSpeedSlider.setSliderSnapsToMousePosition(false);
     mPositionCycleSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
     mPositionCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mPositionCycleSpeedSlider);
     mPositionCycleSpeedSlider.onValueChange = [this] {
+        auto const sliderVal{ mPositionCycleSpeedSlider.getValue() };
+        double speedMultToSend{};
+        if (sliderVal <= 0.5) {
+            speedMultToSend = juce::jmap(sliderVal, 0.0, 0.5, SPEED_SLIDER_MIN_VAL, SPEED_SLIDER_MID_VAL);
+        } else {
+            speedMultToSend = juce::jmap(sliderVal, 0.5, 1.0, SPEED_SLIDER_MID_VAL, SPEED_SLIDER_MAX_VAL);
+        }
         mListeners.call(
-                        [&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(mPositionCycleSpeedSlider.getValue()); });
+                        [&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
     };
     
-    mElevationCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1, 10.0, 0.001));
-    mElevationCycleSpeedSlider.setDoubleClickReturnValue(true, 1.0);
-    mElevationCycleSpeedSlider.setValue(1.0, juce::NotificationType::sendNotificationAsync);
+    mElevationCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
+    mElevationCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
+    mElevationCycleSpeedSlider.setValue(0.5, juce::NotificationType::sendNotificationAsync);
+    mElevationCycleSpeedSlider.setSliderSnapsToMousePosition(false);
     mElevationCycleSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
     mElevationCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mElevationCycleSpeedSlider);
     mElevationCycleSpeedSlider.onValueChange = [this] {
+        auto const sliderVal{ mElevationCycleSpeedSlider.getValue() };
+        double speedMultToSend{};
+        if (sliderVal <= 0.5) {
+            speedMultToSend = juce::jmap(sliderVal, 0.0, 0.5, SPEED_SLIDER_MIN_VAL, SPEED_SLIDER_MID_VAL);
+        } else {
+            speedMultToSend = juce::jmap(sliderVal, 0.5, 1.0, SPEED_SLIDER_MID_VAL, SPEED_SLIDER_MAX_VAL);
+        }
         mListeners.call(
-                        [&](Listener & l) { l.elevationTrajectoryCurrentSpeedChangedCallback(mElevationCycleSpeedSlider.getValue()); });
+                        [&](Listener & l) { l.elevationTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
     };
 
     // Removed because this interacted with DAWs
