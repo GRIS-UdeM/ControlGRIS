@@ -499,6 +499,7 @@ void SectionAbstractSpatialization::resized()
         mRandomZLabel.setVisible(true);
         mRandomZToggle.setVisible(true);
         mRandomZCombo.setVisible(true);
+        mElevationCycleSpeedSlider.setVisible(true);
     } else {
         mTrajectoryTypeXYLabel.setVisible(false);
         mTrajectoryTypeZLabel.setVisible(false);
@@ -511,6 +512,7 @@ void SectionAbstractSpatialization::resized()
         mRandomZLabel.setVisible(false);
         mRandomZToggle.setVisible(false);
         mRandomZCombo.setVisible(false);
+        mElevationCycleSpeedSlider.setVisible(false);
     }
 
     mDurationLabel.setBounds(495, 5, 90, 20);
@@ -524,7 +526,6 @@ void SectionAbstractSpatialization::resized()
     mPositionCycleSpeedSlider.setVisible(true);
     
     mElevationCycleSpeedSlider.setBounds(320, 114, 165, 20);
-    mElevationCycleSpeedSlider.setVisible(true);
 }
 
 } // namespace gris
