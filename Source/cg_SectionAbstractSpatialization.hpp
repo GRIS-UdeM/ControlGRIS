@@ -56,6 +56,7 @@ public:
         virtual void positionTrajectoryStateChangedCallback(bool value) = 0;
         virtual void elevationTrajectoryStateChangedCallback(bool value) = 0;
         virtual void positionTrajectoryCurrentSpeedChangedCallback(double value) = 0;
+        virtual void elevationTrajectoryCurrentSpeedChangedCallback(double value) = 0;
         virtual void speedStateChangedCallback(double value) = 0; // for parameter speed change
     };
 
@@ -88,8 +89,11 @@ private:
     juce::TextEditor mDurationEditor;
     juce::ComboBox mDurationUnitCombo;
 
-    juce::Label mCycleSpeedLabel;
-    juce::Slider mCycleSpeedSlider;
+    juce::Label mPositionCycleSpeedLabel;
+    juce::Slider mPositionCycleSpeedSlider;
+    
+    juce::Label mElevationCycleSpeedLabel;
+    juce::Slider mElevationCycleSpeedSlider;
 
     juce::Label mSpeedXYLabel;
     juce::TextEditor mSpeedXYEditor;

@@ -763,6 +763,12 @@ void ControlGrisAudioProcessorEditor::positionTrajectoryCurrentSpeedChangedCallb
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryCurrentSpeedChangedCallback(double value)
+{
+    mElevationTrajectoryManager.setTrajectoryCurrentSpeed(value);
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::speedStateChangedCallback(double value)
 {
     DBG("speedStateChangedCallback");

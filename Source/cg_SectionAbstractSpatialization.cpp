@@ -88,18 +88,29 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         });
     };
 
-    mCycleSpeedLabel.setText("Cycle Speed:", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mCycleSpeedLabel);
+    mPositionCycleSpeedLabel.setText("Cycle Speed:", juce::NotificationType::dontSendNotification);
+    addAndMakeVisible(&mPositionCycleSpeedLabel);
 
-    mCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1f, 10.0f, 0.1f));
-    mCycleSpeedSlider.setDoubleClickReturnValue(true, 1.0);
-    mCycleSpeedSlider.setValue(1.0, juce::NotificationType::sendNotificationAsync);
-    mCycleSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
-    mCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    addAndMakeVisible(&mCycleSpeedSlider);
-    mCycleSpeedSlider.onValueChange = [this] {
+    mPositionCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1, 10.0, 0.001));
+    mPositionCycleSpeedSlider.setDoubleClickReturnValue(true, 1.0);
+    mPositionCycleSpeedSlider.setValue(1.0, juce::NotificationType::sendNotificationAsync);
+    mPositionCycleSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
+    mPositionCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    addAndMakeVisible(&mPositionCycleSpeedSlider);
+    mPositionCycleSpeedSlider.onValueChange = [this] {
         mListeners.call(
-                        [&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(mCycleSpeedSlider.getValue()); });
+                        [&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(mPositionCycleSpeedSlider.getValue()); });
+    };
+    
+    mElevationCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1, 10.0, 0.001));
+    mElevationCycleSpeedSlider.setDoubleClickReturnValue(true, 1.0);
+    mElevationCycleSpeedSlider.setValue(1.0, juce::NotificationType::sendNotificationAsync);
+    mElevationCycleSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
+    mElevationCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    addAndMakeVisible(&mElevationCycleSpeedSlider);
+    mElevationCycleSpeedSlider.onValueChange = [this] {
+        mListeners.call(
+                        [&](Listener & l) { l.elevationTrajectoryCurrentSpeedChangedCallback(mElevationCycleSpeedSlider.getValue()); });
     };
 
     // Removed because this interacted with DAWs
@@ -485,10 +496,13 @@ void SectionAbstractSpatialization::resized()
     mDurationUnitCombo.setBounds(500, 60, 90, 20);
 
     // Hide Cycle Speed slider until we found the good way to handle it!
-    mCycleSpeedLabel.setBounds(5, 100, 150, 20);
-    mCycleSpeedSlider.setBounds(114, 114, 165, 20);
-    mCycleSpeedLabel.setVisible(false);
-    mCycleSpeedSlider.setVisible(true);
+    mPositionCycleSpeedLabel.setBounds(5, 100, 150, 20);
+    mPositionCycleSpeedSlider.setBounds(114, 114, 165, 20);
+    mPositionCycleSpeedLabel.setVisible(false);
+    mPositionCycleSpeedSlider.setVisible(true);
+    
+    mElevationCycleSpeedSlider.setBounds(320, 114, 165, 20);
+    mElevationCycleSpeedSlider.setVisible(true);
 }
 
 } // namespace gris
