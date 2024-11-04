@@ -57,7 +57,6 @@ public:
         virtual void elevationTrajectoryStateChangedCallback(bool value) = 0;
         virtual void positionTrajectoryCurrentSpeedChangedCallback(double value) = 0;
         virtual void elevationTrajectoryCurrentSpeedChangedCallback(double value) = 0;
-        virtual void speedStateChangedCallback(double value) = 0; // for parameter speed change
     };
 
 private:
@@ -89,21 +88,12 @@ private:
     juce::TextEditor mDurationEditor;
     juce::ComboBox mDurationUnitCombo;
 
-    juce::Label mPositionCycleSpeedLabel;
     juce::Slider mPositionCycleSpeedSlider;
-    
-    juce::Label mElevationCycleSpeedLabel;
     juce::Slider mElevationCycleSpeedSlider;
-
-    juce::Label mSpeedXYLabel;
-    juce::TextEditor mSpeedXYEditor;
 
     juce::Label mRandomXYLabel;
     juce::ToggleButton mRandomXYToggle;
     juce::ComboBox mRandomXYCombo;
-
-    juce::Label mSpeedZLabel;
-    juce::TextEditor mSpeedZEditor;
 
     juce::Label mRandomZLabel;
     juce::ToggleButton mRandomZToggle;
@@ -128,7 +118,6 @@ public:
     SectionAbstractSpatialization & operator=(SectionAbstractSpatialization &&) = delete;
     //==============================================================================
     void mouseDown(juce::MouseEvent const & event) override;
-    void textEditorReturnKeyPressed(juce::TextEditor & textEd) override;
     void textEditorFocusLost(juce::TextEditor & textEd) override;
     void paint(juce::Graphics &) override;
     void resized() override;

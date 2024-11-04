@@ -171,7 +171,6 @@ public:
     void elevationTrajectoryStateChangedCallback(bool value) override;
     void positionTrajectoryCurrentSpeedChangedCallback(double value) override;
     void elevationTrajectoryCurrentSpeedChangedCallback(double value) override;
-    void speedStateChangedCallback(double value) override;
 
     // PositionPresetComponent::Listeners
     void positionPresetChangedCallback(int presetNumber) override;

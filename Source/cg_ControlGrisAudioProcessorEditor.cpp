@@ -769,12 +769,6 @@ void ControlGrisAudioProcessorEditor::elevationTrajectoryCurrentSpeedChangedCall
 }
 
 //==============================================================================
-void ControlGrisAudioProcessorEditor::speedStateChangedCallback(double value)
-{
-    DBG("speedStateChangedCallback");
-}
-
-//==============================================================================
 // Update the interface if anything has changed (mostly automations).
 void ControlGrisAudioProcessorEditor::refresh()
 {

@@ -94,19 +94,19 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         });
     };
 
-    mPositionCycleSpeedLabel.setText("Cycle Speed:", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mPositionCycleSpeedLabel);
-
     mPositionCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
     mPositionCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
     mPositionCycleSpeedSlider.setValue(0.5, juce::NotificationType::sendNotificationAsync);
     mPositionCycleSpeedSlider.setSliderSnapsToMousePosition(false);
-    mPositionCycleSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
+    mPositionCycleSpeedSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 40, 20);
     mPositionCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mPositionCycleSpeedSlider);
     mPositionCycleSpeedSlider.onValueChange = [this] {
         auto const sliderVal{ mPositionCycleSpeedSlider.getValue() };
         double speedMultToSend{};
+        if (mSpeedLinked) {
+            mElevationCycleSpeedSlider.setValue(sliderVal);
+        }
         if (sliderVal <= 0.5) {
             speedMultToSend = juce::jmap(sliderVal, 0.0, 0.5, SPEED_SLIDER_MIN_VAL, SPEED_SLIDER_MID_VAL);
         } else {
@@ -120,12 +120,15 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mElevationCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
     mElevationCycleSpeedSlider.setValue(0.5, juce::NotificationType::sendNotificationAsync);
     mElevationCycleSpeedSlider.setSliderSnapsToMousePosition(false);
-    mElevationCycleSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
+    mElevationCycleSpeedSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 40, 20);
     mElevationCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mElevationCycleSpeedSlider);
     mElevationCycleSpeedSlider.onValueChange = [this] {
         auto const sliderVal{ mElevationCycleSpeedSlider.getValue() };
         double speedMultToSend{};
+        if (mSpeedLinked) {
+            mPositionCycleSpeedSlider.setValue(sliderVal);
+        }
         if (sliderVal <= 0.5) {
             speedMultToSend = juce::jmap(sliderVal, 0.0, 0.5, SPEED_SLIDER_MIN_VAL, SPEED_SLIDER_MID_VAL);
         } else {
@@ -226,17 +229,6 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         mDurationUnitCombo.grabKeyboardFocus();
     };
 
-    // temporary GUI elements
-    mSpeedXYLabel.setText("Speed", juce::dontSendNotification);
-    addAndMakeVisible(&mSpeedXYLabel);
-
-    addAndMakeVisible(&mSpeedXYEditor);
-    mSpeedXYEditor.addListener(this);
-    mSpeedXYEditor.setFont(mGrisLookAndFeel.getFont());
-    mSpeedXYEditor.setTextToShowWhenEmpty("1.0", juce::Colours::white);
-    mSpeedXYEditor.setText("1.0", false);
-    mSpeedXYEditor.setInputRestrictions(4, "0123456789.");
-
     mRandomXYLabel.setText("Random", juce::dontSendNotification);
     addAndMakeVisible(&mRandomXYLabel);
 
@@ -246,16 +238,6 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mRandomXYCombo.addItem("Sine", 1);
     mRandomXYCombo.addItem("Square", 2);
     mRandomXYCombo.setSelectedId(1);
-
-    mSpeedZLabel.setText("Speed", juce::dontSendNotification);
-    addAndMakeVisible(&mSpeedZLabel);
-
-    addAndMakeVisible(&mSpeedZEditor);
-    mSpeedZEditor.addListener(this);
-    mSpeedZEditor.setFont(mGrisLookAndFeel.getFont());
-    mSpeedZEditor.setTextToShowWhenEmpty("1.0", juce::Colours::white);
-    mSpeedZEditor.setText("1.0", false);
-    mSpeedZEditor.setInputRestrictions(4, "0123456789.");
 
     mRandomZLabel.setText("Random", juce::dontSendNotification);
     addAndMakeVisible(&mRandomZLabel);
@@ -267,14 +249,10 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mRandomZCombo.addItem("Square", 2);
     mRandomZCombo.setSelectedId(1);
 
-    mSpeedZLabel.setEnabled(false);
-    mSpeedZEditor.setEnabled(false);
     mRandomZLabel.setEnabled(false);
     mRandomZToggle.setEnabled(false);
     mRandomZCombo.setEnabled(false);
 
-    mSpeedXYLabel.setEnabled(false);
-    mSpeedXYEditor.setEnabled(false);
     mRandomXYLabel.setEnabled(false);
     mRandomXYToggle.setEnabled(false);
     mRandomXYCombo.setEnabled(false);
@@ -410,28 +388,6 @@ void SectionAbstractSpatialization::mouseDown(juce::MouseEvent const & event)
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::textEditorReturnKeyPressed(juce::TextEditor & textEd)
-{
-//    const auto value{ textEd.getText().getDoubleValue() };
-    const auto paramName{ textEd.getName() };
-
-    //mListeners.call([&](Listener & l) { l.speedStateChangedCallback(value); }); // TODO: add a parameter to modify
-    // AudioProcessorValueTreeState
-
-    if (mSpeedLinked) {
-        if (&textEd == &mSpeedXYEditor) {
-            mSpeedZEditor.setText(textEd.getText());
-            // mListeners.call([&](Listener & l) { l.speedStateChangedCallback(value); }); // TODO: call parameter
-            // Z AudioProcessorValueTreeState
-        } else if (&textEd == &mSpeedZEditor) {
-            mSpeedXYEditor.setText(textEd.getText());
-            // mListeners.call([&](Listener & l) { l.speedStateChangedCallback(value); }); // TODO: call parameter
-            // XY AudioProcessorValueTreeState
-        }
-    }
-}
-
-//==============================================================================
 void SectionAbstractSpatialization::textEditorFocusLost(juce::TextEditor & textEd)
 {
     textEditorReturnKeyPressed(textEd);
@@ -449,7 +405,19 @@ void SectionAbstractSpatialization::paint(juce::Graphics & g)
             g.setColour(juce::Colours::black);
         g.drawArrow(juce::Line<float>(302.0f, 78.0f, 292.0f, 78.0f), 4, 10, 7);
         g.drawArrow(juce::Line<float>(297.0f, 78.0f, 317.0f, 78.0f), 4, 10, 7);
+
+        g.setColour(juce::Colours::orange);
+        g.setFont(16.0f);
+        auto eleCycleSpeedSliderBounds{ mElevationCycleSpeedSlider.getBounds() };
+        g.drawText("-", eleCycleSpeedSliderBounds.getTopLeft().getX(), eleCycleSpeedSliderBounds.getTopLeft().getY() - 8, 15, 15, juce::Justification::centred);
+        g.drawText("+", eleCycleSpeedSliderBounds.getTopRight().getX() - 14, eleCycleSpeedSliderBounds.getTopRight().getY() - 8, 15, 15, juce::Justification::centred);
     }
+
+    g.setColour(juce::Colours::orange);
+    g.setFont(16.0f);
+    auto posCycleSpeedSliderBounds{ mPositionCycleSpeedSlider.getBounds() };
+    g.drawText("-", posCycleSpeedSliderBounds.getTopLeft().getX(), posCycleSpeedSliderBounds.getTopLeft().getY() - 8, 15, 15, juce::Justification::centred);
+    g.drawText("+", posCycleSpeedSliderBounds.getTopRight().getX() - 14, posCycleSpeedSliderBounds.getTopRight().getY() - 8, 15, 15, juce::Justification::centred);
 }
 
 //==============================================================================
@@ -465,12 +433,11 @@ void SectionAbstractSpatialization::resized()
     mDeviationLabel.setBounds(110, 40, 150, 22);
     mDeviationLabel2ndLine.setBounds(110, 48, 150, 22);
     mDeviationEditor.setBounds(211, 49, 78, 15);
+    mPositionCycleSpeedSlider.setBounds(113, 72, 180, 16);
 
-    mSpeedXYLabel.setBounds(110, 72, 150, 10);
-    mSpeedXYEditor.setBounds(211, 70, 78, 15);
-    mRandomXYLabel.setBounds(110, 93, 150, 10);
-    mRandomXYToggle.setBounds(181, 92, 88, 15);
-    mRandomXYCombo.setBounds(211, 92, 78, 15);
+    mRandomXYLabel.setBounds(110, 113, 150, 10);
+    mRandomXYToggle.setBounds(181, 112, 88, 15);
+    mRandomXYCombo.setBounds(211, 112, 78, 15);
 
     mPositionActivateButton.setBounds(114, 138, 176, 20);
 
@@ -479,11 +446,11 @@ void SectionAbstractSpatialization::resized()
     mElevationDampeningEditor.setBounds(320, 27, 75, 15);
     mElevationBackAndForthToggle.setBounds(401, 27, 94, 15);
 
-    mSpeedZLabel.setBounds(315, 72, 150, 10);
-    mSpeedZEditor.setBounds(416, 70, 78, 15);
-    mRandomZLabel.setBounds(315, 93, 150, 10);
-    mRandomZToggle.setBounds(386, 92, 88, 15);
-    mRandomZCombo.setBounds(416, 92, 78, 15);
+    mElevationCycleSpeedSlider.setBounds(317, 72, 180, 16);
+
+    mRandomZLabel.setBounds(315, 113, 150, 10);
+    mRandomZToggle.setBounds(386, 112, 88, 15);
+    mRandomZCombo.setBounds(416, 112, 78, 15);
 
     mElevationActivateButton.setBounds(319, 138, 176, 20);
 
@@ -494,8 +461,6 @@ void SectionAbstractSpatialization::resized()
         mElevationActivateButton.setVisible(true);
         mElevationBackAndForthToggle.setVisible(true);
         mElevationDampeningEditor.setVisible(true);
-        mSpeedZLabel.setVisible(true);
-        mSpeedZEditor.setVisible(true);
         mRandomZLabel.setVisible(true);
         mRandomZToggle.setVisible(true);
         mRandomZCombo.setVisible(true);
@@ -507,8 +472,6 @@ void SectionAbstractSpatialization::resized()
         mElevationActivateButton.setVisible(false);
         mElevationBackAndForthToggle.setVisible(false);
         mElevationDampeningEditor.setVisible(false);
-        mSpeedZLabel.setVisible(false);
-        mSpeedZEditor.setVisible(false);
         mRandomZLabel.setVisible(false);
         mRandomZToggle.setVisible(false);
         mRandomZCombo.setVisible(false);
@@ -518,14 +481,6 @@ void SectionAbstractSpatialization::resized()
     mDurationLabel.setBounds(495, 5, 90, 20);
     mDurationEditor.setBounds(500, 30, 90, 20);
     mDurationUnitCombo.setBounds(500, 60, 90, 20);
-
-    // Hide Cycle Speed slider until we found the good way to handle it!
-    mPositionCycleSpeedLabel.setBounds(5, 100, 150, 20);
-    mPositionCycleSpeedSlider.setBounds(114, 114, 165, 20);
-    mPositionCycleSpeedLabel.setVisible(false);
-    mPositionCycleSpeedSlider.setVisible(true);
-    
-    mElevationCycleSpeedSlider.setBounds(320, 114, 165, 20);
 }
 
 } // namespace gris
