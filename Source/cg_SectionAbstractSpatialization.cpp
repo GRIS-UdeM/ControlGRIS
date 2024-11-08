@@ -101,13 +101,18 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
 
     mPositionCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
     mPositionCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
-    mPositionCycleSpeedSlider.setValue(0.5, juce::NotificationType::sendNotificationAsync);
+    auto posCycleSpeed{ mAPVTS.state.getProperty("posCycleSpeed") };
+    if (posCycleSpeed.isVoid()) {
+        posCycleSpeed = 0.5;
+    }
+    mPositionCycleSpeedSlider.setValue(posCycleSpeed);
     mPositionCycleSpeedSlider.setSliderSnapsToMousePosition(false);
     mPositionCycleSpeedSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 40, 20);
     mPositionCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mPositionCycleSpeedSlider);
     mPositionCycleSpeedSlider.onValueChange = [this] {
         auto const sliderVal{ mPositionCycleSpeedSlider.getValue() };
+        mAPVTS.state.setProperty("posCycleSpeed", sliderVal, nullptr);
         double speedMultToSend{};
         if (mSpeedLinked) {
             mElevationCycleSpeedSlider.setValue(sliderVal);
@@ -123,13 +128,18 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     
     mElevationCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
     mElevationCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
-    mElevationCycleSpeedSlider.setValue(0.5, juce::NotificationType::sendNotificationAsync);
+    auto eleCycleSpeed{ mAPVTS.state.getProperty("eleCycleSpeed") };
+    if (eleCycleSpeed.isVoid()) {
+        eleCycleSpeed = 0.5;
+    }
+    mElevationCycleSpeedSlider.setValue(eleCycleSpeed);
     mElevationCycleSpeedSlider.setSliderSnapsToMousePosition(false);
     mElevationCycleSpeedSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 40, 20);
     mElevationCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mElevationCycleSpeedSlider);
     mElevationCycleSpeedSlider.onValueChange = [this] {
         auto const sliderVal{ mElevationCycleSpeedSlider.getValue() };
+        mAPVTS.state.setProperty("eleCycleSpeed", sliderVal, nullptr);
         double speedMultToSend{};
         if (mSpeedLinked) {
             mPositionCycleSpeedSlider.setValue(sliderVal);
