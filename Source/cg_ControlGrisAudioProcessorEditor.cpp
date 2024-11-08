@@ -41,7 +41,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     , mPositionField(controlGrisAudioProcessor.getSources(), positionAutomationManager)
     , mElevationField(controlGrisAudioProcessor.getSources(), elevationAutomationManager)
     , mSectionSourceSpan(mGrisLookAndFeel)
-    , mSectionAbstractSpatialization(mGrisLookAndFeel)
+    , mSectionAbstractSpatialization(mGrisLookAndFeel, vts)
     , mSectionSoundReactiveSpatialization(mGrisLookAndFeel, mProcessor)
     , mSectionGeneralSettings(mGrisLookAndFeel)
     , mSectionSourcePosition(mGrisLookAndFeel, controlGrisAudioProcessor.getSpatMode(), mSectionSourceSpan)
@@ -766,6 +766,30 @@ void ControlGrisAudioProcessorEditor::positionTrajectoryCurrentSpeedChangedCallb
 void ControlGrisAudioProcessorEditor::elevationTrajectoryCurrentSpeedChangedCallback(double value)
 {
     mElevationTrajectoryManager.setTrajectoryCurrentSpeed(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomEnableChangedCallback(bool isEnabled)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomEnabled(isEnabled);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomProximityChangedCallback(double value)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomProximity(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomTimeMinChangedCallback(double value)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomTimeMin(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomTimeMaxChangedCallback(double value)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomTimeMax(value);
 }
 
 //==============================================================================

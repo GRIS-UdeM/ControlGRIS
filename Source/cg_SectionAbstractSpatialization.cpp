@@ -25,13 +25,18 @@
 namespace gris
 {
 namespace {
-    auto constexpr SPEED_SLIDER_MIN_VAL{ 0.1 };
+    auto constexpr SPEED_SLIDER_MIN_VAL{ 0.0 };
     auto constexpr SPEED_SLIDER_MAX_VAL{ 10.0 };
     auto constexpr SPEED_SLIDER_MID_VAL{ 1.0 };
 }
 
 //==============================================================================
-SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
+SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel, juce::AudioProcessorValueTreeState & apvts)
+    : mGrisLookAndFeel(grisLookAndFeel)
+    , mAPVTS(apvts)
+    , mRandomProximityXYSlider(grisLookAndFeel)
+    , mRandomTimeMinXYSlider(grisLookAndFeel)
+    , mRandomTimeMaxXYSlider(grisLookAndFeel)
 {
     setName("SectionAbstractSpatialization");
 
@@ -233,29 +238,79 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     addAndMakeVisible(&mRandomXYLabel);
 
     addAndMakeVisible(&mRandomXYToggle);
+    mRandomXYToggle.onClick = [this] {
+        mListeners.call([&](Listener & l) {
+            l.positionTrajectoryRandomEnableChangedCallback(mRandomXYToggle.getToggleState());
+        });
+    };
 
-    addAndMakeVisible(&mRandomXYCombo);
-    mRandomXYCombo.addItem("Sine", 1);
-    mRandomXYCombo.addItem("Square", 2);
-    mRandomXYCombo.setSelectedId(1);
+    addAndMakeVisible(&mRandomTypeXYCombo);
+    mRandomTypeXYCombo.addItem("Continuous", 1);
+    mRandomTypeXYCombo.addItem("Discrete", 2);
+    mRandomTypeXYCombo.setSelectedId(1);
+
+    addAndMakeVisible(&mRandomProximityXYLabel);
+    mRandomProximityXYLabel.setText("Proximity", juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomTimeMinXYLabel);
+    mRandomTimeMinXYLabel.setText("Time Min.", juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomTimeMaxXYLabel);
+    mRandomTimeMaxXYLabel.setText("Time Max.", juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomProximityXYSlider);
+    mRandomProximityXYSlider.setNumDecimalPlacesToDisplay(2);
+    mRandomProximityXYSlider.setRange(0.0, 1.0);
+    mRandomProximityXYSlider.onValueChange = [this] {
+        mListeners.call([&](Listener & l) {
+            l.positionTrajectoryRandomProximityChangedCallback(mRandomProximityXYSlider.getValue());
+        });
+    };
+
+    addAndMakeVisible(&mRandomTimeMinXYSlider);
+    mRandomTimeMinXYSlider.setNumDecimalPlacesToDisplay(2);
+    mRandomTimeMinXYSlider.setRange(0.03, 5.0);
+    mRandomTimeMinXYSlider.onValueChange = [this] {
+        auto const timeMin{ mRandomTimeMinXYSlider.getValue() };
+        auto const timeMax{ mRandomTimeMaxXYSlider.getValue() };
+        if (timeMin > timeMax) {
+            mRandomTimeMaxXYSlider.setValue(timeMin);
+        }
+        mListeners.call([&](Listener & l) {
+            l.positionTrajectoryRandomTimeMinChangedCallback(timeMin);
+        });
+    };
+    mRandomTimeMinXYSlider.setValue(0.03, juce::sendNotificationAsync);
+
+    addAndMakeVisible(&mRandomTimeMaxXYSlider);
+    mRandomTimeMaxXYSlider.setNumDecimalPlacesToDisplay(2);
+    mRandomTimeMaxXYSlider.setRange(0.03, 5.0);
+    mRandomTimeMaxXYSlider.onValueChange = [this] {
+        auto const timeMin{ mRandomTimeMinXYSlider.getValue() };
+        auto const timeMax{ mRandomTimeMaxXYSlider.getValue() };
+        if (timeMax < timeMin) {
+            mRandomTimeMinXYSlider.setValue(timeMax);
+        }
+        mListeners.call([&](Listener & l) {
+            l.positionTrajectoryRandomTimeMaxChangedCallback(timeMax);
+        });
+    };
+    mRandomTimeMaxXYSlider.setValue(0.03, juce::sendNotification);
+    mRandomTimeMaxXYSlider.valueChanged();
 
     mRandomZLabel.setText("Random", juce::dontSendNotification);
     addAndMakeVisible(&mRandomZLabel);
 
     addAndMakeVisible(&mRandomZToggle);
 
-    addAndMakeVisible(&mRandomZCombo);
-    mRandomZCombo.addItem("Sine", 1);
-    mRandomZCombo.addItem("Square", 2);
-    mRandomZCombo.setSelectedId(1);
+    addAndMakeVisible(&mRandomTypeZCombo);
+    mRandomTypeZCombo.addItem("Sine", 1);
+    mRandomTypeZCombo.addItem("Square", 2);
+    mRandomTypeZCombo.setSelectedId(1);
 
     mRandomZLabel.setEnabled(false);
     mRandomZToggle.setEnabled(false);
-    mRandomZCombo.setEnabled(false);
-
-    mRandomXYLabel.setEnabled(false);
-    mRandomXYToggle.setEnabled(false);
-    mRandomXYCombo.setEnabled(false);
+    mRandomTypeZCombo.setEnabled(false);
 }
 
 //==============================================================================
@@ -435,9 +490,17 @@ void SectionAbstractSpatialization::resized()
     mDeviationEditor.setBounds(211, 49, 78, 15);
     mPositionCycleSpeedSlider.setBounds(113, 72, 180, 16);
 
-    mRandomXYLabel.setBounds(110, 113, 150, 10);
-    mRandomXYToggle.setBounds(181, 112, 88, 15);
-    mRandomXYCombo.setBounds(211, 112, 78, 15);
+    mRandomXYToggle.setBounds(112, 92, 60, 15);
+    mRandomXYLabel.setBounds(124, 95, 150, 10);
+    mRandomTypeXYCombo.setBounds(211, 92, 78, 15);
+
+    mRandomProximityXYLabel.setBounds(110, 110, 60, 10);
+    mRandomTimeMinXYLabel.setBounds(175, 110, 60, 10);
+    mRandomTimeMaxXYLabel.setBounds(235, 110, 60, 10);
+
+    mRandomProximityXYSlider.setBounds(120, 122, 35, 12);
+    mRandomTimeMinXYSlider.setBounds(186, 122, 35, 12);
+    mRandomTimeMaxXYSlider.setBounds(249, 122, 35, 12);
 
     mPositionActivateButton.setBounds(114, 138, 176, 20);
 
@@ -450,7 +513,7 @@ void SectionAbstractSpatialization::resized()
 
     mRandomZLabel.setBounds(315, 113, 150, 10);
     mRandomZToggle.setBounds(386, 112, 88, 15);
-    mRandomZCombo.setBounds(416, 112, 78, 15);
+    mRandomTypeZCombo.setBounds(416, 112, 78, 15);
 
     mElevationActivateButton.setBounds(319, 138, 176, 20);
 
@@ -463,7 +526,7 @@ void SectionAbstractSpatialization::resized()
         mElevationDampeningEditor.setVisible(true);
         mRandomZLabel.setVisible(true);
         mRandomZToggle.setVisible(true);
-        mRandomZCombo.setVisible(true);
+        mRandomTypeZCombo.setVisible(true);
         mElevationCycleSpeedSlider.setVisible(true);
     } else {
         mTrajectoryTypeXYLabel.setVisible(false);
@@ -474,7 +537,7 @@ void SectionAbstractSpatialization::resized()
         mElevationDampeningEditor.setVisible(false);
         mRandomZLabel.setVisible(false);
         mRandomZToggle.setVisible(false);
-        mRandomZCombo.setVisible(false);
+        mRandomTypeZCombo.setVisible(false);
         mElevationCycleSpeedSlider.setVisible(false);
     }
 

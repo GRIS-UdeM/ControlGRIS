@@ -44,7 +44,11 @@ void TrajectoryManager::setPositionActivateState(bool const state)
         mCurrentPlaybackDuration = mPlaybackDuration;
         mCurrentDegreeOfDeviation = Degrees{ 0.0f };
         mDeviationCycleCount = 0;
-        mAdjustNormailzedTimeBuffer = 0.0;
+        mNormalizedTimeBufferAdjustment = 0.0;
+        mTrajectoryLastSpeed.store(mTrajectoryCurrentSpeed.load());
+        calculateCurrentRandomTime();
+        mRandomTimeAdjustment = 0.0;
+        mTrajectoryRandomTimeFromPlaySinceLastPosChange = 0.0;
     }
 }
 
@@ -71,9 +75,47 @@ juce::Point<float> TrajectoryManager::smoothRecordingPosition(juce::Point<float>
 }
 
 //==============================================================================
+void TrajectoryManager::calculateCurrentRandomTime()
+{
+    if (mTrajectoryRandomTimeMin != mTrajectoryRandomTimeMax) {
+        mCurrentRandomTime = mRandomTrajectoryDeviation.nextDouble() * (mTrajectoryRandomTimeMax - mTrajectoryRandomTimeMin) + mTrajectoryRandomTimeMin;
+    } else {
+        mCurrentRandomTime = mTrajectoryRandomTimeMin;
+    }
+}
+
+//==============================================================================
 void TrajectoryManager::setTrajectoryCurrentSpeed(double speed)
 {
     mTrajectoryCurrentSpeed.store(speed);
+}
+
+//==============================================================================
+void TrajectoryManager::setTrajectoryRandomEnabled(bool isEnabled)
+{
+    mTrajectoryRandomEnabled = isEnabled;
+
+    if (!isEnabled) {
+        mRandomTimeAdjustment = 0.0;
+    }
+}
+
+//==============================================================================
+void TrajectoryManager::setTrajectoryRandomProximity(double proximity)
+{
+    mTrajectoryRandomProximity = proximity;
+}
+
+//==============================================================================
+void TrajectoryManager::setTrajectoryRandomTimeMin(double timeMin)
+{
+    mTrajectoryRandomTimeMin = timeMin;
+}
+
+//==============================================================================
+void TrajectoryManager::setTrajectoryRandomTimeMax(double timeMax)
+{
+    mTrajectoryRandomTimeMax = timeMax;
 }
 
 //==============================================================================
@@ -82,19 +124,36 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
     auto trajectoryCurrentSpeed{ mTrajectoryCurrentSpeed.load() };
     auto trajectoryLastSpeed{ mTrajectoryLastSpeed.load() };
 
-    // Calculate the normalized time based on the last speed (1 by default)
+    // Random logic
+    if (mTrajectoryRandomEnabled) {
+        auto timeSinceLastPosChange{ relativeTimeFromPlay - mTrajectoryRandomTimeFromPlaySinceLastPosChange };
+
+        if (timeSinceLastPosChange >= mCurrentRandomTime && relativeTimeFromPlay != 0.0) {
+            calculateCurrentRandomTime();
+            mTrajectoryRandomTimeFromPlaySinceLastPosChange = relativeTimeFromPlay;
+
+            // find random adjustment
+            auto randRange{ juce::Range<double>(0.0, mTrajectoryRandomProximity) };
+            auto nextRandomVal{ mRandomTrajectoryDeviation.nextDouble() };
+            mRandomTimeAdjustment = nextRandomVal * randRange.getLength() - (randRange.getLength() / 2);
+        } else if (relativeTimeFromPlay < mTrajectoryRandomTimeFromPlaySinceLastPosChange) {
+            // if the playhead of the DAW is in loop mode
+            mTrajectoryRandomTimeFromPlaySinceLastPosChange = relativeTimeFromPlay;
+        }
+    }
+
+    // Speed logic
     double normalizedTime = relativeTimeFromPlay * trajectoryLastSpeed / mCurrentPlaybackDuration;
     normalizedTime = std::fmod(normalizedTime, 1.0);
 
-    // Calculate the normalized time based on the new current speed
     double newNormalizedTime = relativeTimeFromPlay * trajectoryCurrentSpeed / mCurrentPlaybackDuration;
     newNormalizedTime = std::fmod(newNormalizedTime, 1.0);
 
     if (trajectoryCurrentSpeed != trajectoryLastSpeed) {
-        mAdjustNormailzedTimeBuffer += normalizedTime - newNormalizedTime;
-        mAdjustNormailzedTimeBuffer = std::fmod(mAdjustNormailzedTimeBuffer, 1.0);
+        mNormalizedTimeBufferAdjustment += normalizedTime - newNormalizedTime;
+        mNormalizedTimeBufferAdjustment = std::fmod(mNormalizedTimeBufferAdjustment, 1.0);
     }
-    auto deltaTimeAdjustement{ newNormalizedTime + mAdjustNormailzedTimeBuffer };
+    auto deltaTimeAdjustement{ newNormalizedTime + mNormalizedTimeBufferAdjustment + mRandomTimeAdjustment};
     if (deltaTimeAdjustement < 0) {
         deltaTimeAdjustement = 1.0 + deltaTimeAdjustement;
     }

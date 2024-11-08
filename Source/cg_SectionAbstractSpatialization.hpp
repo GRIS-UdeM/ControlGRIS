@@ -24,6 +24,7 @@
 
 #include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_constants.hpp"
+#include "cg_NumSlider.h"
 
 namespace gris
 {
@@ -57,11 +58,20 @@ public:
         virtual void elevationTrajectoryStateChangedCallback(bool value) = 0;
         virtual void positionTrajectoryCurrentSpeedChangedCallback(double value) = 0;
         virtual void elevationTrajectoryCurrentSpeedChangedCallback(double value) = 0;
+        virtual void positionTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
+//        virtual void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
+        virtual void positionTrajectoryRandomProximityChangedCallback(double value) = 0;
+//        virtual void elevationTrajectoryRandomProximityChangedCallback(double value) = 0;
+        virtual void positionTrajectoryRandomTimeMinChangedCallback(double value) = 0;
+//        virtual void elevationTrajectoryRandomSpeedChangedCallback(double value) = 0;
+        virtual void positionTrajectoryRandomTimeMaxChangedCallback(double value) = 0;
+//        virtual void elevationTrajectoryRandomTimeMaxChangedCallback(double value) = 0;
     };
 
 private:
     //==============================================================================
     GrisLookAndFeel & mGrisLookAndFeel;
+    juce::AudioProcessorValueTreeState & mAPVTS;
     juce::ListenerList<Listener> mListeners;
     SpatMode mSpatMode;
 
@@ -93,11 +103,17 @@ private:
 
     juce::Label mRandomXYLabel;
     juce::ToggleButton mRandomXYToggle;
-    juce::ComboBox mRandomXYCombo;
+    juce::ComboBox mRandomTypeXYCombo;
+    juce::Label mRandomProximityXYLabel;
+    juce::Label mRandomTimeMinXYLabel;
+    juce::Label mRandomTimeMaxXYLabel;
+    NumSlider mRandomProximityXYSlider;
+    NumSlider mRandomTimeMinXYSlider;
+    NumSlider mRandomTimeMaxXYSlider;
 
     juce::Label mRandomZLabel;
     juce::ToggleButton mRandomZToggle;
-    juce::ComboBox mRandomZCombo;
+    juce::ComboBox mRandomTypeZCombo;
 
     juce::TextButton mPositionActivateButton;
     juce::TextButton mElevationActivateButton;
@@ -106,7 +122,7 @@ private:
 
 public:
     //==============================================================================
-    explicit SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel);
+    explicit SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel, juce::AudioProcessorValueTreeState & apvts);
     //==============================================================================
     SectionAbstractSpatialization() = delete;
     ~SectionAbstractSpatialization() override = default;
