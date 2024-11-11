@@ -497,15 +497,15 @@ void SectionAbstractSpatialization::paint(juce::Graphics & g)
         g.setColour(juce::Colours::orange);
         g.setFont(16.0f);
         auto eleCycleSpeedSliderBounds{ mElevationCycleSpeedSlider.getBounds() };
-        g.drawText("-", eleCycleSpeedSliderBounds.getTopLeft().getX(), eleCycleSpeedSliderBounds.getTopLeft().getY() - 8, 15, 15, juce::Justification::centred);
-        g.drawText("+", eleCycleSpeedSliderBounds.getTopRight().getX() - 14, eleCycleSpeedSliderBounds.getTopRight().getY() - 8, 15, 15, juce::Justification::centred);
+        g.drawText("-", eleCycleSpeedSliderBounds.getTopLeft().getX() - 1, eleCycleSpeedSliderBounds.getTopLeft().getY() - 11, 15, 15, juce::Justification::centred);
+        g.drawText("+", eleCycleSpeedSliderBounds.getTopRight().getX() - 13, eleCycleSpeedSliderBounds.getTopRight().getY() - 11, 15, 15, juce::Justification::centred);
     }
 
     g.setColour(juce::Colours::orange);
     g.setFont(16.0f);
     auto posCycleSpeedSliderBounds{ mPositionCycleSpeedSlider.getBounds() };
-    g.drawText("-", posCycleSpeedSliderBounds.getTopLeft().getX(), posCycleSpeedSliderBounds.getTopLeft().getY() - 8, 15, 15, juce::Justification::centred);
-    g.drawText("+", posCycleSpeedSliderBounds.getTopRight().getX() - 14, posCycleSpeedSliderBounds.getTopRight().getY() - 8, 15, 15, juce::Justification::centred);
+    g.drawText("-", posCycleSpeedSliderBounds.getTopLeft().getX() - 1, posCycleSpeedSliderBounds.getTopLeft().getY() - 11, 15, 15, juce::Justification::centred);
+    g.drawText("+", posCycleSpeedSliderBounds.getTopRight().getX() - 13, posCycleSpeedSliderBounds.getTopRight().getY() - 11, 15, 15, juce::Justification::centred);
 }
 
 //==============================================================================
