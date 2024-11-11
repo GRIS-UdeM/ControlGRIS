@@ -66,6 +66,32 @@ Automation::Enum Automation::idToEnum(const juce::String & name)
     return {};
 }
 
+int TrajectoryRandomTypeToInt(TrajectoryRandomType type)
+{
+    switch (type) {
+        case TrajectoryRandomType::continuous:
+            return 1;
+        case TrajectoryRandomType::discrete:
+            return 2;
+        default:
+            jassertfalse;
+            return 0;
+    }
+}
+
+TrajectoryRandomType TrajectoryRandomTypeFromInt(int value)
+{
+    if (value == 1) {
+        return TrajectoryRandomType::continuous;
+    }
+    if (value == 2) {
+        return TrajectoryRandomType::discrete;
+    }
+    
+    jassertfalse;
+    return {};
+}
+
 juce::String const SOURCE_SELECTION_WARNING{ "This source link does not allow individual moves." };
 
 juce::StringArray const SOURCE_PLACEMENT_SKETCH{

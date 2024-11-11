@@ -262,9 +262,20 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     };
 
     addAndMakeVisible(&mRandomTypeXYCombo);
-    mRandomTypeXYCombo.addItem("Continuous", 1);
-    mRandomTypeXYCombo.addItem("Discrete", 2);
-    mRandomTypeXYCombo.setSelectedId(1);
+    mRandomTypeXYCombo.addItem("Continuous", TrajectoryRandomTypeToInt(TrajectoryRandomType::continuous));
+    mRandomTypeXYCombo.addItem("Discrete", TrajectoryRandomTypeToInt(TrajectoryRandomType::discrete));
+    mRandomTypeXYCombo.onChange = [this] {
+        auto const selectedId{ mRandomTypeXYCombo.getSelectedId() };
+        mAPVTS.state.setProperty("posRandomType", selectedId, nullptr);
+        mListeners.call([&](Listener & l) {
+            l.positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomTypeFromInt(selectedId));
+        });
+    };
+    auto posRandomType{ mAPVTS.state.getProperty("posRandomType") };
+    if (posRandomType.isVoid()) {
+        posRandomType = TrajectoryRandomTypeToInt(TrajectoryRandomType::continuous);
+    }
+    mRandomTypeXYCombo.setSelectedId(posRandomType);
 
     addAndMakeVisible(&mRandomProximityXYLabel);
     mRandomProximityXYLabel.setText("Proximity", juce::dontSendNotification);

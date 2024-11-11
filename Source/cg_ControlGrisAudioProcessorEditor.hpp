@@ -172,6 +172,7 @@ public:
     void positionTrajectoryCurrentSpeedChangedCallback(double value) override;
     void elevationTrajectoryCurrentSpeedChangedCallback(double value) override;
     void positionTrajectoryRandomEnableChangedCallback(bool isEnabled) override;
+    void positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) override;
     void positionTrajectoryRandomProximityChangedCallback(double value) override;
     void positionTrajectoryRandomTimeMinChangedCallback(double value) override;
     void positionTrajectoryRandomTimeMaxChangedCallback(double value) override;

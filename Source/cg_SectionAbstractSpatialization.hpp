@@ -60,6 +60,8 @@ public:
         virtual void elevationTrajectoryCurrentSpeedChangedCallback(double value) = 0;
         virtual void positionTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
 //        virtual void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
+        virtual void positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
+//        virtual void elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
         virtual void positionTrajectoryRandomProximityChangedCallback(double value) = 0;
 //        virtual void elevationTrajectoryRandomProximityChangedCallback(double value) = 0;
         virtual void positionTrajectoryRandomTimeMinChangedCallback(double value) = 0;

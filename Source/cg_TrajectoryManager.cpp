@@ -101,6 +101,12 @@ void TrajectoryManager::setTrajectoryRandomEnabled(bool isEnabled)
 }
 
 //==============================================================================
+void TrajectoryManager::setTrajectoryRandomType(TrajectoryRandomType type)
+{
+    mTrajectoryRandomType = type;
+}
+
+//==============================================================================
 void TrajectoryManager::setTrajectoryRandomProximity(double proximity)
 {
     mTrajectoryRandomProximity = proximity;

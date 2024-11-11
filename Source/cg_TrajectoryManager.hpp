@@ -89,6 +89,7 @@ protected:
     double mNormalizedTimeBufferAdjustment{};
     double mRandomTimeAdjustment{};
     bool mTrajectoryRandomEnabled{};
+    TrajectoryRandomType mTrajectoryRandomType{};
     double mTrajectoryRandomProximity{};
     double mTrajectoryRandomTimeMin{ 0.03 };
     double mTrajectoryRandomTimeMax{ 5.0 };
@@ -128,6 +129,7 @@ public:
     void setTrajectoryDeltaTime(double relativeTimeFromPlay);
     void setTrajectoryCurrentSpeed(double speed);
     void setTrajectoryRandomEnabled(bool isEnabled);
+    void setTrajectoryRandomType(TrajectoryRandomType type);
     void setTrajectoryRandomProximity(double proximity);
     void setTrajectoryRandomTimeMin(double timeMin);
     void setTrajectoryRandomTimeMax(double timeMax);

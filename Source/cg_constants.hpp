@@ -122,6 +122,12 @@ extern juce::String const FIXED_POSITION_DATA_TAG;
 extern juce::StringArray const AUDIO_DESCRIPTOR_TYPES;
 extern juce::StringArray const ONSET_DETECTION_METRIC_TYPES;
 
+//==============================================================================
+// Random trajectories
+enum class TrajectoryRandomType { continuous, discrete };
+int TrajectoryRandomTypeToInt(TrajectoryRandomType type);
+TrajectoryRandomType TrajectoryRandomTypeFromInt(int value);
+
 namespace Automation
 {
 namespace Ids
