@@ -358,6 +358,17 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
 }
 
 //==============================================================================
+void SectionAbstractSpatialization::actualizeValueTreeState()
+{
+    mPositionCycleSpeedSlider.onValueChange();
+    mRandomXYToggle.onClick();
+    mRandomTypeXYCombo.onChange();
+    mRandomProximityXYSlider.onValueChange();
+    mRandomTimeMinXYSlider.onValueChange();
+    mRandomTimeMaxXYSlider.onValueChange();
+}
+
+//==============================================================================
 void SectionAbstractSpatialization::setSpatMode(SpatMode const spatMode)
 {
     mSpatMode = spatMode;

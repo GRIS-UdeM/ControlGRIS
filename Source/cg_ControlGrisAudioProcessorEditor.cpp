@@ -264,6 +264,7 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
 
     // Update the Spatialization Tab
     mSpatializationComponent.setCurrentTabIndex(mAudioProcessorValueTreeState.state.getProperty("soundSpatSelTab", 0));
+    mSectionAbstractSpatialization.actualizeValueTreeState();
 
     // Update the interface.
     //----------------------

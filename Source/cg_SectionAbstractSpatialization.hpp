@@ -140,6 +140,7 @@ public:
     void paint(juce::Graphics &) override;
     void resized() override;
 
+    void actualizeValueTreeState();
     void setSpatMode(SpatMode spatMode);
     void setTrajectoryType(int type);
     void setElevationTrajectoryType(int type);
