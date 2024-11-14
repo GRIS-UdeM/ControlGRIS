@@ -88,15 +88,21 @@ protected:
     std::atomic<double> mTrajectoryLastSpeed{ 1.0 };
     double mNormalizedTimeBufferAdjustment{};
     double mRandomTimeAdjustment{};
+    double mRandomTimeAdjustmentContinuousDestination{};
+    double mRandomTimeAdjustmentContinuousIncrement{};
+    double mRandomTimeAdjustmentContinuousNextStep{};
     bool mTrajectoryRandomEnabled{};
+    bool mTrajectoryJustStartedPlaying{};
     TrajectoryRandomType mTrajectoryRandomType{};
     double mTrajectoryRandomProximity{};
+    double mTrajectoryRandomStartPosition{ 0.5 };
     double mTrajectoryRandomTimeMin{ 0.03 };
     double mTrajectoryRandomTimeMax{ 5.0 };
     double mCurrentRandomTime{};
     double mTrajectoryRandomTimeFromPlaySinceLastPosChange{};
 
     juce::Random mRandomTrajectoryDeviation{};
+    juce::Random mRandomGenrerator{};
 
     Degrees mDegreeOfDeviationPerCycle{};
     Degrees mCurrentDegreeOfDeviation{};
