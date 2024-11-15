@@ -259,12 +259,27 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         mListeners.call([&](Listener & l) { l.positionTrajectoryRandomEnableChangedCallback(toggleState); });
     };
 
+    addAndMakeVisible(&mRandomXYLoopButton);
+    auto posRandomLoop{ mAPVTS.state.getProperty("posRandomLoop") };
+    if (posRandomLoop.isVoid()) {
+        posRandomLoop = false;
+    }
+    mRandomXYLoopButton.setToggleState(posRandomLoop, juce::dontSendNotification);
+    mRandomXYLoopButton.setButtonText("Loop");
+    mRandomXYLoopButton.setClickingTogglesState(true);
+    mRandomXYLoopButton.onClick = [this] {
+        auto const toggleState{ mRandomXYLoopButton.getToggleState() };
+        mAPVTS.state.setProperty("posRandomLoop", toggleState, nullptr);
+        mListeners.call([&](Listener & l) { l.positionTrajectoryRandomLoopChangedCallback(toggleState); });
+    };
+
     addAndMakeVisible(&mRandomTypeXYCombo);
     mRandomTypeXYCombo.addItem("Continuous", TrajectoryRandomTypeToInt(TrajectoryRandomType::continuous));
     mRandomTypeXYCombo.addItem("Discrete", TrajectoryRandomTypeToInt(TrajectoryRandomType::discrete));
     mRandomTypeXYCombo.onChange = [this] {
         auto const selectedId{ mRandomTypeXYCombo.getSelectedId() };
         mAPVTS.state.setProperty("posRandomType", selectedId, nullptr);
+        mRandomXYLoopButton.setVisible(TrajectoryRandomTypeFromInt(selectedId) == TrajectoryRandomType::continuous);
         mListeners.call([&](Listener & l) {
             l.positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomTypeFromInt(selectedId));
         });
@@ -354,6 +369,7 @@ void SectionAbstractSpatialization::actualizeValueTreeState()
 {
     mPositionCycleSpeedSlider.onValueChange();
     mRandomXYToggle.onClick();
+    mRandomXYLoopButton.onClick();
     mRandomTypeXYCombo.onChange();
     mRandomProximityXYSlider.onValueChange();
     mRandomTimeMinXYSlider.onValueChange();
@@ -559,6 +575,7 @@ void SectionAbstractSpatialization::resized()
 
     mRandomXYToggle.setBounds(112, 92, 60, 15);
     mRandomXYLabel.setBounds(124, 95, 150, 10);
+    mRandomXYLoopButton.setBounds(177, 92, 32, 15);
     mRandomTypeXYCombo.setBounds(211, 92, 78, 15);
 
     mRandomProximityXYLabel.setBounds(110, 110, 60, 10);

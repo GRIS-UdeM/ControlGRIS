@@ -781,6 +781,12 @@ void ControlGrisAudioProcessorEditor::positionTrajectoryRandomEnableChangedCallb
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomLoopChangedCallback(bool shouldLoop)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomLoop(shouldLoop);
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type)
 {
     mPositionTrajectoryManager.setTrajectoryRandomType(type);

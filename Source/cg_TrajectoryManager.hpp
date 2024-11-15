@@ -92,6 +92,7 @@ protected:
     double mRandomTimeAdjustmentContinuousIncrement{};
     double mRandomTimeAdjustmentContinuousNextStep{};
     bool mTrajectoryRandomEnabled{};
+    bool mTrajectoryRandomLoop{};
     bool mTrajectoryJustStartedPlaying{};
     TrajectoryRandomType mTrajectoryRandomType{};
     double mTrajectoryRandomProximity{};
@@ -135,6 +136,7 @@ public:
     void setTrajectoryDeltaTime(double relativeTimeFromPlay);
     void setTrajectoryCurrentSpeed(double speed);
     void setTrajectoryRandomEnabled(bool isEnabled);
+    void setTrajectoryRandomLoop(bool shouldLoop);
     void setTrajectoryRandomType(TrajectoryRandomType type);
     void setTrajectoryRandomProximity(double proximity);
     void setTrajectoryRandomTimeMin(double timeMin);

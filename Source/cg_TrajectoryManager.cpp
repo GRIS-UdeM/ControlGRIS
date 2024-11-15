@@ -107,6 +107,12 @@ void TrajectoryManager::setTrajectoryRandomEnabled(bool isEnabled)
 }
 
 //==============================================================================
+void TrajectoryManager::setTrajectoryRandomLoop(bool shouldLoop)
+{
+    mTrajectoryRandomLoop = shouldLoop;
+}
+
+//==============================================================================
 void TrajectoryManager::setTrajectoryRandomType(TrajectoryRandomType type)
 {
     mTrajectoryRandomType = type;
@@ -161,13 +167,20 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
                   && mRandomTimeAdjustmentContinuousNextStep <= mRandomTimeAdjustmentContinuousDestination)
                  || (mRandomTimeAdjustmentContinuousDestination >= 0
                      && mRandomTimeAdjustmentContinuousNextStep >= mRandomTimeAdjustmentContinuousDestination))
-                && mTrajectoryRandomProximity != 0.0) {
+                && !mTrajectoryJustStartedPlaying) {
                 calculateCurrentRandomTime();
 
                 auto randRange{ juce::Range<double>(0.0, mTrajectoryRandomProximity) };
                 auto nextRandomVal{ mRandomGenrerator.nextDouble() };
-                mRandomTimeAdjustmentContinuousDestination
-                    = nextRandomVal * randRange.getLength() - (randRange.getLength() / 2);
+
+                if (mTrajectoryRandomLoop) {
+                    mRandomTimeAdjustmentContinuousDestination
+                        = nextRandomVal * randRange.getLength() - (randRange.getLength() / 2);
+                } else {
+                    mRandomTimeAdjustmentContinuousDestination = nextRandomVal * randRange.getLength()
+                                                                 - (randRange.getLength() / 2) - mRandomTimeAdjustment
+                                                                 + mTrajectoryRandomStartPosition;
+                }
 
                 // If we want constant speed
                 // int sign = (mRandomTimeAdjustmentContinuousDestination > 0) ? 1 :
