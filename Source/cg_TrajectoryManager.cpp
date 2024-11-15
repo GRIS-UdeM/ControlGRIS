@@ -161,6 +161,10 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
                 auto nextRandomVal{ mRandomGenrerator.nextDouble() };
                 mRandomTimeAdjustmentContinuousDestination = nextRandomVal * randRange.getLength() - (randRange.getLength() / 2);
 
+                // If we want constant speed
+                //int sign = (mRandomTimeAdjustmentContinuousDestination > 0) ? 1 : (mRandomTimeAdjustmentContinuousDestination < 0) ? -1 : 0;
+                //mRandomTimeAdjustmentContinuousIncrement = mTrajectoryRandomTimeMin * 0.01 * sign;
+
                 mRandomTimeAdjustmentContinuousIncrement = mRandomTimeAdjustmentContinuousDestination / (mCurrentRandomTime * 45.5); // it should be * 50, but this method is called by a juce::Timer every 20 milliseconds and it is not accurate, so we try to compensate it here instead of using a juce::HighResolutionTimer
                 mRandomTimeAdjustmentContinuousNextStep = 0.0;
             } else if (mTrajectoryJustStartedPlaying) {
