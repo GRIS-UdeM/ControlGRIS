@@ -178,6 +178,12 @@ public:
     void positionTrajectoryRandomProximityChangedCallback(double value) override;
     void positionTrajectoryRandomTimeMinChangedCallback(double value) override;
     void positionTrajectoryRandomTimeMaxChangedCallback(double value) override;
+    void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) override;
+    void elevationTrajectoryRandomLoopChangedCallback(bool shouldLoop) override;
+    void elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) override;
+    void elevationTrajectoryRandomProximityChangedCallback(double value) override;
+    void elevationTrajectoryRandomTimeMinChangedCallback(double value) override;
+    void elevationTrajectoryRandomTimeMaxChangedCallback(double value) override;
 
     // PositionPresetComponent::Listeners
     void positionPresetChangedCallback(int presetNumber) override;

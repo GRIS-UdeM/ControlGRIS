@@ -811,6 +811,42 @@ void ControlGrisAudioProcessorEditor::positionTrajectoryRandomTimeMaxChangedCall
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomEnableChangedCallback(bool isEnabled)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomEnabled(isEnabled);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomLoopChangedCallback(bool shouldLoop)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomLoop(shouldLoop);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomType(type);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomProximityChangedCallback(double value)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomProximity(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomTimeMinChangedCallback(double value)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomTimeMin(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomTimeMaxChangedCallback(double value)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomTimeMax(value);
+}
+
+//==============================================================================
 // Update the interface if anything has changed (mostly automations).
 void ControlGrisAudioProcessorEditor::refresh()
 {

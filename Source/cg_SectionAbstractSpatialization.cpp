@@ -39,6 +39,9 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     , mRandomProximityXYSlider(grisLookAndFeel)
     , mRandomTimeMinXYSlider(grisLookAndFeel)
     , mRandomTimeMaxXYSlider(grisLookAndFeel)
+    , mRandomProximityZSlider(grisLookAndFeel)
+    , mRandomTimeMinZSlider(grisLookAndFeel)
+    , mRandomTimeMaxZSlider(grisLookAndFeel)
 {
     setName("SectionAbstractSpatialization");
 
@@ -353,15 +356,106 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     addAndMakeVisible(&mRandomZLabel);
 
     addAndMakeVisible(&mRandomZToggle);
+    auto eleRandomToggle{ mAPVTS.state.getProperty("eleRandomToggle") };
+    if (eleRandomToggle.isVoid()) {
+        eleRandomToggle = false;
+    }
+    mRandomZToggle.setToggleState(eleRandomToggle, juce::dontSendNotification);
+    mRandomZToggle.onClick = [this] {
+        auto const toggleState{ mRandomZToggle.getToggleState() };
+        mAPVTS.state.setProperty("eleRandomToggle", toggleState, nullptr);
+        mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomEnableChangedCallback(toggleState); });
+    };
+
+    addAndMakeVisible(&mRandomZLoopButton);
+    auto eleRandomLoop{ mAPVTS.state.getProperty("eleRandomLoop") };
+    if (eleRandomLoop.isVoid()) {
+        eleRandomLoop = false;
+    }
+    mRandomZLoopButton.setToggleState(eleRandomLoop, juce::dontSendNotification);
+    mRandomZLoopButton.setButtonText("Loop");
+    mRandomZLoopButton.setClickingTogglesState(true);
+    mRandomZLoopButton.onClick = [this] {
+        auto const toggleState{ mRandomZLoopButton.getToggleState() };
+        mAPVTS.state.setProperty("eleRandomLoop", toggleState, nullptr);
+        mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomLoopChangedCallback(toggleState); });
+    };
 
     addAndMakeVisible(&mRandomTypeZCombo);
-    mRandomTypeZCombo.addItem("Sine", 1);
-    mRandomTypeZCombo.addItem("Square", 2);
-    mRandomTypeZCombo.setSelectedId(1);
+    mRandomTypeZCombo.addItem("Continuous", TrajectoryRandomTypeToInt(TrajectoryRandomType::continuous));
+    mRandomTypeZCombo.addItem("Discrete", TrajectoryRandomTypeToInt(TrajectoryRandomType::discrete));
+    mRandomTypeZCombo.onChange = [this] {
+        auto const selectedId{ mRandomTypeZCombo.getSelectedId() };
+        mAPVTS.state.setProperty("eleRandomType", selectedId, nullptr);
+        mRandomZLoopButton.setVisible(TrajectoryRandomTypeFromInt(selectedId) == TrajectoryRandomType::continuous);
+        mListeners.call([&](Listener & l) {
+            l.elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomTypeFromInt(selectedId));
+        });
+    };
+    auto eleRandomType{ mAPVTS.state.getProperty("eleRandomType") };
+    if (eleRandomType.isVoid()) {
+        eleRandomType = TrajectoryRandomTypeToInt(TrajectoryRandomType::continuous);
+    }
+    mRandomTypeZCombo.setSelectedId(eleRandomType);
 
-    mRandomZLabel.setEnabled(false);
-    mRandomZToggle.setEnabled(false);
-    mRandomTypeZCombo.setEnabled(false);
+    addAndMakeVisible(&mRandomProximityZLabel);
+    mRandomProximityZLabel.setText("Proximity", juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomTimeMinZLabel);
+    mRandomTimeMinZLabel.setText("Time Min.", juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomTimeMaxZLabel);
+    mRandomTimeMaxZLabel.setText("Time Max.", juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomProximityZSlider);
+    mRandomProximityZSlider.setNumDecimalPlacesToDisplay(2);
+    mRandomProximityZSlider.setRange(0.0, 1.0);
+    mRandomProximityZSlider.onValueChange = [this] {
+        auto proxVal{ mRandomProximityZSlider.getValue() };
+        mAPVTS.state.setProperty("eleRandomProximity", proxVal, nullptr);
+        mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomProximityChangedCallback(proxVal); });
+    };
+    auto eleRandomProximity{ mAPVTS.state.getProperty("eleRandomProximity") };
+    if (eleRandomProximity.isVoid()) {
+        eleRandomProximity = 0.0;
+    }
+    mRandomProximityZSlider.setValue(eleRandomProximity);
+
+    addAndMakeVisible(&mRandomTimeMinZSlider);
+    mRandomTimeMinZSlider.setNumDecimalPlacesToDisplay(2);
+    mRandomTimeMinZSlider.setRange(0.03, 5.0);
+    mRandomTimeMinZSlider.onValueChange = [this] {
+        auto const timeMin{ mRandomTimeMinZSlider.getValue() };
+        auto const timeMax{ mRandomTimeMaxZSlider.getValue() };
+        if (timeMin > timeMax) {
+            mRandomTimeMaxZSlider.setValue(timeMin);
+        }
+        mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomTimeMinChangedCallback(timeMin); });
+        mAPVTS.state.setProperty("eleRandomTimeMin", timeMin, nullptr);
+    };
+    auto eleRandomTimeMin{ mAPVTS.state.getProperty("eleRandomTimeMin") };
+    if (eleRandomTimeMin.isVoid()) {
+        eleRandomTimeMin = 0.03;
+    }
+    mRandomTimeMinZSlider.setValue(eleRandomTimeMin, juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomTimeMaxZSlider);
+    mRandomTimeMaxZSlider.setNumDecimalPlacesToDisplay(2);
+    mRandomTimeMaxZSlider.setRange(0.03, 5.0);
+    mRandomTimeMaxZSlider.onValueChange = [this] {
+        auto const timeMin{ mRandomTimeMinZSlider.getValue() };
+        auto const timeMax{ mRandomTimeMaxZSlider.getValue() };
+        if (timeMax < timeMin) {
+            mRandomTimeMinZSlider.setValue(timeMax);
+        }
+        mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomTimeMaxChangedCallback(timeMax); });
+        mAPVTS.state.setProperty("eleRandomTimeMax", timeMax, nullptr);
+    };
+    auto eleRandomTimeMax{ mAPVTS.state.getProperty("eleRandomTimeMax") };
+    if (eleRandomTimeMax.isVoid()) {
+        eleRandomTimeMax = 0.03;
+    }
+    mRandomTimeMaxZSlider.setValue(eleRandomTimeMax, juce::dontSendNotification);
 }
 
 //==============================================================================
@@ -374,6 +468,14 @@ void SectionAbstractSpatialization::actualizeValueTreeState()
     mRandomProximityXYSlider.onValueChange();
     mRandomTimeMinXYSlider.onValueChange();
     mRandomTimeMaxXYSlider.onValueChange();
+
+    mElevationCycleSpeedSlider.onValueChange();
+    mRandomZToggle.onClick();
+    mRandomZLoopButton.onClick();
+    mRandomTypeZCombo.onChange();
+    mRandomProximityZSlider.onValueChange();
+    mRandomTimeMinZSlider.onValueChange();
+    mRandomTimeMaxZSlider.onValueChange();
 }
 
 //==============================================================================
@@ -595,9 +697,22 @@ void SectionAbstractSpatialization::resized()
 
     mElevationCycleSpeedSlider.setBounds(317, 72, 180, 16);
 
-    mRandomZLabel.setBounds(315, 113, 150, 10);
-    mRandomZToggle.setBounds(386, 112, 88, 15);
-    mRandomTypeZCombo.setBounds(416, 112, 78, 15);
+//    mRandomZLabel.setBounds(315, 113, 150, 10);
+//    mRandomZToggle.setBounds(386, 112, 88, 15);
+//    mRandomTypeZCombo.setBounds(416, 112, 78, 15);
+    auto const xOffsetForZRandom{ 205 };
+    mRandomZToggle.setBounds(112 + xOffsetForZRandom, 92, 60, 15);
+    mRandomZLabel.setBounds(124 + xOffsetForZRandom, 95, 150, 10);
+    mRandomZLoopButton.setBounds(177 + xOffsetForZRandom, 92, 32, 15);
+    mRandomTypeZCombo.setBounds(211 + xOffsetForZRandom, 92, 78, 15);
+
+    mRandomProximityZLabel.setBounds(110 + xOffsetForZRandom, 110, 60, 10);
+    mRandomTimeMinZLabel.setBounds(175 + xOffsetForZRandom, 110, 60, 10);
+    mRandomTimeMaxZLabel.setBounds(235 + xOffsetForZRandom, 110, 60, 10);
+
+    mRandomProximityZSlider.setBounds(120 + xOffsetForZRandom, 122, 35, 12);
+    mRandomTimeMinZSlider.setBounds(186 + xOffsetForZRandom, 122, 35, 12);
+    mRandomTimeMaxZSlider.setBounds(249 + xOffsetForZRandom, 122, 35, 12);
 
     mElevationActivateButton.setBounds(319, 138, 176, 20);
 
@@ -610,7 +725,14 @@ void SectionAbstractSpatialization::resized()
         mElevationDampeningEditor.setVisible(true);
         mRandomZLabel.setVisible(true);
         mRandomZToggle.setVisible(true);
+        mRandomZLoopButton.setVisible(true);
         mRandomTypeZCombo.setVisible(true);
+        mRandomProximityZLabel.setVisible(true);
+        mRandomTimeMinZLabel.setVisible(true);
+        mRandomTimeMaxZLabel.setVisible(true);
+        mRandomProximityZSlider.setVisible(true);
+        mRandomTimeMinZSlider.setVisible(true);
+        mRandomTimeMaxZSlider.setVisible(true);
         mElevationCycleSpeedSlider.setVisible(true);
     } else {
         mTrajectoryTypeXYLabel.setVisible(false);
@@ -621,7 +743,14 @@ void SectionAbstractSpatialization::resized()
         mElevationDampeningEditor.setVisible(false);
         mRandomZLabel.setVisible(false);
         mRandomZToggle.setVisible(false);
+        mRandomZLoopButton.setVisible(false);
         mRandomTypeZCombo.setVisible(false);
+        mRandomProximityZLabel.setVisible(false);
+        mRandomTimeMinZLabel.setVisible(false);
+        mRandomTimeMaxZLabel.setVisible(false);
+        mRandomProximityZSlider.setVisible(false);
+        mRandomTimeMinZSlider.setVisible(false);
+        mRandomTimeMaxZSlider.setVisible(false);
         mElevationCycleSpeedSlider.setVisible(false);
     }
 

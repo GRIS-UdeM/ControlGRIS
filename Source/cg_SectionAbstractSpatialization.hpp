@@ -61,17 +61,17 @@ public:
         virtual void positionTrajectoryCurrentSpeedChangedCallback(double value) = 0;
         virtual void elevationTrajectoryCurrentSpeedChangedCallback(double value) = 0;
         virtual void positionTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
-        // virtual void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
+        virtual void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
         virtual void positionTrajectoryRandomLoopChangedCallback(bool shouldLoop) = 0;
-        // virtual void elevationTrajectoryRandomLoopChangedCallback(bool shouldLoop) = 0;
+        virtual void elevationTrajectoryRandomLoopChangedCallback(bool shouldLoop) = 0;
         virtual void positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
-        // virtual void elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
+        virtual void elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
         virtual void positionTrajectoryRandomProximityChangedCallback(double value) = 0;
-        // virtual void elevationTrajectoryRandomProximityChangedCallback(double value) = 0;
+        virtual void elevationTrajectoryRandomProximityChangedCallback(double value) = 0;
         virtual void positionTrajectoryRandomTimeMinChangedCallback(double value) = 0;
-        // virtual void elevationTrajectoryRandomSpeedChangedCallback(double value) = 0;
+        virtual void elevationTrajectoryRandomTimeMinChangedCallback(double value) = 0;
         virtual void positionTrajectoryRandomTimeMaxChangedCallback(double value) = 0;
-        // virtual void elevationTrajectoryRandomTimeMaxChangedCallback(double value) = 0;
+        virtual void elevationTrajectoryRandomTimeMaxChangedCallback(double value) = 0;
     };
 
 private:
@@ -120,7 +120,14 @@ private:
 
     juce::Label mRandomZLabel;
     juce::ToggleButton mRandomZToggle;
+    juce::TextButton mRandomZLoopButton;
     juce::ComboBox mRandomTypeZCombo;
+    juce::Label mRandomProximityZLabel;
+    juce::Label mRandomTimeMinZLabel;
+    juce::Label mRandomTimeMaxZLabel;
+    NumSlider mRandomProximityZSlider;
+    NumSlider mRandomTimeMinZSlider;
+    NumSlider mRandomTimeMaxZSlider;
 
     juce::TextButton mPositionActivateButton;
     juce::TextButton mElevationActivateButton;
