@@ -23,8 +23,8 @@
 #include <JuceHeader.h>
 
 #include "cg_ControlGrisLookAndFeel.hpp"
-#include "cg_Source.hpp"
 #include "cg_NumSlider.h"
+#include "cg_Source.hpp"
 
 namespace gris
 {

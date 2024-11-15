@@ -237,8 +237,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
     addChildComponent(&mZSourceLinkCombo);
     mZSourceLinkCombo.onChange = [this] {
         mListeners.call([&](Listener & l) {
-            l.elevationSourceLinkChangedCallback(
-                static_cast<ElevationSourceLink>(mZSourceLinkCombo.getSelectedId()));
+            l.elevationSourceLinkChangedCallback(static_cast<ElevationSourceLink>(mZSourceLinkCombo.getSelectedId()));
         });
     };
 
@@ -300,7 +299,7 @@ void SectionSourcePosition::resized()
 
     mDomeControls.setBounds(5, 30, 300, 15);
     mCubeControls.setBounds(5, 30, 300, 15);
-    
+
     mSectionSourceSpan.setBounds(0, 50, getWidth(), 25);
 
     mSourceLinkLabel.setBounds(5, 81, 150, 10);

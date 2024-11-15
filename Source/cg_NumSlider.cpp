@@ -18,15 +18,14 @@
  * <https://www.gnu.org/licenses/>.                                       *
  *************************************************************************/
 
-#include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_NumSlider.h"
+#include "cg_ControlGrisLookAndFeel.hpp"
 
 namespace gris
 {
 
 //==============================================================================
-NumSlider::NumSlider(GrisLookAndFeel & grisLookAndFeel)
-    : mGrisLookAndFeel(grisLookAndFeel)
+NumSlider::NumSlider(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
 {
     setLookAndFeel(&grisLookAndFeel);
     setTitle("NumSlider");
@@ -46,7 +45,8 @@ void NumSlider::mouseWheelMove(const juce::MouseEvent & /*event*/, const juce::M
     mLastValue = getValue();
     juce::Time currentTime = juce::Time::getCurrentTime();
     auto timeDiff = static_cast<double>((currentTime - mLastTime).inMilliseconds());
-    if (timeDiff <= 0.0001) timeDiff = 1.0;
+    if (timeDiff <= 0.0001)
+        timeDiff = 1.0;
     double valueDiff = wheel.deltaY * getInterval();
     double velocity = valueDiff / timeDiff * 1000;
     double newValue = mLastValue - velocity;
@@ -96,8 +96,7 @@ void NumSlider::paint(juce::Graphics & g)
                                           static_cast<float>(bounds.getWidth()),
                                           static_cast<float>(bounds.getHeight()) };
         g.fillRect(drawRec);
-    }
-    else {
+    } else {
         g.setColour(lightColor);
         g.fillRect(bounds);
     }
@@ -135,7 +134,7 @@ void NumSlider::mouseUp(const juce::MouseEvent & event)
             sliderEditor->setInputRestrictions(5, "0123456789,.");
         }
 
-        auto& box = juce::CallOutBox::launchAsynchronously(std::move(sliderEditor), getScreenBounds(), nullptr);
+        auto & box = juce::CallOutBox::launchAsynchronously(std::move(sliderEditor), getScreenBounds(), nullptr);
         box.setLookAndFeel(&mGrisLookAndFeel);
     }
 

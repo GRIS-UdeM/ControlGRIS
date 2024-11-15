@@ -24,11 +24,11 @@
 
 #include <JuceHeader.h>
 
+#include "SpatialParameters/cg_SpatialParameter.h"
 #include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_ControlGrisLookAndFeel.hpp"
-#include "cg_constants.hpp"
 #include "cg_NumSlider.h"
-#include "SpatialParameters/cg_SpatialParameter.h"
+#include "cg_constants.hpp"
 
 namespace gris
 {
@@ -72,7 +72,7 @@ public:
     struct Listener {
         virtual ~Listener() = default;
 
-        //virtual void futureVirtualFunctionsHere() = 0;
+        // virtual void futureVirtualFunctionsHere() = 0;
     };
 
 private:
@@ -133,7 +133,7 @@ private:
 
     NumSlider mParameterElevationZOffsetSlider;
     NumSlider mParameterEleZSpanOffsetSlider;
-    
+
     juce::Label mParameterLapLabel;
     juce::ComboBox mParameterLapCombo;
 

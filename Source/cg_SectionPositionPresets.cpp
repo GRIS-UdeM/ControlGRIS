@@ -205,7 +205,7 @@ void PositionPresetInfoComponent::resized()
 //==============================================================================
 void PositionPresetInfoComponent::timerCallback()
 {
-    if (mTimerFlashCounter > 0) { 
+    if (mTimerFlashCounter > 0) {
         if (mTimerFlashCounter % 2 == 0) {
             mActionLog.setColour(juce::Label::backgroundColourId, mGrisLookAndFeel.getOnColor());
         } else {
@@ -230,7 +230,7 @@ void PositionPresetInfoComponent::setActionLogText(juce::String const & text, ju
 
 //==============================================================================
 void PositionPresetInfoComponent::setAppVersionLabelText(juce::String const & text,
-                                                          juce::NotificationType notificationType)
+                                                         juce::NotificationType notificationType)
 {
     mAppVersionLabel.setText(text, notificationType);
 }

@@ -23,13 +23,15 @@
 #include <JuceHeader.h>
 
 #include "cg_ControlGrisLookAndFeel.hpp"
-#include "cg_constants.hpp"
 #include "cg_NumSlider.h"
+#include "cg_constants.hpp"
 
 namespace gris
 {
 //==============================================================================
-class SectionAbstractSpatialization final : public juce::Component, private juce::TextEditor::Listener
+class SectionAbstractSpatialization final
+    : public juce::Component
+    , private juce::TextEditor::Listener
 {
 public:
     //==============================================================================
@@ -59,15 +61,15 @@ public:
         virtual void positionTrajectoryCurrentSpeedChangedCallback(double value) = 0;
         virtual void elevationTrajectoryCurrentSpeedChangedCallback(double value) = 0;
         virtual void positionTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
-//        virtual void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
+        //        virtual void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
         virtual void positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
-//        virtual void elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
+        //        virtual void elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
         virtual void positionTrajectoryRandomProximityChangedCallback(double value) = 0;
-//        virtual void elevationTrajectoryRandomProximityChangedCallback(double value) = 0;
+        //        virtual void elevationTrajectoryRandomProximityChangedCallback(double value) = 0;
         virtual void positionTrajectoryRandomTimeMinChangedCallback(double value) = 0;
-//        virtual void elevationTrajectoryRandomSpeedChangedCallback(double value) = 0;
+        //        virtual void elevationTrajectoryRandomSpeedChangedCallback(double value) = 0;
         virtual void positionTrajectoryRandomTimeMaxChangedCallback(double value) = 0;
-//        virtual void elevationTrajectoryRandomTimeMaxChangedCallback(double value) = 0;
+        //        virtual void elevationTrajectoryRandomTimeMaxChangedCallback(double value) = 0;
     };
 
 private:
@@ -124,7 +126,8 @@ private:
 
 public:
     //==============================================================================
-    explicit SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel, juce::AudioProcessorValueTreeState & apvts);
+    explicit SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel,
+                                           juce::AudioProcessorValueTreeState & apvts);
     //==============================================================================
     SectionAbstractSpatialization() = delete;
     ~SectionAbstractSpatialization() override = default;

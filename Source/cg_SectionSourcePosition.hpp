@@ -25,10 +25,10 @@
 #include <JuceHeader.h>
 
 #include "cg_ControlGrisLookAndFeel.hpp"
-#include "cg_Source.hpp"
-#include "cg_constants.hpp"
 #include "cg_NumSlider.h"
 #include "cg_SectionSourceSpan.hpp"
+#include "cg_Source.hpp"
+#include "cg_constants.hpp"
 
 namespace gris
 {
@@ -149,7 +149,9 @@ private:
 
 public:
     //==============================================================================
-    explicit SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, SpatMode spatMode, SectionSourceSpan & sectionSourceSpan);
+    explicit SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
+                                   SpatMode spatMode,
+                                   SectionSourceSpan & sectionSourceSpan);
     //==============================================================================
     SectionSourcePosition() = delete;
     ~SectionSourcePosition() override = default;

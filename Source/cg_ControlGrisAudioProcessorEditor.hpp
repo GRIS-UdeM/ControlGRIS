@@ -24,11 +24,11 @@
 
 #include "cg_BannerComponent.hpp"
 #include "cg_FieldComponent.hpp"
+#include "cg_SectionAbstractSpatialization.hpp"
 #include "cg_SectionOscController.hpp"
 #include "cg_SectionPositionPresets.hpp"
-#include "cg_SectionSourcePosition.hpp"
-#include "cg_SectionAbstractSpatialization.hpp"
 #include "cg_SectionSoundReactiveSpatialization.h"
+#include "cg_SectionSourcePosition.hpp"
 
 namespace gris
 {
@@ -38,6 +38,7 @@ class TabbedSpatializationComponent final : public juce::TabbedComponent
 private:
     //==============================================================================
     ControlGrisAudioProcessor & mAudioProcessor;
+
 public:
     //==============================================================================
     TabbedSpatializationComponent() = delete;

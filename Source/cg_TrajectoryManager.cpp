@@ -82,7 +82,9 @@ juce::Point<float> TrajectoryManager::smoothRecordingPosition(juce::Point<float>
 void TrajectoryManager::calculateCurrentRandomTime()
 {
     if (mTrajectoryRandomTimeMin != mTrajectoryRandomTimeMax) {
-        mCurrentRandomTime = mRandomTrajectoryDeviation.nextDouble() * (mTrajectoryRandomTimeMax - mTrajectoryRandomTimeMin) + mTrajectoryRandomTimeMin;
+        mCurrentRandomTime
+            = mRandomTrajectoryDeviation.nextDouble() * (mTrajectoryRandomTimeMax - mTrajectoryRandomTimeMin)
+              + mTrajectoryRandomTimeMin;
     } else {
         mCurrentRandomTime = mTrajectoryRandomTimeMin;
     }
@@ -145,7 +147,8 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
 
                 auto randRange{ juce::Range<double>(0.0, mTrajectoryRandomProximity) };
                 auto nextRandomVal{ mRandomGenrerator.nextDouble() };
-                mRandomTimeAdjustment = nextRandomVal * randRange.getLength() - (randRange.getLength() / 2) + mTrajectoryRandomStartPosition;
+                mRandomTimeAdjustment = nextRandomVal * randRange.getLength() - (randRange.getLength() / 2)
+                                        + mTrajectoryRandomStartPosition;
             } else if (relativeTimeFromPlay < mTrajectoryRandomTimeFromPlaySinceLastPosChange) {
                 // if the playhead of the DAW is in loop mode
                 mTrajectoryRandomTimeFromPlaySinceLastPosChange = relativeTimeFromPlay;
@@ -154,18 +157,28 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
                 mTrajectoryJustStartedPlaying = false;
             }
         } else if (mTrajectoryRandomType == TrajectoryRandomType::continuous) {
-            if (((mRandomTimeAdjustmentContinuousDestination <= 0 && mRandomTimeAdjustmentContinuousNextStep <= mRandomTimeAdjustmentContinuousDestination) || (mRandomTimeAdjustmentContinuousDestination >= 0 && mRandomTimeAdjustmentContinuousNextStep >= mRandomTimeAdjustmentContinuousDestination)) && mTrajectoryRandomProximity != 0.0) {
+            if (((mRandomTimeAdjustmentContinuousDestination <= 0
+                  && mRandomTimeAdjustmentContinuousNextStep <= mRandomTimeAdjustmentContinuousDestination)
+                 || (mRandomTimeAdjustmentContinuousDestination >= 0
+                     && mRandomTimeAdjustmentContinuousNextStep >= mRandomTimeAdjustmentContinuousDestination))
+                && mTrajectoryRandomProximity != 0.0) {
                 calculateCurrentRandomTime();
 
                 auto randRange{ juce::Range<double>(0.0, mTrajectoryRandomProximity) };
                 auto nextRandomVal{ mRandomGenrerator.nextDouble() };
-                mRandomTimeAdjustmentContinuousDestination = nextRandomVal * randRange.getLength() - (randRange.getLength() / 2);
+                mRandomTimeAdjustmentContinuousDestination
+                    = nextRandomVal * randRange.getLength() - (randRange.getLength() / 2);
 
                 // If we want constant speed
-                //int sign = (mRandomTimeAdjustmentContinuousDestination > 0) ? 1 : (mRandomTimeAdjustmentContinuousDestination < 0) ? -1 : 0;
-                //mRandomTimeAdjustmentContinuousIncrement = mTrajectoryRandomTimeMin * 0.01 * sign;
+                // int sign = (mRandomTimeAdjustmentContinuousDestination > 0) ? 1 :
+                // (mRandomTimeAdjustmentContinuousDestination < 0) ? -1 : 0; mRandomTimeAdjustmentContinuousIncrement =
+                // mTrajectoryRandomTimeMin * 0.01 * sign;
 
-                mRandomTimeAdjustmentContinuousIncrement = mRandomTimeAdjustmentContinuousDestination / (mCurrentRandomTime * 45.5); // it should be * 50, but this method is called by a juce::Timer every 20 milliseconds and it is not accurate, so we try to compensate it here instead of using a juce::HighResolutionTimer
+                mRandomTimeAdjustmentContinuousIncrement
+                    = mRandomTimeAdjustmentContinuousDestination
+                      / (mCurrentRandomTime * 45.5); // it should be * 50, but this method is called by a juce::Timer
+                                                     // every 20 milliseconds and it is not accurate, so we try to
+                                                     // compensate it here instead of using a juce::HighResolutionTimer
                 mRandomTimeAdjustmentContinuousNextStep = 0.0;
             } else if (mTrajectoryJustStartedPlaying) {
                 mRandomTimeAdjustment = mTrajectoryRandomStartPosition;
@@ -188,7 +201,7 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
         mNormalizedTimeBufferAdjustment += normalizedTime - newNormalizedTime;
         mNormalizedTimeBufferAdjustment = std::fmod(mNormalizedTimeBufferAdjustment, 1.0);
     }
-    auto deltaTimeAdjustement{ newNormalizedTime + mNormalizedTimeBufferAdjustment + mRandomTimeAdjustment};
+    auto deltaTimeAdjustement{ newNormalizedTime + mNormalizedTimeBufferAdjustment + mRandomTimeAdjustment };
     if (deltaTimeAdjustement < 0) {
         auto deltaTimeAdjustementIntegerPart{ std::abs(static_cast<int>(deltaTimeAdjustement / 1)) + 1 };
         deltaTimeAdjustement = deltaTimeAdjustementIntegerPart + deltaTimeAdjustement;

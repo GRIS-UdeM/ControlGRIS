@@ -24,14 +24,16 @@
 
 namespace gris
 {
-namespace {
-    auto constexpr SPEED_SLIDER_MIN_VAL{ 0.0 };
-    auto constexpr SPEED_SLIDER_MAX_VAL{ 10.0 };
-    auto constexpr SPEED_SLIDER_MID_VAL{ 1.0 };
-}
+namespace
+{
+auto constexpr SPEED_SLIDER_MIN_VAL{ 0.0 };
+auto constexpr SPEED_SLIDER_MAX_VAL{ 10.0 };
+auto constexpr SPEED_SLIDER_MID_VAL{ 1.0 };
+} // namespace
 
 //==============================================================================
-SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel, juce::AudioProcessorValueTreeState & apvts)
+SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel,
+                                                             juce::AudioProcessorValueTreeState & apvts)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAPVTS(apvts)
     , mRandomProximityXYSlider(grisLookAndFeel)
@@ -122,10 +124,9 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         } else {
             speedMultToSend = juce::jmap(sliderVal, 0.5, 1.0, SPEED_SLIDER_MID_VAL, SPEED_SLIDER_MAX_VAL);
         }
-        mListeners.call(
-                        [&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
+        mListeners.call([&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
     };
-    
+
     mElevationCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
     mElevationCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
     auto eleCycleSpeed{ mAPVTS.state.getProperty("eleCycleSpeed") };
@@ -149,8 +150,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         } else {
             speedMultToSend = juce::jmap(sliderVal, 0.5, 1.0, SPEED_SLIDER_MID_VAL, SPEED_SLIDER_MAX_VAL);
         }
-        mListeners.call(
-                        [&](Listener & l) { l.elevationTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
+        mListeners.call([&](Listener & l) { l.elevationTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
     };
 
     // Removed because this interacted with DAWs
@@ -256,9 +256,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mRandomXYToggle.onClick = [this] {
         auto const toggleState{ mRandomXYToggle.getToggleState() };
         mAPVTS.state.setProperty("posRandomToggle", toggleState, nullptr);
-        mListeners.call([&](Listener & l) {
-            l.positionTrajectoryRandomEnableChangedCallback(toggleState);
-        });
+        mListeners.call([&](Listener & l) { l.positionTrajectoryRandomEnableChangedCallback(toggleState); });
     };
 
     addAndMakeVisible(&mRandomTypeXYCombo);
@@ -292,9 +290,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mRandomProximityXYSlider.onValueChange = [this] {
         auto proxVal{ mRandomProximityXYSlider.getValue() };
         mAPVTS.state.setProperty("posRandomProximity", proxVal, nullptr);
-        mListeners.call([&](Listener & l) {
-            l.positionTrajectoryRandomProximityChangedCallback(proxVal);
-        });
+        mListeners.call([&](Listener & l) { l.positionTrajectoryRandomProximityChangedCallback(proxVal); });
     };
     auto posRandomProximity{ mAPVTS.state.getProperty("posRandomProximity") };
     if (posRandomProximity.isVoid()) {
@@ -311,9 +307,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         if (timeMin > timeMax) {
             mRandomTimeMaxXYSlider.setValue(timeMin);
         }
-        mListeners.call([&](Listener & l) {
-            l.positionTrajectoryRandomTimeMinChangedCallback(timeMin);
-        });
+        mListeners.call([&](Listener & l) { l.positionTrajectoryRandomTimeMinChangedCallback(timeMin); });
         mAPVTS.state.setProperty("posRandomTimeMin", timeMin, nullptr);
     };
     auto posRandomTimeMin{ mAPVTS.state.getProperty("posRandomTimeMin") };
@@ -331,9 +325,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         if (timeMax < timeMin) {
             mRandomTimeMinXYSlider.setValue(timeMax);
         }
-        mListeners.call([&](Listener & l) {
-            l.positionTrajectoryRandomTimeMaxChangedCallback(timeMax);
-        });
+        mListeners.call([&](Listener & l) { l.positionTrajectoryRandomTimeMaxChangedCallback(timeMax); });
         mAPVTS.state.setProperty("posRandomTimeMax", timeMax, nullptr);
     };
     auto posRandomTimeMax{ mAPVTS.state.getProperty("posRandomTimeMax") };
@@ -519,15 +511,35 @@ void SectionAbstractSpatialization::paint(juce::Graphics & g)
         g.setColour(juce::Colours::orange);
         g.setFont(16.0f);
         auto eleCycleSpeedSliderBounds{ mElevationCycleSpeedSlider.getBounds() };
-        g.drawText("-", eleCycleSpeedSliderBounds.getTopLeft().getX() - 1, eleCycleSpeedSliderBounds.getTopLeft().getY() - 11, 15, 15, juce::Justification::centred);
-        g.drawText("+", eleCycleSpeedSliderBounds.getTopRight().getX() - 13, eleCycleSpeedSliderBounds.getTopRight().getY() - 11, 15, 15, juce::Justification::centred);
+        g.drawText("-",
+                   eleCycleSpeedSliderBounds.getTopLeft().getX() - 1,
+                   eleCycleSpeedSliderBounds.getTopLeft().getY() - 11,
+                   15,
+                   15,
+                   juce::Justification::centred);
+        g.drawText("+",
+                   eleCycleSpeedSliderBounds.getTopRight().getX() - 13,
+                   eleCycleSpeedSliderBounds.getTopRight().getY() - 11,
+                   15,
+                   15,
+                   juce::Justification::centred);
     }
 
     g.setColour(juce::Colours::orange);
     g.setFont(16.0f);
     auto posCycleSpeedSliderBounds{ mPositionCycleSpeedSlider.getBounds() };
-    g.drawText("-", posCycleSpeedSliderBounds.getTopLeft().getX() - 1, posCycleSpeedSliderBounds.getTopLeft().getY() - 11, 15, 15, juce::Justification::centred);
-    g.drawText("+", posCycleSpeedSliderBounds.getTopRight().getX() - 13, posCycleSpeedSliderBounds.getTopRight().getY() - 11, 15, 15, juce::Justification::centred);
+    g.drawText("-",
+               posCycleSpeedSliderBounds.getTopLeft().getX() - 1,
+               posCycleSpeedSliderBounds.getTopLeft().getY() - 11,
+               15,
+               15,
+               juce::Justification::centred);
+    g.drawText("+",
+               posCycleSpeedSliderBounds.getTopRight().getX() - 13,
+               posCycleSpeedSliderBounds.getTopRight().getY() - 11,
+               15,
+               15,
+               juce::Justification::centred);
 }
 
 //==============================================================================

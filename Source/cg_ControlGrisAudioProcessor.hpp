@@ -31,26 +31,26 @@
 
 #include "FluidVersion.hpp"
 
-#include "Descriptors/cg_Pitch.hpp"
-#include "Descriptors/cg_Loudness.hpp"
-#include "Descriptors/cg_Stats.hpp"
-#include "Descriptors/cg_Shape.hpp"
 #include "Descriptors/cg_Centroid.hpp"
-#include "Descriptors/cg_Spread.hpp"
 #include "Descriptors/cg_Flatness.hpp"
+#include "Descriptors/cg_Loudness.hpp"
 #include "Descriptors/cg_OnsetDetection.hpp"
+#include "Descriptors/cg_Pitch.hpp"
+#include "Descriptors/cg_Shape.hpp"
+#include "Descriptors/cg_Spread.hpp"
+#include "Descriptors/cg_Stats.hpp"
 
 #include "SpatialParameters/cg_SpatParamHelperFunctions.h"
 
 #include "SpatialParameters/cg_AzimuthDome.hpp"
 #include "SpatialParameters/cg_ElevationDome.hpp"
+#include "SpatialParameters/cg_HspanCube.hpp"
 #include "SpatialParameters/cg_HspanDome.hpp"
+#include "SpatialParameters/cg_VspanCube.hpp"
 #include "SpatialParameters/cg_VspanDome.hpp"
 #include "SpatialParameters/cg_XCube.hpp"
 #include "SpatialParameters/cg_YCube.hpp"
 #include "SpatialParameters/cg_ZCube.hpp"
-#include "SpatialParameters/cg_HspanCube.hpp"
-#include "SpatialParameters/cg_VspanCube.hpp"
 
 namespace gris
 {

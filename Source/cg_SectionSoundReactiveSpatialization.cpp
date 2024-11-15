@@ -24,7 +24,7 @@
 
 //==============================================================================
 gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(GrisLookAndFeel & grisLookAndFeel,
-    ControlGrisAudioProcessor & audioProcessor)
+                                                                             ControlGrisAudioProcessor & audioProcessor)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAudioProcessor(audioProcessor)
     , mAPVTS(mAudioProcessor.getValueTreeState())
@@ -59,14 +59,14 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
 {
     auto const initRangeSlider = [&](NumSlider & slider) {
         slider.setNormalisableRange(juce::NormalisableRange<double>{ -100.0, 100.0, 0.1 });
-        //slider.setValue(100.0, juce::dontSendNotification);
+        // slider.setValue(100.0, juce::dontSendNotification);
         slider.setNumDecimalPlacesToDisplay(1);
         addAndMakeVisible(slider);
     };
 
     auto const initParameterDescCombo = [&](juce::ComboBox & combo) {
         combo.addItemList(AUDIO_DESCRIPTOR_TYPES, 1);
-        //combo.setSelectedId(1, juce::dontSendNotification);
+        // combo.setSelectedId(1, juce::dontSendNotification);
         addAndMakeVisible(combo);
     };
 
@@ -223,7 +223,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
         } else {
             rangeSliderOnValueChange(mParameterAzimuthOrXYSpanDescriptorCombo,
                                      mParameterAzimuthOrXYSpanRangeSlider,
-                                     mAudioProcessor.getHSpanCube());        
+                                     mAudioProcessor.getHSpanCube());
         }
     };
 
@@ -243,12 +243,12 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
     mParameterElevationZOffsetSlider.onValueChange = [this, offsetSliderOnValueChange] {
         if (mSpatMode == SpatMode::dome) {
             offsetSliderOnValueChange(mParameterElevationDescriptorCombo,
-                                     mParameterElevationZOffsetSlider,
-                                     mAudioProcessor.getElevationDome());
+                                      mParameterElevationZOffsetSlider,
+                                      mAudioProcessor.getElevationDome());
         } else {
             offsetSliderOnValueChange(mParameterZDescriptorCombo,
-                                     mParameterElevationZOffsetSlider,
-                                     mAudioProcessor.getZCube());
+                                      mParameterElevationZOffsetSlider,
+                                      mAudioProcessor.getZCube());
         }
     };
 
@@ -381,7 +381,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
         }
         repaint();
     };
-    
+
     addAndMakeVisible(&mParameterZButton);
     mParameterZButton.setButtonText("Z");
     mParameterZButton.setClickingTogglesState(true);
@@ -410,7 +410,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
                 mAPVTS.state.setProperty("LastUsedParameterDomeButtonRefIdx", 2, nullptr);
             } else {
                 mLastUsedParameterCubeButton = mParameterAzimuthOrXYSpanButton;
-                mAPVTS.state.setProperty("LastUsedParameterCubeButtonRefIdx", 3, nullptr); 
+                mAPVTS.state.setProperty("LastUsedParameterCubeButtonRefIdx", 3, nullptr);
             }
             mParameterAzimuthOrXYSpanDescriptorCombo.onChange();
         } else {
@@ -622,7 +622,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
 
         refreshDescriptorPanel();
     };
-    
+
     initParameterDescCombo(mParameterYDescriptorCombo);
     mParameterYDescriptorCombo.onChange = [this] {
         unselectAllParamButtons();
@@ -867,12 +867,12 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
         refreshDescriptorPanel();
     };
 
-    //mSourcePlacementCombo.onChange = [this] {
-    //    mListeners.call([&](Listener & l) {
-    //        l.sourcesPlacementChangedCallback(static_cast<SourcePlacement>(mSourcePlacementCombo.getSelectedId()));
-    //        mSourcePlacementCombo.setSelectedId(0, juce::NotificationType::dontSendNotification);
-    //    });
-    //};
+    // mSourcePlacementCombo.onChange = [this] {
+    //     mListeners.call([&](Listener & l) {
+    //         l.sourcesPlacementChangedCallback(static_cast<SourcePlacement>(mSourcePlacementCombo.getSelectedId()));
+    //         mSourcePlacementCombo.setSelectedId(0, juce::NotificationType::dontSendNotification);
+    //     });
+    // };
 
     addAndMakeVisible(&mParameterRangeLabel);
     mParameterRangeLabel.setText("Range", juce::dontSendNotification);
@@ -899,9 +899,8 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
     addAndMakeVisible(&mAudioAnalysisActivateButton);
     mAudioAnalysisActivateButton.setButtonText("Activate");
     mAudioAnalysisActivateButton.setClickingTogglesState(true);
-    mAudioAnalysisActivateButton.onClick = [this] {
-        mAudioProcessor.setAudioAnalysisState(mAudioAnalysisActivateButton.getToggleState());
-    };
+    mAudioAnalysisActivateButton.onClick
+        = [this] { mAudioProcessor.setAudioAnalysisState(mAudioAnalysisActivateButton.getToggleState()); };
 
     //==============================================================================
     // Audio Analysis
@@ -1147,7 +1146,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
     mDescriptorMetricCombo.addItemList(ONSET_DETECTION_METRIC_TYPES, 1);
     mDescriptorMetricCombo.onChange = [this] {
         if (mParameterToShow) {
-            auto& param = mParameterToShow->get();
+            auto & param = mParameterToShow->get();
             param.setParamMetricComboboxIndex(mDescriptorMetricCombo.getSelectedId());
             mAudioProcessor.setOnsetDetectionMetric(param.getParameterID(), mDescriptorMetricCombo.getSelectedId());
         }
@@ -1226,9 +1225,9 @@ void gris::SectionSoundReactiveSpatialization::paint(juce::Graphics & g)
 {
     g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
 
-    //g.setColour(mGrisLookAndFeel.getDarkColor());
+    // g.setColour(mGrisLookAndFeel.getDarkColor());
     g.setColour(juce::Colour(100, 100, 100));
-    //g.drawLine(juce::Line<float>(0.0f, 20.0f, (float)getWidth(), 20.0f));
+    // g.drawLine(juce::Line<float>(0.0f, 20.0f, (float)getWidth(), 20.0f));
     g.drawHorizontalLine(20, 0.0f, static_cast<float>(getWidth()));
     g.drawVerticalLine(350, 0.0f, static_cast<float>(getHeight()));
 
@@ -1364,26 +1363,28 @@ void gris::SectionSoundReactiveSpatialization::resized()
                                                    15);
 
         mParameterAzimuthDescriptorCombo.setBounds(mParameterAzimuthButton.getRight() + 5,
-                                         areaSpatParams.getTopLeft().getY() + 15,
-                                         100,
-                                         15);
+                                                   areaSpatParams.getTopLeft().getY() + 15,
+                                                   100,
+                                                   15);
         mParameterElevationDescriptorCombo.setBounds(mParameterAzimuthButton.getRight() + 5,
-                                           mParameterAzimuthDescriptorCombo.getBounds().getBottom() + 5,
-                                           100,
-                                           15);
+                                                     mParameterAzimuthDescriptorCombo.getBounds().getBottom() + 5,
+                                                     100,
+                                                     15);
         mParameterAzimuthOrXYSpanDescriptorCombo.setBounds(mParameterAzimuthButton.getRight() + 5,
-                                                 mParameterElevationDescriptorCombo.getBounds().getBottom() + 5,
-                                                 100,
-                                                 15);
-        mParameterElevationOrZSpanDescriptorCombo.setBounds(mParameterAzimuthButton.getRight() + 5,
-                                                  mParameterAzimuthOrXYSpanDescriptorCombo.getBounds().getBottom() + 5,
-                                                  100,
-                                                  15);
+                                                           mParameterElevationDescriptorCombo.getBounds().getBottom()
+                                                               + 5,
+                                                           100,
+                                                           15);
+        mParameterElevationOrZSpanDescriptorCombo.setBounds(
+            mParameterAzimuthButton.getRight() + 5,
+            mParameterAzimuthOrXYSpanDescriptorCombo.getBounds().getBottom() + 5,
+            100,
+            15);
 
         mParameterRangeLabel.setBounds(mParameterAzimuthDescriptorCombo.getRight() + 3,
-                                              areaSpatParams.getTopLeft().getY() + 2,
-                                              40,
-                                              15);
+                                       areaSpatParams.getTopLeft().getY() + 2,
+                                       40,
+                                       15);
 
         mParameterAzimuthRangeSlider.setBounds(mParameterAzimuthDescriptorCombo.getRight() + 5,
                                                areaSpatParams.getTopLeft().getY() + 17,
@@ -1417,7 +1418,7 @@ void gris::SectionSoundReactiveSpatialization::resized()
                                                  mParameterElevationOrZSpanRangeSlider.getBounds().getTopLeft().getY(),
                                                  35,
                                                  12);
-        
+
         mParameterLapLabel.setBounds(mParameterOffsetLabel.getRight() + 7,
                                      areaSpatParams.getTopLeft().getY() + 2,
                                      40,
@@ -1428,8 +1429,7 @@ void gris::SectionSoundReactiveSpatialization::resized()
                                      30,
                                      15);
 
-        mAudioAnalysisActivateButton.setBounds(mParameterElevationOrZSpanButton.getBounds().getBottomLeft().getX()
-                                                   + 70,
+        mAudioAnalysisActivateButton.setBounds(mParameterElevationOrZSpanButton.getBounds().getBottomLeft().getX() + 70,
                                                mParameterElevationOrZSpanButton.getBounds().getBottomLeft().getY() + 17,
                                                176,
                                                20);
@@ -1480,23 +1480,27 @@ void gris::SectionSoundReactiveSpatialization::resized()
                                                    80,
                                                    15);
 
-        mParameterXDescriptorCombo.setBounds(mParameterXButton.getRight() + 5, areaSpatParams.getTopLeft().getY() + 15, 100, 15);
+        mParameterXDescriptorCombo.setBounds(mParameterXButton.getRight() + 5,
+                                             areaSpatParams.getTopLeft().getY() + 15,
+                                             100,
+                                             15);
         mParameterYDescriptorCombo.setBounds(mParameterXButton.getRight() + 5,
-                                   mParameterXDescriptorCombo.getBounds().getBottom() + 5,
-                                   100,
-                                   15);
+                                             mParameterXDescriptorCombo.getBounds().getBottom() + 5,
+                                             100,
+                                             15);
         mParameterZDescriptorCombo.setBounds(mParameterXButton.getRight() + 5,
-                                   mParameterYDescriptorCombo.getBounds().getBottom() + 5,
-                                   100,
-                                   15);
+                                             mParameterYDescriptorCombo.getBounds().getBottom() + 5,
+                                             100,
+                                             15);
         mParameterAzimuthOrXYSpanDescriptorCombo.setBounds(mParameterXButton.getRight() + 5,
-                                                 mParameterZDescriptorCombo.getBounds().getBottom() + 5,
-                                                 100,
-                                                 15);
-        mParameterElevationOrZSpanDescriptorCombo.setBounds(mParameterXButton.getRight() + 5,
-                                                  mParameterAzimuthOrXYSpanDescriptorCombo.getBounds().getBottom() + 5,
-                                                  100,
-                                                  15);
+                                                           mParameterZDescriptorCombo.getBounds().getBottom() + 5,
+                                                           100,
+                                                           15);
+        mParameterElevationOrZSpanDescriptorCombo.setBounds(
+            mParameterXButton.getRight() + 5,
+            mParameterAzimuthOrXYSpanDescriptorCombo.getBounds().getBottom() + 5,
+            100,
+            15);
 
         mParameterRangeLabel.setBounds(mParameterXDescriptorCombo.getRight() + 3,
                                        areaSpatParams.getTopLeft().getY() + 2,
@@ -1556,7 +1560,7 @@ void gris::SectionSoundReactiveSpatialization::resized()
 
         if (mXYParamLinked) {
             auto const showLapCombo{ Descriptor::fromInt(mParameterXDescriptorCombo.getSelectedId())
-                                         != DescriptorID::invalid };
+                                     != DescriptorID::invalid };
 
             mParameterLapLabel.setVisible(true);
             mParameterLapCombo.setVisible(showLapCombo);
@@ -2177,7 +2181,6 @@ void gris::SectionSoundReactiveSpatialization::iterSpeedDescriptorLayout()
     mDataGraph.setVisible(true);
     mClickTimerButton.setVisible(true);
 
-
     auto area = mAreaAudioAnalysis;
 
     mDescriptorMetricLabel.setBounds(area.getTopLeft().getX() + 5, area.getTopLeft().getY() + 15, 75, 15);
@@ -2291,8 +2294,8 @@ void gris::DataGraph::paint(juce::Graphics & g)
             if (param.getParameterID() == ParameterID::elevation || param.getParameterID() == ParameterID::elevationspan
                 || param.getParameterID() == ParameterID::z) {
                 // parameter has an offset option, the graph can have negative values
-                initialX = ((static_cast<float>(area.getWidth()) / static_cast<float>(mGUIBuffer.size())) * i)
-                           + area.getX();
+                initialX
+                    = ((static_cast<float>(area.getWidth()) / static_cast<float>(mGUIBuffer.size())) * i) + area.getX();
                 width = static_cast<float>(area.getWidth()) / mGUIBuffer.size();
                 height = static_cast<float>(area.getHeight() * std::abs(valueToPaint) / 2);
                 if (valueToPaint < 0) {
@@ -2306,8 +2309,10 @@ void gris::DataGraph::paint(juce::Graphics & g)
                 }
             } else {
                 // the graph uses only positive values
-                initialX = (static_cast<float>(area.getWidth()) / static_cast<float>(mGUIBuffer.size()) * i) + area.getX();
-                initialY = (static_cast<float>(area.getHeight() - (area.getHeight() * std::abs(mGUIBuffer.at(i))))) + area.getY();
+                initialX
+                    = (static_cast<float>(area.getWidth()) / static_cast<float>(mGUIBuffer.size()) * i) + area.getX();
+                initialY = (static_cast<float>(area.getHeight() - (area.getHeight() * std::abs(mGUIBuffer.at(i)))))
+                           + area.getY();
                 width = static_cast<float>(area.getWidth()) / mGUIBuffer.size();
                 height = static_cast<float>(area.getHeight() * std::abs(mGUIBuffer.at(i)));
                 rectList.add(initialX, initialY, width, height);

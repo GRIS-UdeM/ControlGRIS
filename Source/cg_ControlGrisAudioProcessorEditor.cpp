@@ -158,7 +158,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 
     mPositionPresetComponent.setLookAndFeel(&mGrisLookAndFeel);
     mPositionPresetComponent.addListener(this);
-    //addAndMakeVisible(&mPositionPresetComponent);
+    // addAndMakeVisible(&mPositionPresetComponent);
 
     mPositionPresetViewport.setViewedComponent(&mPositionPresetComponent);
     mPositionPresetViewport.setScrollBarsShown(false, false, true, true);
@@ -234,10 +234,12 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
 
     // Set state for abstraction spatialization box persistent values.
     //------------------------------------------------
-    mSectionAbstractSpatialization.setTrajectoryType(mAudioProcessorValueTreeState.state.getProperty("trajectoryType", 1));
+    mSectionAbstractSpatialization.setTrajectoryType(
+        mAudioProcessorValueTreeState.state.getProperty("trajectoryType", 1));
     mSectionAbstractSpatialization.setElevationTrajectoryType(
         mAudioProcessorValueTreeState.state.getProperty("trajectoryTypeAlt", 1));
-    mSectionAbstractSpatialization.setPositionBackAndForth(mAudioProcessorValueTreeState.state.getProperty("backAndForth", false));
+    mSectionAbstractSpatialization.setPositionBackAndForth(
+        mAudioProcessorValueTreeState.state.getProperty("backAndForth", false));
     mSectionAbstractSpatialization.setElevationBackAndForth(
         mAudioProcessorValueTreeState.state.getProperty("backAndForthAlt", false));
     mSectionAbstractSpatialization.setPositionDampeningCycles(
@@ -248,10 +250,12 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
         mAudioProcessorValueTreeState.state.getProperty("dampeningCyclesAlt", 0));
     mElevationTrajectoryManager.setPositionDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCyclesAlt", 0));
-    mSectionAbstractSpatialization.setDeviationPerCycle(mAudioProcessorValueTreeState.state.getProperty("deviationPerCycle", 0));
+    mSectionAbstractSpatialization.setDeviationPerCycle(
+        mAudioProcessorValueTreeState.state.getProperty("deviationPerCycle", 0));
     mPositionTrajectoryManager.setDeviationPerCycle(
         Degrees{ mAudioProcessorValueTreeState.state.getProperty("deviationPerCycle", 0) });
-    mSectionAbstractSpatialization.setCycleDuration(mAudioProcessorValueTreeState.state.getProperty("cycleDuration", 5.0));
+    mSectionAbstractSpatialization.setCycleDuration(
+        mAudioProcessorValueTreeState.state.getProperty("cycleDuration", 5.0));
     mSectionAbstractSpatialization.setDurationUnit(mAudioProcessorValueTreeState.state.getProperty("durationUnit", 1));
 
     // Update the position preset box.
@@ -303,7 +307,7 @@ void ControlGrisAudioProcessorEditor::updateSourceLinkCombo(PositionSourceLink v
 {
     auto action = [=]() {
         mSectionSourcePosition.getPositionSourceLinkCombo().setSelectedId(static_cast<int>(value),
-                                                                      juce::NotificationType::dontSendNotification);
+                                                                          juce::NotificationType::dontSendNotification);
     };
     auto const isMessageThread{ juce::MessageManager::getInstance()->isThisTheMessageThread() };
     if (isMessageThread) {
@@ -317,8 +321,9 @@ void ControlGrisAudioProcessorEditor::updateSourceLinkCombo(PositionSourceLink v
 void ControlGrisAudioProcessorEditor::updateElevationSourceLinkCombo(ElevationSourceLink value)
 {
     juce::MessageManager::callAsync([=] {
-        mSectionSourcePosition.getElevationSourceLinkCombo().setSelectedId(static_cast<int>(value),
-                                                                       juce::NotificationType::dontSendNotification);
+        mSectionSourcePosition.getElevationSourceLinkCombo().setSelectedId(
+            static_cast<int>(value),
+            juce::NotificationType::dontSendNotification);
     });
 }
 
@@ -811,11 +816,14 @@ void ControlGrisAudioProcessorEditor::refresh()
     mPositionField.setIsPlaying(mProcessor.isPlaying());
     mElevationField.setIsPlaying(mProcessor.isPlaying());
 
-    if (mSectionAbstractSpatialization.getPositionActivateState() != mPositionTrajectoryManager.getPositionActivateState()) {
+    if (mSectionAbstractSpatialization.getPositionActivateState()
+        != mPositionTrajectoryManager.getPositionActivateState()) {
         mSectionAbstractSpatialization.setPositionActivateState(mPositionTrajectoryManager.getPositionActivateState());
     }
-    if (mSectionAbstractSpatialization.getElevationActivateState() != mElevationTrajectoryManager.getPositionActivateState()) {
-        mSectionAbstractSpatialization.setElevationActivateState(mElevationTrajectoryManager.getPositionActivateState());
+    if (mSectionAbstractSpatialization.getElevationActivateState()
+        != mElevationTrajectoryManager.getPositionActivateState()) {
+        mSectionAbstractSpatialization.setElevationActivateState(
+            mElevationTrajectoryManager.getPositionActivateState());
     }
     if (mSectionSoundReactiveSpatialization.getAudioAnalysisActivateState() != mProcessor.getAudioAnalysisState()) {
         mSectionSoundReactiveSpatialization.setAudioAnalysisActivateState(mProcessor.getAudioAnalysisState());
@@ -916,7 +924,7 @@ void ControlGrisAudioProcessorEditor::resized()
     auto const height{ getHeight() };
     auto const fieldSize{ std::max(width / 2, MIN_FIELD_WIDTH) };
     auto preseHeight{ 645 };
-    
+
     if (height >= 665) {
         preseHeight = height - 20;
     }
@@ -932,13 +940,13 @@ void ControlGrisAudioProcessorEditor::resized()
     mElevationBanner.setBounds(fieldSize, 0, fieldSize, 20);
     mElevationField.setBounds(fieldSize, 20, fieldSize, fieldSize);
     mElevationModeCombobox.setBounds(fieldSize + mElevationBanner.getBounds().getWidth() / 2,
-                                        (mElevationBanner.getHeight() - mElevationModeCombobox.getHeight()) / 2,
-                                        (mElevationBanner.getBounds().getWidth() / 2) - 4,
-                                        16);
+                                     (mElevationBanner.getHeight() - mElevationModeCombobox.getHeight()) / 2,
+                                     (mElevationBanner.getBounds().getWidth() / 2) - 4,
+                                     16);
     mElevationModeLabel.setBounds(mElevationModeCombobox.getBounds().getX() - 60,
-                                    (mElevationBanner.getHeight() - mElevationModeLabel.getHeight()) / 2,
-                                    60,
-                                    12);
+                                  (mElevationBanner.getHeight() - mElevationModeLabel.getHeight()) / 2,
+                                  60,
+                                  12);
 
     mSpatializationBanner.setBounds(0, fieldSize + 70 + 100 + 20, width, 20);
     mSpatializationComponent.setBounds(0, fieldSize + 90 + 100 + 20, width, 190);

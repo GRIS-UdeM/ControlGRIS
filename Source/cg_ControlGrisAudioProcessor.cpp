@@ -1744,8 +1744,7 @@ void ControlGrisAudioProcessor::processParameterValues()
             pSource.setElevation(Radians{ Degrees{ mSpatParamElevationBuffer + diffElev } }, originOfChange);
             mSpatParamElevationBuffer = 0.0f;
         }
-    }
-    else {
+    } else {
         if (mXYParamLinked) {
             // X param behaves like Azimuth
             auto aziDeg{ pSource.getAzimuth().getAsDegrees() };

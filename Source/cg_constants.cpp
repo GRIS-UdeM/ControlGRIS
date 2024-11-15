@@ -69,13 +69,13 @@ Automation::Enum Automation::idToEnum(const juce::String & name)
 int TrajectoryRandomTypeToInt(TrajectoryRandomType type)
 {
     switch (type) {
-        case TrajectoryRandomType::continuous:
-            return 1;
-        case TrajectoryRandomType::discrete:
-            return 2;
-        default:
-            jassertfalse;
-            return 0;
+    case TrajectoryRandomType::continuous:
+        return 1;
+    case TrajectoryRandomType::discrete:
+        return 2;
+    default:
+        jassertfalse;
+        return 0;
     }
 }
 
@@ -87,7 +87,7 @@ TrajectoryRandomType TrajectoryRandomTypeFromInt(int value)
     if (value == 2) {
         return TrajectoryRandomType::discrete;
     }
-    
+
     jassertfalse;
     return {};
 }
