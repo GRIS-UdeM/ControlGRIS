@@ -200,6 +200,15 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
 
             mRandomTimeAdjustment += mRandomTimeAdjustmentContinuousIncrement;
             mRandomTimeAdjustmentContinuousNextStep += mRandomTimeAdjustmentContinuousIncrement;
+
+            if (!mTrajectoryRandomLoop) {
+                // To prevent a position change between the end and the beginning of the trajectory
+                if (mRandomTimeAdjustment > 1.0) {
+                    mRandomTimeAdjustment = 1.0;
+                } else if (mRandomTimeAdjustment < 0.0) {
+                    mRandomTimeAdjustment = 0.0;
+                }
+            }
         }
     }
 
