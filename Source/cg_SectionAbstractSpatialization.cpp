@@ -260,6 +260,15 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         auto const toggleState{ mRandomXYToggle.getToggleState() };
         mAPVTS.state.setProperty("posRandomToggle", toggleState, nullptr);
         mListeners.call([&](Listener & l) { l.positionTrajectoryRandomEnableChangedCallback(toggleState); });
+
+        mRandomXYLoopButton.setEnabled(toggleState);
+        mRandomTypeXYCombo.setEnabled(toggleState);
+        mRandomProximityXYLabel.setEnabled(toggleState);
+        mRandomTimeMinXYLabel.setEnabled(toggleState);
+        mRandomTimeMaxXYLabel.setEnabled(toggleState);
+        mRandomProximityXYSlider.setEnabled(toggleState);
+        mRandomTimeMinXYSlider.setEnabled(toggleState);
+        mRandomTimeMaxXYSlider.setEnabled(toggleState);
     };
 
     addAndMakeVisible(&mRandomXYLoopButton);
@@ -365,6 +374,15 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         auto const toggleState{ mRandomZToggle.getToggleState() };
         mAPVTS.state.setProperty("eleRandomToggle", toggleState, nullptr);
         mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomEnableChangedCallback(toggleState); });
+
+        mRandomZLoopButton.setEnabled(toggleState);
+        mRandomTypeZCombo.setEnabled(toggleState);
+        mRandomProximityZLabel.setEnabled(toggleState);
+        mRandomTimeMinZLabel.setEnabled(toggleState);
+        mRandomTimeMaxZLabel.setEnabled(toggleState);
+        mRandomProximityZSlider.setEnabled(toggleState);
+        mRandomTimeMinZSlider.setEnabled(toggleState);
+        mRandomTimeMaxZSlider.setEnabled(toggleState);
     };
 
     addAndMakeVisible(&mRandomZLoopButton);
