@@ -662,6 +662,10 @@ void ElevationFieldComponent::mouseDown([[maybe_unused]] juce::MouseEvent const 
     mOldSelectedSource.reset();
     setSelectedSource(std::nullopt);
 
+    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing) {
+        mDrawingHandle.mouseDown(event);
+    }
+
     repaint();
 }
 
@@ -674,11 +678,17 @@ void ElevationFieldComponent::notifySourcePositionChanged(SourceIndex const sour
 //==============================================================================
 void ElevationFieldComponent::mouseDrag([[maybe_unused]] const juce::MouseEvent & event)
 {
+    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing) {
+        mDrawingHandle.mouseDrag(event);
+    }
 }
 
 //==============================================================================
 void ElevationFieldComponent::mouseUp([[maybe_unused]] const juce::MouseEvent & event)
 {
+    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing) {
+        mDrawingHandle.mouseDrag(event);
+    }
 }
 
 //==============================================================================
