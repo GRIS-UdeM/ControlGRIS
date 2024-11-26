@@ -381,7 +381,9 @@ void TrajectoryManager::computeCurrentTrajectoryPoint()
         }
         if (deviationFlag) {
             mCurrentDegreeOfDeviation
-                = mDegreeOfDeviationPerCycle * static_cast<float>(mDeviationCycleCount + mTrajectoryDeltaTime);
+                = mDegreeOfDeviationPerCycle
+                  * static_cast<float>(mDeviationCycleCount
+                                       + mTrajectoryDeltaTimeWithoutRandom);
             if (mCurrentDegreeOfDeviation >= Degrees{ 360.0f }) {
                 mCurrentDegreeOfDeviation -= Degrees{ 360.0f };
             }
