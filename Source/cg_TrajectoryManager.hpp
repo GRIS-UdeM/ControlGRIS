@@ -80,6 +80,8 @@ protected:
 
     double mTrajectoryDeltaTime{};
     double mLastTrajectoryDeltaTime{};
+    double mTrajectoryDeltaTimeWithoutRandom{};
+    double mTrajectoryRandomDeltaTimeBackAndForthBuffer{};
     std::optional<Trajectory> mTrajectory{};
     juce::Point<float> mCurrentTrajectoryPoint{};
     juce::Point<float> mLastRecordingPoint{};

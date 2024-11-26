@@ -38,6 +38,7 @@ void TrajectoryManager::setPositionActivateState(bool const state)
     if (state) {
         mTrajectoryDeltaTime = 0.0;
         mLastTrajectoryDeltaTime = 0.0;
+        mTrajectoryDeltaTimeWithoutRandom = 0.0;
         mBackAndForthDirection = Direction::forward;
         mDampeningCycleCount = 0;
         mDampeningLastDelta = 0.0;
@@ -52,6 +53,7 @@ void TrajectoryManager::setPositionActivateState(bool const state)
         mRandomTimeAdjustmentContinuousIncrement = 0.0;
         mRandomTimeAdjustmentContinuousNextStep = 0.0;
         mTrajectoryRandomTimeFromPlaySinceLastPosChange = 0.0;
+        mTrajectoryRandomDeltaTimeBackAndForthBuffer = 0.0;
         mTrajectoryJustStartedPlaying = true;
     }
 }
@@ -202,11 +204,11 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
             mRandomTimeAdjustmentContinuousNextStep += mRandomTimeAdjustmentContinuousIncrement;
 
             if (!mTrajectoryRandomLoop) {
-                // To prevent a position change between the end and the beginning of the trajectory
-                if (mRandomTimeAdjustment > 1.0) {
-                    mRandomTimeAdjustment = 1.0;
-                } else if (mRandomTimeAdjustment < 0.0) {
-                    mRandomTimeAdjustment = 0.0;
+                // To wrap around from start position
+                if (mRandomTimeAdjustment > mTrajectoryRandomStartPosition + 0.5) {
+                    mRandomTimeAdjustment = mTrajectoryRandomStartPosition + 0.5;
+                } else if (mRandomTimeAdjustment < mTrajectoryRandomStartPosition - 0.5) {
+                    mRandomTimeAdjustment = mTrajectoryRandomStartPosition - 0.5;
                 }
             }
         }
@@ -228,7 +230,21 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
         auto deltaTimeAdjustementIntegerPart{ std::abs(static_cast<int>(deltaTimeAdjustement / 1)) + 1 };
         deltaTimeAdjustement = deltaTimeAdjustementIntegerPart + deltaTimeAdjustement;
     }
-    mTrajectoryDeltaTime = std::fmod(deltaTimeAdjustement, 1.0);
+    auto deltaTimeAdjustementWithoutRandom{ newNormalizedTime + mNormalizedTimeBufferAdjustment };
+    if (deltaTimeAdjustementWithoutRandom < 0) {
+        auto deltaTimeAdjustementIntegerPart{ std::abs(static_cast<int>(deltaTimeAdjustementWithoutRandom / 1)) + 1 };
+        deltaTimeAdjustementWithoutRandom = deltaTimeAdjustementIntegerPart + deltaTimeAdjustementWithoutRandom;
+    }
+
+    if (deltaTimeAdjustement == 1.0) {
+        // To prevent a position change between the end and the beginning of the trajectory
+        // Usefull for trajectories that do not loop (lines, drawing...)
+        mTrajectoryDeltaTime = 1.0;
+    } else {
+        mTrajectoryDeltaTime = std::fmod(deltaTimeAdjustement, 1.0);
+    }
+
+    mTrajectoryDeltaTimeWithoutRandom = std::fmod(deltaTimeAdjustementWithoutRandom, 1.0);
     mTrajectoryLastSpeed.store(mTrajectoryCurrentSpeed.load());
 
     computeCurrentTrajectoryPoint();
@@ -246,11 +262,13 @@ void TrajectoryManager::computeCurrentTrajectoryPoint()
     auto const dampeningCyclesTimes2{ mDampeningCycles * 2 };
     double currentScaleMin{};
     double currentScaleMax{};
+    bool backAndForthDirectionJustChanged{};
 
     if (mTrajectory->size() > 0) {
-        if (mTrajectoryDeltaTime < mLastTrajectoryDeltaTime) {
+        if (mTrajectoryDeltaTimeWithoutRandom < mLastTrajectoryDeltaTime) {
             if (mIsBackAndForth) {
                 this->invertBackAndForthDirection();
+                backAndForthDirectionJustChanged = true;
                 mDampeningCycleCount++;
                 if (mDampeningCycleCount >= dampeningCyclesTimes2) {
                     mDampeningCycleCount = dampeningCyclesTimes2;
@@ -258,9 +276,10 @@ void TrajectoryManager::computeCurrentTrajectoryPoint()
             }
             mDeviationCycleCount++;
         }
-        mLastTrajectoryDeltaTime = mTrajectoryDeltaTime;
+        mLastTrajectoryDeltaTime = mTrajectoryDeltaTimeWithoutRandom;
 
         double trajectoryPhase;
+        double trajectoryPhaseWithoutRandom{};
         if (mIsBackAndForth && mDampeningCycles > 0) {
             if (mTrajectoryDeltaTime <= 0.5) {
                 trajectoryPhase = std::pow(mTrajectoryDeltaTime * 2.0, 2.0) * 0.5;
@@ -269,13 +288,59 @@ void TrajectoryManager::computeCurrentTrajectoryPoint()
             }
         } else {
             trajectoryPhase = mTrajectoryDeltaTime;
+            trajectoryPhaseWithoutRandom = mTrajectoryDeltaTimeWithoutRandom;
         }
 
         double delta{ trajectoryPhase * mTrajectory->size() };
+        double deltaWithoutRandom{ trajectoryPhaseWithoutRandom * mTrajectory->size() };
+        auto trajectoryCurrentSpeed{ mTrajectoryCurrentSpeed.load() };
 
-        if (mBackAndForthDirection == Direction::backward) {
-            delta = mTrajectory->size() - delta;
+        // Random logic
+        if (mTrajectoryRandomEnabled && backAndForthDirectionJustChanged) {
+            if (mTrajectoryRandomDeltaTimeBackAndForthBuffer != 0.0) {
+                jassertfalse;
+            }
+            mTrajectoryRandomDeltaTimeBackAndForthBuffer
+                += delta - (deltaWithoutRandom + (mTrajectory->size() * mTrajectoryRandomStartPosition));
+            if (mTrajectoryRandomDeltaTimeBackAndForthBuffer > mTrajectory->size() * 0.5) {
+                mTrajectoryRandomDeltaTimeBackAndForthBuffer -= mTrajectory->size();
+            } else if (mTrajectoryRandomDeltaTimeBackAndForthBuffer < -(mTrajectory->size() * 0.5)) {
+                mTrajectoryRandomDeltaTimeBackAndForthBuffer += mTrajectory->size();
+            }
         }
+
+        if (mTrajectoryRandomEnabled && trajectoryCurrentSpeed != 0.0) {
+            if (mBackAndForthDirection == Direction::backward) {
+                delta = mTrajectory->size() - delta + (2 * mTrajectoryRandomDeltaTimeBackAndForthBuffer);
+            } else {
+                delta = delta - (2 * mTrajectoryRandomDeltaTimeBackAndForthBuffer);
+            }
+            delta = std::fmod(delta, mTrajectory->size());
+            if (delta < 0) {
+                delta += mTrajectory->size();
+            }
+        } else {
+            if (mBackAndForthDirection == Direction::backward) {
+                delta = mTrajectory->size() - delta;
+            }
+        }
+
+        double minDurationMult{ 1.0 };
+        if (mCurrentPlaybackDuration > 1.0) {
+            minDurationMult = 2.0;
+        }
+        auto minCycleDuration{ 5.0 / (mCurrentPlaybackDuration * minDurationMult) };
+        auto maxCycleDuration{ 50.0 / mCurrentPlaybackDuration };
+        auto backAndForthSmoothTransitionSpeed{
+            juce::jmap(trajectoryCurrentSpeed, 0.01, 10.0, minCycleDuration, maxCycleDuration)
+        };
+        if (mTrajectoryRandomDeltaTimeBackAndForthBuffer > backAndForthSmoothTransitionSpeed) {
+            mTrajectoryRandomDeltaTimeBackAndForthBuffer -= backAndForthSmoothTransitionSpeed;
+        } else if (mTrajectoryRandomDeltaTimeBackAndForthBuffer < -backAndForthSmoothTransitionSpeed) {
+            mTrajectoryRandomDeltaTimeBackAndForthBuffer += backAndForthSmoothTransitionSpeed;
+        } else {
+            mTrajectoryRandomDeltaTimeBackAndForthBuffer = 0.0;
+        } // end Random logic
 
         delta = std::clamp(delta, 0.0, static_cast<double>(mTrajectory->size()));
 
