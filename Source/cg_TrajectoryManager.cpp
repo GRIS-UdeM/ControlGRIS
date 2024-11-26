@@ -203,7 +203,7 @@ void TrajectoryManager::setTrajectoryDeltaTime(double const relativeTimeFromPlay
             mRandomTimeAdjustment += mRandomTimeAdjustmentContinuousIncrement;
             mRandomTimeAdjustmentContinuousNextStep += mRandomTimeAdjustmentContinuousIncrement;
 
-            if (!mTrajectoryRandomLoop) {
+            if (!mTrajectoryRandomLoop || mIsBackAndForth) {
                 // To wrap around from start position
                 if (mRandomTimeAdjustment > mTrajectoryRandomStartPosition + 0.5) {
                     mRandomTimeAdjustment = mTrajectoryRandomStartPosition + 0.5;
