@@ -106,10 +106,9 @@ void TrajectoryManager::setTrajectoryRandomEnabled(bool isEnabled)
     if (isEnabled) {
         mTmpDampeningCycleForRandom = mDampeningCycles;
         mDampeningCycles = 0;
-    }
-    else {
+    } else {
         mRandomTimeAdjustment = 0.0;
-        
+
         mDampeningCycles = mTmpDampeningCycleForRandom;
         mTmpDampeningCycleForRandom = 0;
     }
@@ -119,6 +118,16 @@ void TrajectoryManager::setTrajectoryRandomEnabled(bool isEnabled)
 void TrajectoryManager::setTrajectoryRandomLoop(bool shouldLoop)
 {
     mTrajectoryRandomLoop = shouldLoop;
+}
+
+//==============================================================================
+void TrajectoryManager::setTrajectoryRandomStart(bool shouldStartInMiddle)
+{
+    if (shouldStartInMiddle) {
+        mTrajectoryRandomStartPosition = 0.5;
+    } else {
+        mTrajectoryRandomStartPosition = 0.0;
+    }
 }
 
 //==============================================================================
@@ -305,7 +314,7 @@ void TrajectoryManager::computeCurrentTrajectoryPoint()
         // Random logic
         if (mTrajectoryRandomEnabled && backAndForthDirectionJustChanged) {
             jassert(mTrajectoryRandomDeltaTimeBackAndForthBuffer == 0.0);
-            
+
             mTrajectoryRandomDeltaTimeBackAndForthBuffer
                 += delta - (deltaWithoutRandom + (mTrajectory->size() * mTrajectoryRandomStartPosition));
             if (mTrajectoryRandomDeltaTimeBackAndForthBuffer > mTrajectory->size() * 0.5) {
@@ -386,10 +395,8 @@ void TrajectoryManager::computeCurrentTrajectoryPoint()
             }
         }
         if (deviationFlag) {
-            mCurrentDegreeOfDeviation
-                = mDegreeOfDeviationPerCycle
-                  * static_cast<float>(mDeviationCycleCount
-                                       + mTrajectoryDeltaTimeWithoutRandom);
+            mCurrentDegreeOfDeviation = mDegreeOfDeviationPerCycle
+                                        * static_cast<float>(mDeviationCycleCount + mTrajectoryDeltaTimeWithoutRandom);
             if (mCurrentDegreeOfDeviation >= Degrees{ 360.0f }) {
                 mCurrentDegreeOfDeviation -= Degrees{ 360.0f };
             }

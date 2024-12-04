@@ -99,7 +99,7 @@ protected:
     bool mTrajectoryJustStartedPlaying{};
     TrajectoryRandomType mTrajectoryRandomType{};
     double mTrajectoryRandomProximity{};
-    double mTrajectoryRandomStartPosition{ 0.5 };
+    double mTrajectoryRandomStartPosition{ 0.0 };
     double mTrajectoryRandomTimeMin{ 0.03 };
     double mTrajectoryRandomTimeMax{ 5.0 };
     double mCurrentRandomTime{};
@@ -140,6 +140,7 @@ public:
     void setTrajectoryCurrentSpeed(double speed);
     void setTrajectoryRandomEnabled(bool isEnabled);
     void setTrajectoryRandomLoop(bool shouldLoop);
+    void setTrajectoryRandomStart(bool shoulStartInMiddle);
     void setTrajectoryRandomType(TrajectoryRandomType type);
     void setTrajectoryRandomProximity(double proximity);
     void setTrajectoryRandomTimeMin(double timeMin);

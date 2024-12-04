@@ -787,6 +787,12 @@ void ControlGrisAudioProcessorEditor::positionTrajectoryRandomLoopChangedCallbac
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomStartChangedCallback(bool shouldStartInMiddle)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomStart(shouldStartInMiddle);
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type)
 {
     mPositionTrajectoryManager.setTrajectoryRandomType(type);
@@ -820,6 +826,12 @@ void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomEnableChangedCall
 void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomLoopChangedCallback(bool shouldLoop)
 {
     mElevationTrajectoryManager.setTrajectoryRandomLoop(shouldLoop);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomStartChangedCallback(bool shouldStartInMiddle)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomStart(shouldStartInMiddle);
 }
 
 //==============================================================================

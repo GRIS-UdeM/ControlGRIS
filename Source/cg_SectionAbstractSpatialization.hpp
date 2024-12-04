@@ -64,6 +64,8 @@ public:
         virtual void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) = 0;
         virtual void positionTrajectoryRandomLoopChangedCallback(bool shouldLoop) = 0;
         virtual void elevationTrajectoryRandomLoopChangedCallback(bool shouldLoop) = 0;
+        virtual void positionTrajectoryRandomStartChangedCallback(bool shouldStartInMiddle) = 0;
+        virtual void elevationTrajectoryRandomStartChangedCallback(bool shouldStartInMiddle) = 0;
         virtual void positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
         virtual void elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) = 0;
         virtual void positionTrajectoryRandomProximityChangedCallback(double value) = 0;
@@ -114,9 +116,12 @@ private:
     juce::Label mRandomProximityXYLabel;
     juce::Label mRandomTimeMinXYLabel;
     juce::Label mRandomTimeMaxXYLabel;
+    juce::Label mRandomStartXYLabel;
     NumSlider mRandomProximityXYSlider;
     NumSlider mRandomTimeMinXYSlider;
     NumSlider mRandomTimeMaxXYSlider;
+    juce::TextButton mRandomStartXYButton;
+    bool mRandomStartXYButtonSendStateInit{ true };
 
     juce::Label mRandomZLabel;
     juce::ToggleButton mRandomZToggle;
@@ -125,9 +130,12 @@ private:
     juce::Label mRandomProximityZLabel;
     juce::Label mRandomTimeMinZLabel;
     juce::Label mRandomTimeMaxZLabel;
+    juce::Label mRandomStartZLabel;
     NumSlider mRandomProximityZSlider;
     NumSlider mRandomTimeMinZSlider;
     NumSlider mRandomTimeMaxZSlider;
+    juce::TextButton mRandomStartZButton;
+    bool mRandomStartZButtonSendStateInit{ true };
 
     juce::TextButton mPositionActivateButton;
     juce::TextButton mElevationActivateButton;

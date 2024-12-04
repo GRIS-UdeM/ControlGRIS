@@ -267,10 +267,12 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
 
         setPositionDampeningEnabled(!toggleState);
         mRandomXYLoopButton.setEnabled(toggleState);
+        mRandomStartXYButton.setEnabled(toggleState);
         mRandomTypeXYCombo.setEnabled(toggleState);
         mRandomProximityXYLabel.setEnabled(toggleState);
         mRandomTimeMinXYLabel.setEnabled(toggleState);
         mRandomTimeMaxXYLabel.setEnabled(toggleState);
+        mRandomStartXYLabel.setEnabled(toggleState);
         mRandomProximityXYSlider.setEnabled(toggleState);
         mRandomTimeMinXYSlider.setEnabled(toggleState);
         mRandomTimeMaxXYSlider.setEnabled(toggleState);
@@ -288,6 +290,34 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         auto const toggleState{ mRandomXYLoopButton.getToggleState() };
         mAPVTS.state.setProperty("posRandomLoop", toggleState, nullptr);
         mListeners.call([&](Listener & l) { l.positionTrajectoryRandomLoopChangedCallback(toggleState); });
+    };
+
+    addAndMakeVisible(&mRandomStartXYButton);
+    auto posRandomStart{ mAPVTS.state.getProperty("posRandomStart") };
+    if (posRandomStart.isVoid()) {
+        posRandomStart = false;
+    }
+    if (posRandomStart) {
+        mRandomStartXYButton.setButtonText("Middle");
+    } else {
+        mRandomStartXYButton.setButtonText("Start");
+    }
+    mRandomStartXYButton.setClickingTogglesState(false);
+    mRandomStartXYButton.onClick = [this] {
+        bool toggleState{ mRandomStartXYButton.getButtonText().compare("Start")
+                          != 0 }; // false for start, true for middle
+        if (!mRandomStartXYButtonSendStateInit) {
+            if (toggleState) {
+                mRandomStartXYButton.setButtonText("Start");
+            } else {
+                mRandomStartXYButton.setButtonText("Middle");
+            }
+            mAPVTS.state.setProperty("posRandomStart", !toggleState, nullptr);
+            mListeners.call([&](Listener & l) { l.positionTrajectoryRandomStartChangedCallback(!toggleState); });
+        } else {
+            mListeners.call([&](Listener & l) { l.positionTrajectoryRandomStartChangedCallback(toggleState); });
+        }
+        mRandomStartXYButtonSendStateInit = false;
     };
 
     addAndMakeVisible(&mRandomTypeXYCombo);
@@ -308,13 +338,16 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mRandomTypeXYCombo.setSelectedId(posRandomType);
 
     addAndMakeVisible(&mRandomProximityXYLabel);
-    mRandomProximityXYLabel.setText("Proximity", juce::dontSendNotification);
+    mRandomProximityXYLabel.setText("Prox.", juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomTimeMinXYLabel);
-    mRandomTimeMinXYLabel.setText("Time Min.", juce::dontSendNotification);
+    mRandomTimeMinXYLabel.setText("T. Min.", juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomTimeMaxXYLabel);
-    mRandomTimeMaxXYLabel.setText("Time Max.", juce::dontSendNotification);
+    mRandomTimeMaxXYLabel.setText("T. Max.", juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomStartXYLabel);
+    mRandomStartXYLabel.setText("Begin.", juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomProximityXYSlider);
     mRandomProximityXYSlider.setNumDecimalPlacesToDisplay(2);
@@ -382,10 +415,12 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
 
         setElevationDampeningEnabled(!toggleState);
         mRandomZLoopButton.setEnabled(toggleState);
+        mRandomStartZButton.setEnabled(toggleState);
         mRandomTypeZCombo.setEnabled(toggleState);
         mRandomProximityZLabel.setEnabled(toggleState);
         mRandomTimeMinZLabel.setEnabled(toggleState);
         mRandomTimeMaxZLabel.setEnabled(toggleState);
+        mRandomStartZLabel.setEnabled(toggleState);
         mRandomProximityZSlider.setEnabled(toggleState);
         mRandomTimeMinZSlider.setEnabled(toggleState);
         mRandomTimeMaxZSlider.setEnabled(toggleState);
@@ -403,6 +438,34 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         auto const toggleState{ mRandomZLoopButton.getToggleState() };
         mAPVTS.state.setProperty("eleRandomLoop", toggleState, nullptr);
         mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomLoopChangedCallback(toggleState); });
+    };
+
+    addAndMakeVisible(&mRandomStartZButton);
+    auto eleRandomStart{ mAPVTS.state.getProperty("eleRandomStart") };
+    if (eleRandomStart.isVoid()) {
+        eleRandomStart = false;
+    }
+    if (eleRandomStart) {
+        mRandomStartZButton.setButtonText("Middle");
+    } else {
+        mRandomStartZButton.setButtonText("Start");
+    }
+    mRandomStartZButton.setClickingTogglesState(false);
+    mRandomStartZButton.onClick = [this] {
+        bool toggleState{ mRandomStartZButton.getButtonText().compare("Start")
+                          != 0 }; // false for start, true for middle
+        if (!mRandomStartZButtonSendStateInit) {
+            if (toggleState) {
+                mRandomStartZButton.setButtonText("Start");
+            } else {
+                mRandomStartZButton.setButtonText("Middle");
+            }
+            mAPVTS.state.setProperty("eleRandomStart", !toggleState, nullptr);
+            mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomStartChangedCallback(!toggleState); });
+        } else {
+            mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomStartChangedCallback(toggleState); });
+        }
+        mRandomStartZButtonSendStateInit = false;
     };
 
     addAndMakeVisible(&mRandomTypeZCombo);
@@ -423,13 +486,16 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     mRandomTypeZCombo.setSelectedId(eleRandomType);
 
     addAndMakeVisible(&mRandomProximityZLabel);
-    mRandomProximityZLabel.setText("Proximity", juce::dontSendNotification);
+    mRandomProximityZLabel.setText("Proxi.", juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomTimeMinZLabel);
-    mRandomTimeMinZLabel.setText("Time Min.", juce::dontSendNotification);
+    mRandomTimeMinZLabel.setText("T. Min.", juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomTimeMaxZLabel);
-    mRandomTimeMaxZLabel.setText("Time Max.", juce::dontSendNotification);
+    mRandomTimeMaxZLabel.setText("T. Max.", juce::dontSendNotification);
+
+    addAndMakeVisible(&mRandomStartZLabel);
+    mRandomStartZLabel.setText("Begin.", juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomProximityZSlider);
     mRandomProximityZSlider.setNumDecimalPlacesToDisplay(2);
@@ -488,6 +554,7 @@ void SectionAbstractSpatialization::actualizeValueTreeState()
     mPositionCycleSpeedSlider.onValueChange();
     mRandomXYToggle.onClick();
     mRandomXYLoopButton.onClick();
+    mRandomStartXYButton.triggerClick();
     mRandomTypeXYCombo.onChange();
     mRandomProximityXYSlider.onValueChange();
     mRandomTimeMinXYSlider.onValueChange();
@@ -496,6 +563,7 @@ void SectionAbstractSpatialization::actualizeValueTreeState()
     mElevationCycleSpeedSlider.onValueChange();
     mRandomZToggle.onClick();
     mRandomZLoopButton.onClick();
+    mRandomStartZButton.triggerClick();
     mRandomTypeZCombo.onChange();
     mRandomProximityZSlider.onValueChange();
     mRandomTimeMinZSlider.onValueChange();
@@ -701,16 +769,19 @@ void SectionAbstractSpatialization::resized()
 
     mRandomXYToggle.setBounds(112, 92, 60, 15);
     mRandomXYLabel.setBounds(124, 95, 150, 10);
-    mRandomXYLoopButton.setBounds(177, 92, 32, 15);
-    mRandomTypeXYCombo.setBounds(211, 92, 78, 15);
+    mRandomTypeXYCombo.setBounds(175, 92, 78, 15);
 
-    mRandomProximityXYLabel.setBounds(110, 110, 60, 10);
-    mRandomTimeMinXYLabel.setBounds(175, 110, 60, 10);
-    mRandomTimeMaxXYLabel.setBounds(235, 110, 60, 10);
+    mRandomXYLoopButton.setBounds(257, 92, 32, 15);
+    mRandomStartXYButton.setBounds(249, 121, 40, 14);
 
-    mRandomProximityXYSlider.setBounds(120, 122, 35, 12);
-    mRandomTimeMinXYSlider.setBounds(186, 122, 35, 12);
-    mRandomTimeMaxXYSlider.setBounds(249, 122, 35, 12);
+    mRandomProximityXYLabel.setBounds(117, 110, 60, 10);
+    mRandomTimeMinXYLabel.setBounds(158, 110, 60, 10);
+    mRandomTimeMaxXYLabel.setBounds(201, 110, 60, 10);
+    mRandomStartXYLabel.setBounds(248, 110, 60, 10);
+
+    mRandomProximityXYSlider.setBounds(116, 122, 35, 12);
+    mRandomTimeMinXYSlider.setBounds(161, 122, 35, 12);
+    mRandomTimeMaxXYSlider.setBounds(206, 122, 35, 12);
 
     mPositionActivateButton.setBounds(114, 138, 176, 20);
 
@@ -724,16 +795,19 @@ void SectionAbstractSpatialization::resized()
     auto const xOffsetForZRandom{ 205 };
     mRandomZToggle.setBounds(112 + xOffsetForZRandom, 92, 60, 15);
     mRandomZLabel.setBounds(124 + xOffsetForZRandom, 95, 150, 10);
-    mRandomZLoopButton.setBounds(177 + xOffsetForZRandom, 92, 32, 15);
-    mRandomTypeZCombo.setBounds(211 + xOffsetForZRandom, 92, 78, 15);
+    mRandomTypeZCombo.setBounds(175 + xOffsetForZRandom, 92, 78, 15);
 
-    mRandomProximityZLabel.setBounds(110 + xOffsetForZRandom, 110, 60, 10);
-    mRandomTimeMinZLabel.setBounds(175 + xOffsetForZRandom, 110, 60, 10);
-    mRandomTimeMaxZLabel.setBounds(235 + xOffsetForZRandom, 110, 60, 10);
+    mRandomZLoopButton.setBounds(257 + xOffsetForZRandom, 92, 32, 15);
+    mRandomStartZButton.setBounds(249 + xOffsetForZRandom, 121, 40, 14);
 
-    mRandomProximityZSlider.setBounds(120 + xOffsetForZRandom, 122, 35, 12);
-    mRandomTimeMinZSlider.setBounds(186 + xOffsetForZRandom, 122, 35, 12);
-    mRandomTimeMaxZSlider.setBounds(249 + xOffsetForZRandom, 122, 35, 12);
+    mRandomProximityZLabel.setBounds(116 + xOffsetForZRandom, 110, 60, 10);
+    mRandomTimeMinZLabel.setBounds(158 + xOffsetForZRandom, 110, 60, 10);
+    mRandomTimeMaxZLabel.setBounds(201 + xOffsetForZRandom, 110, 60, 10);
+    mRandomStartZLabel.setBounds(248 + xOffsetForZRandom, 110, 60, 10);
+
+    mRandomProximityZSlider.setBounds(116 + xOffsetForZRandom, 122, 35, 12);
+    mRandomTimeMinZSlider.setBounds(161 + xOffsetForZRandom, 122, 35, 12);
+    mRandomTimeMaxZSlider.setBounds(206 + xOffsetForZRandom, 122, 35, 12);
 
     mElevationActivateButton.setBounds(319, 138, 176, 20);
 
@@ -751,9 +825,11 @@ void SectionAbstractSpatialization::resized()
         mRandomProximityZLabel.setVisible(true);
         mRandomTimeMinZLabel.setVisible(true);
         mRandomTimeMaxZLabel.setVisible(true);
+        mRandomStartZLabel.setVisible(true);
         mRandomProximityZSlider.setVisible(true);
         mRandomTimeMinZSlider.setVisible(true);
         mRandomTimeMaxZSlider.setVisible(true);
+        mRandomStartZButton.setVisible(true);
         mElevationCycleSpeedSlider.setVisible(true);
     } else {
         mTrajectoryTypeXYLabel.setVisible(false);
@@ -769,9 +845,11 @@ void SectionAbstractSpatialization::resized()
         mRandomProximityZLabel.setVisible(false);
         mRandomTimeMinZLabel.setVisible(false);
         mRandomTimeMaxZLabel.setVisible(false);
+        mRandomStartZLabel.setVisible(false);
         mRandomProximityZSlider.setVisible(false);
         mRandomTimeMinZSlider.setVisible(false);
         mRandomTimeMaxZSlider.setVisible(false);
+        mRandomStartZButton.setVisible(false);
         mElevationCycleSpeedSlider.setVisible(false);
     }
 
