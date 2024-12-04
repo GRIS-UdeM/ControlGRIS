@@ -715,9 +715,6 @@ void SectionAbstractSpatialization::resized()
 
     mElevationCycleSpeedSlider.setBounds(317, 72, 180, 16);
 
-//    mRandomZLabel.setBounds(315, 113, 150, 10);
-//    mRandomZToggle.setBounds(386, 112, 88, 15);
-//    mRandomTypeZCombo.setBounds(416, 112, 78, 15);
     auto const xOffsetForZRandom{ 205 };
     mRandomZToggle.setBounds(112 + xOffsetForZRandom, 92, 60, 15);
     mRandomZLabel.setBounds(124 + xOffsetForZRandom, 95, 150, 10);
