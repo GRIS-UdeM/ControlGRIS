@@ -297,9 +297,8 @@ void TrajectoryManager::computeCurrentTrajectoryPoint()
 
         // Random logic
         if (mTrajectoryRandomEnabled && backAndForthDirectionJustChanged) {
-            if (mTrajectoryRandomDeltaTimeBackAndForthBuffer != 0.0) {
-                jassertfalse;
-            }
+            jassert(mTrajectoryRandomDeltaTimeBackAndForthBuffer == 0.0);
+            
             mTrajectoryRandomDeltaTimeBackAndForthBuffer
                 += delta - (deltaWithoutRandom + (mTrajectory->size() * mTrajectoryRandomStartPosition));
             if (mTrajectoryRandomDeltaTimeBackAndForthBuffer > mTrajectory->size() * 0.5) {
