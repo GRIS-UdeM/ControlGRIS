@@ -71,6 +71,7 @@ protected:
     Direction mBackAndForthDirection{ Direction::forward };
 
     int mDampeningCycles{};
+    int mTmpDampeningCycleForRandom{};
     int mDampeningCycleCount{};
     double mDampeningLastDelta{};
 

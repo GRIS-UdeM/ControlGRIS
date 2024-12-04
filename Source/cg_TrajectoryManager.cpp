@@ -103,8 +103,15 @@ void TrajectoryManager::setTrajectoryRandomEnabled(bool isEnabled)
 {
     mTrajectoryRandomEnabled = isEnabled;
 
-    if (!isEnabled) {
+    if (isEnabled) {
+        mTmpDampeningCycleForRandom = mDampeningCycles;
+        mDampeningCycles = 0;
+    }
+    else {
         mRandomTimeAdjustment = 0.0;
+        
+        mDampeningCycles = mTmpDampeningCycleForRandom;
+        mTmpDampeningCycleForRandom = 0;
     }
 }
 
