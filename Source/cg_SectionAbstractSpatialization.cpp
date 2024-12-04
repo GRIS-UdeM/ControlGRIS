@@ -173,7 +173,9 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         mListeners.call([&](Listener & l) {
             l.positionTrajectoryBackAndForthChangedCallback(mPositionBackAndForthToggle.getToggleState());
         });
-        setPositionDampeningEnabled(mPositionBackAndForthToggle.getToggleState());
+        if (!mRandomXYToggle.getToggleState()) {
+            setPositionDampeningEnabled(mPositionBackAndForthToggle.getToggleState());
+        }
     };
     addAndMakeVisible(&mPositionBackAndForthToggle);
 
@@ -230,7 +232,9 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         mListeners.call([&](Listener & l) {
             l.elevationTrajectoryBackAndForthChangedCallback(mElevationBackAndForthToggle.getToggleState());
         });
-        setElevationDampeningEnabled(mElevationBackAndForthToggle.getToggleState());
+        if (!mRandomZToggle.getToggleState()) {
+            setElevationDampeningEnabled(mElevationBackAndForthToggle.getToggleState());
+        }
     };
     addAndMakeVisible(&mElevationBackAndForthToggle);
 
@@ -261,6 +265,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         mAPVTS.state.setProperty("posRandomToggle", toggleState, nullptr);
         mListeners.call([&](Listener & l) { l.positionTrajectoryRandomEnableChangedCallback(toggleState); });
 
+        setPositionDampeningEnabled(!toggleState);
         mRandomXYLoopButton.setEnabled(toggleState);
         mRandomTypeXYCombo.setEnabled(toggleState);
         mRandomProximityXYLabel.setEnabled(toggleState);
@@ -375,6 +380,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         mAPVTS.state.setProperty("eleRandomToggle", toggleState, nullptr);
         mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomEnableChangedCallback(toggleState); });
 
+        setElevationDampeningEnabled(!toggleState);
         mRandomZLoopButton.setEnabled(toggleState);
         mRandomTypeZCombo.setEnabled(toggleState);
         mRandomProximityZLabel.setEnabled(toggleState);
