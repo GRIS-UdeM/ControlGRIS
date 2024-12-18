@@ -106,6 +106,7 @@ private:
     juce::TextEditor mDurationEditor;
     juce::ComboBox mDurationUnitCombo;
 
+    juce::Label mCycleSpeedLabel;
     juce::Slider mPositionCycleSpeedSlider;
     juce::Slider mElevationCycleSpeedSlider;
 

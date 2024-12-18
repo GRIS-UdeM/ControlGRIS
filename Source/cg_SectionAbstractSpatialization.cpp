@@ -104,6 +104,9 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
         });
     };
 
+    mCycleSpeedLabel.setText("Speed:", juce::dontSendNotification);
+    addAndMakeVisible(&mCycleSpeedLabel);
+
     mPositionCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
     mPositionCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
     auto posCycleSpeed{ mAPVTS.state.getProperty("posCycleSpeed") };
@@ -765,6 +768,7 @@ void SectionAbstractSpatialization::resized()
     mDeviationLabel.setBounds(110, 40, 150, 22);
     mDeviationLabel2ndLine.setBounds(110, 48, 150, 22);
     mDeviationEditor.setBounds(211, 49, 78, 15);
+    mCycleSpeedLabel.setBounds(5, 71, 100, 22);
     mPositionCycleSpeedSlider.setBounds(113, 72, 180, 16);
 
     mRandomXYToggle.setBounds(112, 92, 60, 15);
