@@ -1855,11 +1855,14 @@ void ControlGrisAudioProcessor::processParameterValues()
 
     if (mAudioAnalysisActivateState) {
         // recording automation for spans
-        auto const gestureLockAzimuth{ mChangeGesturesManager.getScopedLock(Automation::Ids::AZIMUTH_SPAN) };
-        mAudioProcessorValueTreeState.getParameter(Automation::Ids::AZIMUTH_SPAN)->setValueNotifyingHost(newHSpanVal);
-
-        auto const gestureLockElevation{ mChangeGesturesManager.getScopedLock(Automation::Ids::ELEVATION_SPAN) };
-        mAudioProcessorValueTreeState.getParameter(Automation::Ids::ELEVATION_SPAN)->setValueNotifyingHost(newVSpanVal);
+        if (mAudioAnalysisAzimuthSpanFlag) {
+            auto const gestureLockAzimuth{ mChangeGesturesManager.getScopedLock(Automation::Ids::AZIMUTH_SPAN) };
+            mAudioProcessorValueTreeState.getParameter(Automation::Ids::AZIMUTH_SPAN)->setValueNotifyingHost(newHSpanVal);
+        }
+        if (mAudioAnalysisElevationSpanFlag) {
+            auto const gestureLockElevation{ mChangeGesturesManager.getScopedLock(Automation::Ids::ELEVATION_SPAN) };
+            mAudioProcessorValueTreeState.getParameter(Automation::Ids::ELEVATION_SPAN)->setValueNotifyingHost(newVSpanVal);
+        }
     }
 }
 

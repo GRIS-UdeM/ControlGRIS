@@ -137,6 +137,8 @@ class ControlGrisAudioProcessor final
     int mNumChannelsToAnalyse{};
     bool mXYParamLinked{};
     bool mAudioAnalysisActivateState{};
+    bool mAudioAnalysisAzimuthSpanFlag{};
+    bool mAudioAnalysisElevationSpanFlag{};
 
     float mSpatParamElevationBuffer{};
     float mSpatParamHSpanBuffer{};
@@ -342,6 +344,9 @@ public:
     void setOnsetDetectionMinTime(ParameterID paramID, const double minTime);
     void setOnsetDetectionMaxTime(ParameterID paramID, const double maxTime);
     void setOnsetDetectionFromClick(ParameterID paramID, const double timeValue);
+
+    void setAudioAnalysisAzimuthSpanFlag(bool flag) { mAudioAnalysisAzimuthSpanFlag = flag; }
+    void setAudioAnalysisElevationSpanFlag(bool flag) { mAudioAnalysisElevationSpanFlag = flag; }
 
     bool shouldProcessDomeSpectralAnalysis();
     bool shouldProcessDomeLoudnessAnalysis();

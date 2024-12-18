@@ -789,6 +789,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
             }
         }
 
+        mAudioProcessor.setAudioAnalysisAzimuthSpanFlag(mDescriptorIdToUse != DescriptorID::invalid);
         refreshDescriptorPanel();
     };
 
@@ -864,6 +865,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
             }
         }
 
+        mAudioProcessor.setAudioAnalysisElevationSpanFlag(mDescriptorIdToUse != DescriptorID::invalid);
         refreshDescriptorPanel();
     };
 
