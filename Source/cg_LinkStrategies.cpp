@@ -90,17 +90,23 @@ std::unique_ptr<Base> Base::make(PositionSourceLink const sourceLink)
 }
 
 //==============================================================================
-std::unique_ptr<Base> Base::make(ElevationSourceLink const sourceLink)
+std::unique_ptr<Base> Base::make(ElevationSourceLink const sourceLink, double scale)
 {
+    std::unique_ptr<Base> eleSrcLink;
+
     switch (sourceLink) {
     case ElevationSourceLink::independent:
         return std::make_unique<ElevationIndependent>();
     case ElevationSourceLink::fixedElevation:
         return std::make_unique<FixedElevation>();
     case ElevationSourceLink::linearMin:
-        return std::make_unique<LinearMin>();
+        eleSrcLink = std::make_unique<LinearMin>();
+        eleSrcLink->mSourceLinkScale = scale;
+        return eleSrcLink;
     case ElevationSourceLink::linearMax:
-        return std::make_unique<LinearMax>();
+        eleSrcLink = std::make_unique<LinearMax>();
+        eleSrcLink->mSourceLinkScale = scale;
+        return eleSrcLink;
     case ElevationSourceLink::deltaLock:
         return std::make_unique<ElevationDeltaLock>();
     case ElevationSourceLink::undefined:
@@ -573,7 +579,7 @@ SourceSnapshot FixedElevation::computeInitialStateFromFinalState_implementation(
 void LinearMin::computeParameters_implementation(Sources const & sources, SourcesSnapshots const & /*snapshots*/)
 {
     mBaseElevation = sources.getPrimarySource().getElevation();
-    mElevationPerSource = ELEVATION_DIFF / static_cast<float>((sources.size() - 1));
+    mElevationPerSource = (ELEVATION_DIFF * mSourceLinkScale) / static_cast<float>((sources.size() - 1));
 }
 
 //==============================================================================
@@ -599,7 +605,7 @@ SourceSnapshot LinearMin::computeInitialStateFromFinalState_implementation([[may
 void LinearMax::computeParameters_implementation(Sources const & sources, SourcesSnapshots const & /*snapshots*/)
 {
     mBaseElevation = sources.getPrimarySource().getElevation();
-    mElevationPerSource = ELEVATION_DIFF / static_cast<float>((sources.size() - 1));
+    mElevationPerSource = (ELEVATION_DIFF * mSourceLinkScale) / static_cast<float>((sources.size() - 1));
 }
 
 //==============================================================================

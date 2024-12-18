@@ -177,9 +177,12 @@ void CubeControls::updateSliderValues(Source * source)
 //==============================================================================
 SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
                                              SpatMode const spatMode,
-                                             SectionSourceSpan & sectionSourceSpan)
+                                             SectionSourceSpan & sectionSourceSpan,
+                                             juce::AudioProcessorValueTreeState & apvts)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mSectionSourceSpan(sectionSourceSpan)
+    , mAPVTS(apvts)
+    , mZSourceLinkScaleSlider(grisLookAndFeel)
     , mDomeControls(*this, grisLookAndFeel)
     , mCubeControls(*this, grisLookAndFeel)
 {
@@ -238,6 +241,38 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
     mZSourceLinkCombo.onChange = [this] {
         mListeners.call([&](Listener & l) {
             l.elevationSourceLinkChangedCallback(static_cast<ElevationSourceLink>(mZSourceLinkCombo.getSelectedId()));
+        });
+
+        if( mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3) {
+            mZSourceLinkScaleLabel.setVisible(true);
+            mZSourceLinkScaleSlider.setVisible(true);
+            mZSourceLinkCombo.setBounds(120, 102, 96, 15);
+            mZSourceLinkScaleLabel.setBounds(214, 106, 40, 10);
+            mZSourceLinkScaleSlider.setBounds(250, 104, 35, 12);
+        } else {
+            mZSourceLinkScaleLabel.setVisible(false);
+            mZSourceLinkScaleSlider.setVisible(false);
+            mZSourceLinkCombo.setBounds(120, 102, 165, 15);
+        }
+    };
+
+    mZSourceLinkScaleLabel.setText("Scale", juce::dontSendNotification);
+    addAndMakeVisible(&mZSourceLinkScaleLabel);
+
+    mZSourceLinkScaleSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
+    auto eleSourceLinkScale{ mAPVTS.state.getProperty("eleSourceLinkScale") };
+    if (eleSourceLinkScale.isVoid()) {
+        eleSourceLinkScale = 1.0;
+    }
+    mZSourceLinkScaleSlider.setValue(eleSourceLinkScale, juce::dontSendNotification);
+    mZSourceLinkScaleSlider.setNumDecimalPlacesToDisplay(2);
+    mZSourceLinkScaleSlider.setDoubleClickReturnValue(true, 1.0);
+    addAndMakeVisible(&mZSourceLinkScaleSlider);
+    mZSourceLinkScaleSlider.onValueChange = [this] {
+        auto scaleVal{ mZSourceLinkScaleSlider.getValue() };
+        mAPVTS.state.setProperty("eleSourceLinkScale", scaleVal, nullptr);
+        mListeners.call([&](Listener & l) {
+            l.elevationSourceLinkScaleChangedCallback(scaleVal);
         });
     };
 
@@ -308,13 +343,25 @@ void SectionSourcePosition::resized()
     if (mSpatMode == SpatMode::cube) {
         mZSourceLinkLabel.setVisible(true);
         mZSourceLinkCombo.setVisible(true);
-        mZSourceLinkLabel.setBounds(5, 107, 150, 10);
-        mZSourceLinkCombo.setBounds(120, 102, 165, 15);
+        mZSourceLinkLabel.setBounds(5, 106, 150, 10);
+        if( mZSourceLinkCombo.getSelectedItemIndex() == 3 || mZSourceLinkCombo.getSelectedItemIndex() == 4) {
+            mZSourceLinkScaleLabel.setVisible(true);
+            mZSourceLinkScaleSlider.setVisible(true);
+            mZSourceLinkCombo.setBounds(120, 102, 96, 15);
+            mZSourceLinkScaleLabel.setBounds(214, 106, 40, 10);
+            mZSourceLinkScaleSlider.setBounds(250, 104, 35, 12);
+        } else {
+            mZSourceLinkScaleLabel.setVisible(false);
+            mZSourceLinkScaleSlider.setVisible(false);
+            mZSourceLinkCombo.setBounds(120, 102, 165, 15);
+        }
         mSourcePlacementLabel.setBounds(5, 130, 150, 10);
         mSourcePlacementCombo.setBounds(120, 127, 165, 15);
     } else {
         mZSourceLinkLabel.setVisible(false);
         mZSourceLinkCombo.setVisible(false);
+        mZSourceLinkScaleLabel.setVisible(false);
+        mZSourceLinkScaleSlider.setVisible(false);
         mSourcePlacementLabel.setBounds(5, 105, 150, 10);
         mSourcePlacementCombo.setBounds(120, 102, 165, 15);
     }
@@ -397,6 +444,12 @@ void SectionSourcePosition::setSpatMode(SpatMode const spatMode)
     }
 
     resized();
+}
+
+//==============================================================================
+void SectionSourcePosition::actualizeValueTreeState()
+{
+    mZSourceLinkScaleSlider.onValueChange();
 }
 
 } // namespace gris

@@ -73,7 +73,7 @@ void SourceLinkEnforcer::setSourceLink(ElevationSourceLink const sourceLink, Ori
     if (sourceLink != mElevationSourceLink) {
         mElevationSourceLink = sourceLink;
         mPositionSourceLink = PositionSourceLink::undefined;
-        mLinkStrategy = source_link_strategies::Base::make(sourceLink);
+        mLinkStrategy = source_link_strategies::Base::make(sourceLink, mElevationSourceLinkScale);
         enforceSourceLink();
     }
 }
@@ -89,6 +89,13 @@ void SourceLinkEnforcer::enforceSourceLink()
         // relative ordering with the mouse won't make any sense.
         saveCurrentPositionsToInitialStates();
     }
+}
+
+//==============================================================================
+void SourceLinkEnforcer::setElevationSourceLinkScale(double scale)
+{
+    mElevationSourceLinkScale = scale;
+    mLinkStrategy->setSourceLinkScale(scale);
 }
 
 //==============================================================================

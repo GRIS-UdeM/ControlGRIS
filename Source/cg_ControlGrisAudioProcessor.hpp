@@ -307,6 +307,7 @@ public:
 
     void setPositionSourceLink(PositionSourceLink newSourceLink, SourceLinkEnforcer::OriginOfChange originOfChange);
     void setElevationSourceLink(ElevationSourceLink newSourceLink, SourceLinkEnforcer::OriginOfChange originOfChange);
+    void setElevationSourceLinkScale(double scale);
 
     PresetsManager & getPresetsManager() { return mPresetManager; }
     PresetsManager const & getPresetsManager() const { return mPresetManager; }

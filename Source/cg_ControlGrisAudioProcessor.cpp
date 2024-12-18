@@ -309,6 +309,13 @@ void ControlGrisAudioProcessor::setElevationSourceLink(ElevationSourceLink const
 }
 
 //==============================================================================
+void ControlGrisAudioProcessor::setElevationSourceLinkScale(double scale)
+{
+    mElevationSourceLinkEnforcer.setElevationSourceLinkScale(scale);
+    mElevationSourceLinkEnforcer.enforceSourceLink();
+}
+
+//==============================================================================
 void ControlGrisAudioProcessor::setSpatMode(SpatMode const spatMode)
 {
     mSpatMode = spatMode;

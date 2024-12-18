@@ -44,7 +44,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     , mSectionAbstractSpatialization(mGrisLookAndFeel, vts)
     , mSectionSoundReactiveSpatialization(mGrisLookAndFeel, mProcessor)
     , mSectionGeneralSettings(mGrisLookAndFeel)
-    , mSectionSourcePosition(mGrisLookAndFeel, controlGrisAudioProcessor.getSpatMode(), mSectionSourceSpan)
+    , mSectionSourcePosition(mGrisLookAndFeel, controlGrisAudioProcessor.getSpatMode(), mSectionSourceSpan, mAudioProcessorValueTreeState)
     , mSectionOscController(mGrisLookAndFeel)
     , mPositionPresetComponent(controlGrisAudioProcessor.getPresetsManager(), mPositionPresetInfoComponent)
     , mPositionPresetInfoComponent(mGrisLookAndFeel)
@@ -278,6 +278,7 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
     mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource],
                                                 mSelectedSource,
                                                 mProcessor.getSpatMode());
+    mSectionSourcePosition.actualizeValueTreeState();
 
     auto const preset{ static_cast<int>(static_cast<float>(
         mAudioProcessorValueTreeState.getParameterAsValue(Automation::Ids::POSITION_PRESET).getValue())) };
@@ -683,6 +684,12 @@ void ControlGrisAudioProcessorEditor::elevationTrajectoryTypeChangedCallback(Ele
     mAudioProcessorValueTreeState.state.setProperty("trajectoryTypeAlt", static_cast<int>(value), nullptr);
     mElevationTrajectoryManager.setTrajectoryType(value);
     mElevationField.repaint();
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationSourceLinkScaleChangedCallback(double scale)
+{
+    mProcessor.setElevationSourceLinkScale(scale);
 }
 
 //==============================================================================

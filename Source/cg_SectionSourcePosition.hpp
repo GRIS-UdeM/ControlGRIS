@@ -119,6 +119,7 @@ public:
             = 0;
         virtual void positionSourceLinkChangedCallback(PositionSourceLink sourceLink) = 0;
         virtual void elevationSourceLinkChangedCallback(ElevationSourceLink sourceLink) = 0;
+        virtual void elevationSourceLinkScaleChangedCallback(double scale) = 0;
         virtual void selectedSourceClickedCallback() = 0;
     };
 
@@ -126,6 +127,7 @@ private:
     //==============================================================================
     GrisLookAndFeel & mGrisLookAndFeel;
     SectionSourceSpan & mSectionSourceSpan;
+    juce::AudioProcessorValueTreeState & mAPVTS;
 
     juce::ListenerList<Listener> mListeners;
 
@@ -144,6 +146,9 @@ private:
     juce::Label mZSourceLinkLabel;
     juce::ComboBox mZSourceLinkCombo;
 
+    juce::Label mZSourceLinkScaleLabel;
+    NumSlider mZSourceLinkScaleSlider;
+
     DomeControls mDomeControls;
     CubeControls mCubeControls;
 
@@ -151,7 +156,8 @@ public:
     //==============================================================================
     explicit SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
                                    SpatMode spatMode,
-                                   SectionSourceSpan & sectionSourceSpan);
+                                   SectionSourceSpan & sectionSourceSpan,
+                                   juce::AudioProcessorValueTreeState & apvts);
     //==============================================================================
     SectionSourcePosition() = delete;
     ~SectionSourcePosition() override = default;
@@ -169,6 +175,8 @@ public:
     void removeListener(Listener * l) { mListeners.remove(l); }
 
     void setSpatMode(SpatMode spatMode);
+
+    void actualizeValueTreeState();
     //==============================================================================
     void mouseDown(juce::MouseEvent const & event) override;
     void paint(juce::Graphics &) override;

@@ -161,6 +161,7 @@ public:
     void elevationSourceLinkChangedCallback(ElevationSourceLink sourceLink) override;
     void positionTrajectoryTypeChangedCallback(PositionTrajectoryType value) override;
     void elevationTrajectoryTypeChangedCallback(ElevationTrajectoryType value) override;
+    void elevationSourceLinkScaleChangedCallback(double scale) override;
     void positionTrajectoryBackAndForthChangedCallback(bool value) override;
     void elevationTrajectoryBackAndForthChangedCallback(bool value) override;
     void positionTrajectoryDampeningCyclesChangedCallback(int value) override;
