@@ -140,12 +140,15 @@ class PositionFieldComponent final : public FieldComponent
     std::optional<juce::Point<float>> mLineDrawingStartPosition{ std::nullopt };
     std::optional<juce::Point<float>> mLineDrawingEndPosition{ std::nullopt };
     SourceComponent mDrawingHandleComponent{ juce::Colour::fromRGB(176, 176, 228), "X" };
+    PersistentStorage & mStorage;
     juce::OwnedArray<PositionSourceComponent> mSourceComponents{};
 
 public:
     //==============================================================================
     PositionFieldComponent() = delete;
-    PositionFieldComponent(Sources & sources, PositionTrajectoryManager & positionAutomationManager) noexcept;
+    PositionFieldComponent(Sources & sources,
+                           PositionTrajectoryManager & positionAutomationManager,
+                           PersistentStorage & storage) noexcept;
     ~PositionFieldComponent() noexcept override = default;
 
     PositionFieldComponent(PositionFieldComponent const &) = delete;

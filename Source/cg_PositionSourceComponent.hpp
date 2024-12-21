@@ -22,6 +22,7 @@
 
 #include <JuceHeader.h>
 
+#include "cg_PersistentStorage.h"
 #include "cg_Source.hpp"
 #include "cg_SourceComponent.hpp"
 #include "cg_StrongTypes.hpp"
@@ -39,6 +40,7 @@ class PositionSourceComponent final
     PositionFieldComponent & mFieldComponent;
     PositionTrajectoryManager & mTrajectoryManager;
     Source & mSource;
+    PersistentStorage & mStorage;
     DisplacementMode mDisplacementMode{};
     bool mCanDrag{};
 
@@ -53,7 +55,7 @@ public:
     PositionSourceComponent & operator=(PositionSourceComponent const &) = delete;
     PositionSourceComponent & operator=(PositionSourceComponent &&) = delete;
     //==============================================================================
-    PositionSourceComponent(PositionFieldComponent & fieldComponent, Source & source);
+    PositionSourceComponent(PositionFieldComponent & fieldComponent, Source & source, PersistentStorage & storage);
     //==============================================================================
     [[nodiscard]] SourceIndex getSourceIndex() const;
 

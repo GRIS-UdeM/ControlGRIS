@@ -23,6 +23,7 @@
 #include <JuceHeader.h>
 
 #include "cg_ChangeGesturesManager.hpp"
+#include "cg_PersistentStorage.h"
 #include "cg_PresetsManager.hpp"
 #include "cg_Source.hpp"
 #include "cg_SourceLinkEnforcer.hpp"
@@ -76,6 +77,7 @@ class ControlGrisAudioProcessor final
     int mCurrentOscOutputPort{ 9000 };
     juce::String mCurrentOscOutputAddress{ "192.168.1.100" };
     bool mNeedsInitialization{ true };
+    PersistentStorage mPersistentStorage;
 
     double mInitTimeOnPlay{ 0.0 };
     double mCurrentTime{ 0.0 };
@@ -242,6 +244,9 @@ public:
     //==============================================================================
     void getStateInformation(juce::MemoryBlock & destData) override;
     void setStateInformation(const void * data, int sizeInBytes) override;
+
+    //==============================================================================
+    PersistentStorage & getPersistentStorage();
 
     //==============================================================================
     void parameterChanged(juce::String const & parameterId, float newValue) override;

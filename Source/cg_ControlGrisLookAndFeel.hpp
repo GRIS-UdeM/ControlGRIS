@@ -28,18 +28,18 @@ namespace gris
 class GrisLookAndFeel final : public juce::LookAndFeel_V3
 {
     float mFontSize;
-    juce::Font mFont{ juce::CustomTypeface::createSystemTypefaceFor(
-        BinaryData::SinkinSans400Regular_otf,
-        static_cast<size_t>(BinaryData::SinkinSans400Regular_otfSize)) };
-    juce::Font mNumSliderFont{ juce::CustomTypeface::createSystemTypefaceFor(
-        BinaryData::SinkinSans400Regular_otf,
-        static_cast<size_t>(BinaryData::SinkinSans400Regular_otfSize)) };
-    juce::Font mBigFont{ juce::CustomTypeface::createSystemTypefaceFor(
-        BinaryData::SinkinSans400Regular_otf,
-        static_cast<size_t>(BinaryData::SinkinSans400Regular_otfSize)) };
-    juce::Font mBiggerFont{ juce::CustomTypeface::createSystemTypefaceFor(
-        BinaryData::SinkinSans400Regular_otf,
-        static_cast<size_t>(BinaryData::SinkinSans400Regular_otfSize)) };
+    juce::Font mFont{ juce::FontOptions(BinaryData::SinkinSans400Regular_otf,
+                                        juce::Font::plain,
+                                        static_cast<size_t>(BinaryData::SinkinSans400Regular_otfSize)) };
+    juce::Font mNumSliderFont{ juce::FontOptions(BinaryData::SinkinSans400Regular_otf,
+                                                 juce::Font::plain,
+                                                 static_cast<size_t>(BinaryData::SinkinSans400Regular_otfSize)) };
+    juce::Font mBigFont{ juce::FontOptions(BinaryData::SinkinSans400Regular_otf,
+                                           juce::Font::plain,
+                                           static_cast<size_t>(BinaryData::SinkinSans400Regular_otfSize)) };
+    juce::Font mBiggerFont{ juce::FontOptions(BinaryData::SinkinSans400Regular_otf,
+                                              juce::Font::plain,
+                                              static_cast<size_t>(BinaryData::SinkinSans400Regular_otfSize)) };
 
     juce::Colour mBackgroundAndFieldColor;
     juce::Colour mWinBackgroundAndFieldColor;

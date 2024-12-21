@@ -38,13 +38,18 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     , mAudioProcessorValueTreeState(vts)
     , mPositionTrajectoryManager(positionAutomationManager)
     , mElevationTrajectoryManager(elevationAutomationManager)
-    , mPositionField(controlGrisAudioProcessor.getSources(), positionAutomationManager)
+    , mPositionField(controlGrisAudioProcessor.getSources(),
+                     positionAutomationManager,
+                     mProcessor.getPersistentStorage())
     , mElevationField(controlGrisAudioProcessor.getSources(), elevationAutomationManager)
     , mSectionSourceSpan(mGrisLookAndFeel)
     , mSectionAbstractSpatialization(mGrisLookAndFeel, vts)
     , mSectionSoundReactiveSpatialization(mGrisLookAndFeel, mProcessor)
     , mSectionGeneralSettings(mGrisLookAndFeel)
-    , mSectionSourcePosition(mGrisLookAndFeel, controlGrisAudioProcessor.getSpatMode(), mSectionSourceSpan, mAudioProcessorValueTreeState)
+    , mSectionSourcePosition(mGrisLookAndFeel,
+                             controlGrisAudioProcessor.getSpatMode(),
+                             mSectionSourceSpan,
+                             mAudioProcessorValueTreeState)
     , mSectionOscController(mGrisLookAndFeel)
     , mPositionPresetComponent(controlGrisAudioProcessor.getPresetsManager(), mPositionPresetInfoComponent)
     , mPositionPresetInfoComponent(mGrisLookAndFeel)

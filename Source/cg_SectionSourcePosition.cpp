@@ -243,7 +243,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
             l.elevationSourceLinkChangedCallback(static_cast<ElevationSourceLink>(mZSourceLinkCombo.getSelectedId()));
         });
 
-        if( mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3) {
+        if (mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3) {
             mZSourceLinkScaleLabel.setVisible(true);
             mZSourceLinkScaleSlider.setVisible(true);
             mZSourceLinkCombo.setBounds(120, 102, 96, 15);
@@ -271,9 +271,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
     mZSourceLinkScaleSlider.onValueChange = [this] {
         auto scaleVal{ mZSourceLinkScaleSlider.getValue() };
         mAPVTS.state.setProperty("eleSourceLinkScale", scaleVal, nullptr);
-        mListeners.call([&](Listener & l) {
-            l.elevationSourceLinkScaleChangedCallback(scaleVal);
-        });
+        mListeners.call([&](Listener & l) { l.elevationSourceLinkScaleChangedCallback(scaleVal); });
     };
 
     addAndMakeVisible(&mDomeControls);
@@ -344,7 +342,7 @@ void SectionSourcePosition::resized()
         mZSourceLinkLabel.setVisible(true);
         mZSourceLinkCombo.setVisible(true);
         mZSourceLinkLabel.setBounds(5, 106, 150, 10);
-        if( mZSourceLinkCombo.getSelectedItemIndex() == 3 || mZSourceLinkCombo.getSelectedItemIndex() == 4) {
+        if (mZSourceLinkCombo.getSelectedItemIndex() == 3 || mZSourceLinkCombo.getSelectedItemIndex() == 4) {
             mZSourceLinkScaleLabel.setVisible(true);
             mZSourceLinkScaleSlider.setVisible(true);
             mZSourceLinkCombo.setBounds(120, 102, 96, 15);

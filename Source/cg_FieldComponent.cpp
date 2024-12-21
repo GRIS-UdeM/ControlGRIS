@@ -111,7 +111,7 @@ void FieldComponent::paint(juce::Graphics & g)
         static constexpr auto padding{ 25 };
         static constexpr auto fontSize{ 16 };
         juce::Rectangle<int> const textArea{ padding, padding, getWidth() - padding * 2, getHeight() - padding * 2 };
-        juce::Font const font{ fontSize, juce::Font::FontStyleFlags::plain };
+        juce::Font const font{ juce::FontOptions(fontSize, juce::Font::plain) };
         g.setFont(font);
         g.setColour(juce::Colours::antiquewhite);
         g.drawFittedText(SOURCE_SELECTION_WARNING, textArea, juce::Justification::centredTop, 2);
@@ -306,16 +306,18 @@ void PositionFieldComponent::rebuildSourceComponents(int const numberOfSources)
     mSourceComponents.clearQuick(true);
     for (int i{ numberOfSources - 1 }; i >= 0; --i) {
         auto & source{ mSources[i] };
-        mSourceComponents.add(new PositionSourceComponent{ *this, source });
+        mSourceComponents.add(new PositionSourceComponent{ *this, source, mStorage });
         addAndMakeVisible(mSourceComponents.getLast());
     }
 }
 
 //==============================================================================
 PositionFieldComponent::PositionFieldComponent(Sources & sources,
-                                               PositionTrajectoryManager & positionAutomationManager) noexcept
+                                               PositionTrajectoryManager & positionAutomationManager,
+                                               PersistentStorage & storage) noexcept
     : FieldComponent(sources)
     , mAutomationManager(positionAutomationManager)
+    , mStorage(storage)
 {
     mDrawingHandleComponent.setInterceptsMouseClicks(false, false);
     mDrawingHandleComponent.setCentrePosition(getWidth() / 2, getHeight() / 2);

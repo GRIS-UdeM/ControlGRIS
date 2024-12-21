@@ -64,7 +64,7 @@ GrisLookAndFeel::GrisLookAndFeel()
 #if WIN32
     mFontSize = 13.0f;
 #else
-    mFontSize = 9.0f;
+    mFontSize = 10.0f;
 #endif
     mFont.setHeight(mFontSize);
     mNumSliderFont.setHeight(mFontSize);

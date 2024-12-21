@@ -1592,6 +1592,12 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
 }
 
 //==============================================================================
+PersistentStorage & ControlGrisAudioProcessor::getPersistentStorage()
+{
+    return mPersistentStorage;
+}
+
+//==============================================================================
 void ControlGrisAudioProcessor::sourceChanged(Source & source,
                                               Source::ChangeType changeType,
                                               Source::OriginOfChange origin)
@@ -1857,11 +1863,13 @@ void ControlGrisAudioProcessor::processParameterValues()
         // recording automation for spans
         if (mAudioAnalysisAzimuthSpanFlag) {
             auto const gestureLockAzimuth{ mChangeGesturesManager.getScopedLock(Automation::Ids::AZIMUTH_SPAN) };
-            mAudioProcessorValueTreeState.getParameter(Automation::Ids::AZIMUTH_SPAN)->setValueNotifyingHost(newHSpanVal);
+            mAudioProcessorValueTreeState.getParameter(Automation::Ids::AZIMUTH_SPAN)
+                ->setValueNotifyingHost(newHSpanVal);
         }
         if (mAudioAnalysisElevationSpanFlag) {
             auto const gestureLockElevation{ mChangeGesturesManager.getScopedLock(Automation::Ids::ELEVATION_SPAN) };
-            mAudioProcessorValueTreeState.getParameter(Automation::Ids::ELEVATION_SPAN)->setValueNotifyingHost(newVSpanVal);
+            mAudioProcessorValueTreeState.getParameter(Automation::Ids::ELEVATION_SPAN)
+                ->setValueNotifyingHost(newVSpanVal);
         }
     }
 }
