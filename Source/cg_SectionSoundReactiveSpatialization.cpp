@@ -1225,8 +1225,6 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
 //==============================================================================
 void gris::SectionSoundReactiveSpatialization::paint(juce::Graphics & g)
 {
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-
     // g.setColour(mGrisLookAndFeel.getDarkColor());
     g.setColour(juce::Colour(100, 100, 100));
     // g.drawLine(juce::Line<float>(0.0f, 20.0f, (float)getWidth(), 20.0f));
@@ -1296,8 +1294,8 @@ void gris::SectionSoundReactiveSpatialization::resized()
     mSpatialParameterLabel.setBounds(5, 3, 140, 15);
     mAudioAnalysisLabel.setBounds(bannerAudioAnalysis.getTopLeft().getX() + 5, 3, 140, 15);
 
-    mChannelMixLabel.setBounds(mSpatialParameterLabel.getRight() + 60, 3, 50, 15);
-    mChannelMixCombo.setBounds(mChannelMixLabel.getRight() - 3, 2, 30, 15);
+    mChannelMixLabel.setBounds(mSpatialParameterLabel.getRight() + 55, 3, 50, 15);
+    mChannelMixCombo.setBounds(mChannelMixLabel.getRight() - 5, 2, 35, 15);
     mGainLabel.setBounds(350 - 35 - 3 - 30, 3, 33, 15);
     mGainSlider.setBounds(350 - 35 - 3, 4, 35, 12);
 

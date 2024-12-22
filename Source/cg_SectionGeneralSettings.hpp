@@ -94,7 +94,6 @@ public:
     void removeListener(Listener * l) { mListeners.remove(l); }
     //==============================================================================
     // overrides
-    void paint(juce::Graphics &) override;
     void resized() override;
 
 private:

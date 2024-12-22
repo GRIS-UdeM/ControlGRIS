@@ -146,9 +146,6 @@ private:
     DescriptorID mDescriptorIdToUse{ DescriptorID::invalid };
     DataGraph mDataGraph;
 
-    juce::Label mAnalyzedSourceMixLabel;
-    juce::ComboBox mAnalyzedSourceMixCombo;
-
     juce::Label mDescriptorFactorLabel;
     juce::Label mDescriptorThresholdLabel;
     juce::Label mDescriptorMinFreqLabel;

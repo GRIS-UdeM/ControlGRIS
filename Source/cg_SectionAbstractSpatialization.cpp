@@ -711,8 +711,6 @@ void SectionAbstractSpatialization::textEditorFocusLost(juce::TextEditor & textE
 //==============================================================================
 void SectionAbstractSpatialization::paint(juce::Graphics & g)
 {
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-
     if (mSpatMode == SpatMode::cube) {
         if (mSpeedLinked)
             g.setColour(juce::Colours::orange);

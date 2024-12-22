@@ -142,10 +142,11 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     mSectionOscController.setLookAndFeel(&mGrisLookAndFeel);
     mSectionOscController.addListener(this);
 
-    auto const bg{ mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId) };
+    auto const bg{ mGrisLookAndFeel.getGreyColor() };
 
     mConfigurationComponent.setLookAndFeel(&mGrisLookAndFeel);
     mConfigurationComponent.setColour(juce::TabbedComponent::backgroundColourId, bg);
+    mConfigurationComponent.setColour(mConfigurationComponent.outlineColourId, mGrisLookAndFeel.getDarkColor());
     mConfigurationComponent.setTabBarDepth(24);
     mConfigurationComponent.addTab("Settings", bg, &mSectionGeneralSettings, false);
     mConfigurationComponent.addTab("Controllers", bg, &mSectionOscController, false);
@@ -153,6 +154,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 
     mSpatializationComponent.setLookAndFeel(&mGrisLookAndFeel);
     mSpatializationComponent.setColour(juce::TabbedComponent::backgroundColourId, bg);
+    mSpatializationComponent.setColour(mSpatializationComponent.outlineColourId, mGrisLookAndFeel.getDarkColor());
     mSpatializationComponent.setTabBarDepth(24);
     mSpatializationComponent.addTab(mSectionSoundReactiveSpatialization.getName(),
                                     bg,
@@ -980,7 +982,7 @@ void ControlGrisAudioProcessorEditor::oscOutputConnectionChangedCallback(bool co
 //==============================================================================
 void ControlGrisAudioProcessorEditor::paint(juce::Graphics & g)
 {
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
+    g.fillAll(mGrisLookAndFeel.getGreyColor());
 }
 
 //==============================================================================
@@ -1014,8 +1016,8 @@ void ControlGrisAudioProcessorEditor::resized()
                                   60,
                                   12);
 
-    mSpatializationBanner.setBounds(0, fieldSize + 70 + 100 + 20, width, 20);
-    mSpatializationComponent.setBounds(0, fieldSize + 90 + 100 + 20, width, 190);
+    mSpatializationBanner.setBounds(0, fieldSize + 70 + 100 + 20, std::max(width + 1, MIN_FIELD_WIDTH * 2), 20);
+    mSpatializationComponent.setBounds(0, fieldSize + 90 + 100 + 20, std::max(width - 1, MIN_FIELD_WIDTH * 2), 190);
 
     if (mProcessor.getSpatMode() == SpatMode::cube) {
         mMainBanner.setText("X - Y", juce::NotificationType::dontSendNotification);

@@ -294,8 +294,6 @@ void SectionSourcePosition::mouseDown(juce::MouseEvent const & event)
 //==============================================================================
 void SectionSourcePosition::paint(juce::Graphics & g)
 {
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-
     Source * selectedSource = mSectionSourceSpan.getSectionSourceSpanSelectedSource();
 
     // draw Source ellipse

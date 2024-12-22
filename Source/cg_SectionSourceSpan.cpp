@@ -108,8 +108,6 @@ void SectionSourceSpan::sliderValueChanged(NumSlider::Slider * slider)
 //==============================================================================
 void SectionSourceSpan::paint(juce::Graphics & g)
 {
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-
     if (mSpanLinked)
         g.setColour(juce::Colours::orange);
     else

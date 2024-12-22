@@ -168,12 +168,6 @@ void SectionGeneralSettings::setActivateButtonState(bool const shouldBeOn)
 }
 
 //==============================================================================
-void SectionGeneralSettings::paint(juce::Graphics & g)
-{
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-}
-
-//==============================================================================
 void SectionGeneralSettings::resized()
 {
     mOscFormatLabel.setBounds(5, 12, 90, 10);

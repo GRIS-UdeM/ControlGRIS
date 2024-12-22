@@ -25,7 +25,7 @@
 namespace gris
 {
 //==============================================================================
-class GrisLookAndFeel final : public juce::LookAndFeel_V3
+class GrisLookAndFeel final : public juce::LookAndFeel_V4
 {
     float mFontSize;
     juce::Font mFont{ juce::FontOptions(BinaryData::SinkinSans400Regular_otf,
@@ -100,6 +100,8 @@ public:
                       int buttonW,
                       int buttonH,
                       juce::ComboBox & box) override;
+
+    void positionComboBoxText(juce::ComboBox & box, juce::Label & label) override;
 
     void drawRoundThumb(juce::Graphics & g,
                         float x,

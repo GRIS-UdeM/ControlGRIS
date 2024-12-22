@@ -179,12 +179,6 @@ void SectionOscController::setOscSendOutputAddress(juce::String const & address)
 }
 
 //==============================================================================
-void SectionOscController::paint(juce::Graphics & g)
-{
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-}
-
-//==============================================================================
 void SectionOscController::resized()
 {
     mOscOutputPluginIdLabel.setBounds(5, 13, 135, 10);
