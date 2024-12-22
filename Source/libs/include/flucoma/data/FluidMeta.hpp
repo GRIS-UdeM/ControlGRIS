@@ -74,7 +74,7 @@ using IsIteratorType =
 // conversion in the first template will be an error except for constant
 // expressions
 template <int (*p)()>
-std::true_type isConstexprImpl(decltype(int{(p(), 0U)}));
+std::true_type isConstexprImpl(decltype(int{((void)p(), 0U)}));
 template <int (*p)()>
 std::false_type isConstexprImpl(...);
 template <int (*p)()>
