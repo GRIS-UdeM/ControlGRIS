@@ -104,13 +104,10 @@ void TrajectoryManager::setTrajectoryRandomEnabled(bool isEnabled)
     mTrajectoryRandomEnabled = isEnabled;
 
     if (isEnabled) {
-        mTmpDampeningCycleForRandom = mDampeningCycles;
         mDampeningCycles = 0;
     } else {
         mRandomTimeAdjustment = 0.0;
-
         mDampeningCycles = mTmpDampeningCycleForRandom;
-        mTmpDampeningCycleForRandom = 0;
     }
 }
 
@@ -152,6 +149,13 @@ void TrajectoryManager::setTrajectoryRandomTimeMin(double timeMin)
 void TrajectoryManager::setTrajectoryRandomTimeMax(double timeMax)
 {
     mTrajectoryRandomTimeMax = timeMax;
+}
+
+//==============================================================================
+void TrajectoryManager::setPositionDampeningCycles(int const value)
+{
+    this->mDampeningCycles = value;
+    this->mTmpDampeningCycleForRandom = value;
 }
 
 //==============================================================================

@@ -149,7 +149,7 @@ public:
 
     void setPositionBackAndForth(bool const newState) { mIsBackAndForth = newState; }
 
-    void setPositionDampeningCycles(int const value) { this->mDampeningCycles = value; }
+    void setPositionDampeningCycles(int const value);
     void setDeviationPerCycle(Degrees const value) { this->mDegreeOfDeviationPerCycle = value; }
     void addListener(Listener * l) { mListeners.add(l); }
 
