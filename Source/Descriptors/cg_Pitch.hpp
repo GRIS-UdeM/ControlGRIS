@@ -117,13 +117,12 @@ private:
     std::unique_ptr<fluid::algorithm::STFT> mStft;
 
     // PITCH VALUE
-    fluid::index mNBinsPitch = 513;
-    fluid::index mHopSizePitch = 512;
-    fluid::index mWindowSizePitch = 1024;
+    fluid::index mNBinsPitch = 16385;
+    fluid::index mHopSizePitch = 32768;
+    fluid::index mWindowSizePitch = 32768;
     fluid::index mHalfWindowPitch = mWindowSizePitch / 2;
-    fluid::index mFftSizePitch = 1024;
-    fluid::index mNBandsPitch = 40;
-    fluid::index mMinFreqPitch = 40;
+    fluid::index mFftSizePitch = 32768;
+    fluid::index mMinFreqPitch = 20;
     fluid::index mMaxFreqPitch = 10000;
 
     //==============================================================================
