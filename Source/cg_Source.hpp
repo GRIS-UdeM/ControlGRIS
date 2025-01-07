@@ -78,7 +78,7 @@ public:
 
 private:
     //==============================================================================
-    juce::ListenerList<Listener> mGuiListeners;
+    juce::LightweightListenerList<Listener> mGuiListeners;
 
     SourceIndex mIndex{};
     SourceId mId{ 1 };
