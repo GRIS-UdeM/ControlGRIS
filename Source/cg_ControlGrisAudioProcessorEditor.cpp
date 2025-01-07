@@ -926,7 +926,7 @@ void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const pr
     mProcessor.getPresetsManager().forceLoad(presetNumber);
 
     auto * parameter{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::POSITION_PRESET) };
-    auto const newValue{ static_cast<float>(presetNumber) / static_cast<float>(NUMBER_OF_POSITION_PRESETS) };
+    auto const newValue{ static_cast<float>(presetNumber - 1) / static_cast<float>(NUMBER_OF_POSITION_PRESETS - 1) };
 
     auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(Automation::Ids::POSITION_PRESET) };
     parameter->setValueNotifyingHost(newValue);
