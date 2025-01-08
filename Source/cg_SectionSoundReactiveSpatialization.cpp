@@ -922,7 +922,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
     mDescriptorSmoothSlider.setDoubleClickReturnValue(true, 5.0);
     mDescriptorSmoothCoefSlider.setDoubleClickReturnValue(true, 0.0);
     mDescriptorMinFreqSlider.setDoubleClickReturnValue(true, 20.0);
-    mDescriptorMaxFreqSlider.setDoubleClickReturnValue(true, 10000.0);
+    mDescriptorMaxFreqSlider.setDoubleClickReturnValue(true, 5000.0);
     mDescriptorThresholdSlider.setDoubleClickReturnValue(true, 0.1);
     mDescriptorMinTimeSlider.setDoubleClickReturnValue(true, 0.1);
     mDescriptorMaxTimeSlider.setDoubleClickReturnValue(true, 10.0);
@@ -939,8 +939,8 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
     mDescriptorFactorSlider.setRange(0, 500);
     mDescriptorSmoothSlider.setRange(0, 100);
     mDescriptorSmoothCoefSlider.setRange(0, 100);
-    mDescriptorMinFreqSlider.setRange(20, 20000);
-    mDescriptorMaxFreqSlider.setRange(20, 20000);
+    mDescriptorMinFreqSlider.setRange(20, 5000);
+    mDescriptorMaxFreqSlider.setRange(20, 5000);
     mDescriptorThresholdSlider.setRange(0.0, 1.0);
     mDescriptorMinTimeSlider.setRange(0.0, 30.0 + ALMOST_ZERO);
     mDescriptorMaxTimeSlider.setRange(ALMOST_ZERO, 30.0);

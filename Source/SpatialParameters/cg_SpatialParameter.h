@@ -894,7 +894,7 @@ protected:
     double paramMinFreqPitch = 20.0;
     double paramMinFreqCentroid = 20.0;
 
-    double paramMaxFreqPitch = 10000.0;
+    double paramMaxFreqPitch = 5000.0;
     double paramMaxFreqCentroid = 10000.0;
 
     int paramMetricComboBoxIndex = 4;
