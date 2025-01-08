@@ -135,7 +135,7 @@ private:
     NumSlider mParameterEleZSpanOffsetSlider;
 
     juce::Label mParameterLapLabel;
-    juce::ComboBox mParameterLapCombo;
+    juce::TextEditor mParameterLapEditor;
 
     juce::TextButton mAudioAnalysisActivateButton;
 
