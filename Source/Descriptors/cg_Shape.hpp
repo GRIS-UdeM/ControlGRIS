@@ -1,28 +1,28 @@
 /*
  This file is part of ControlGris.
- 
+
  Developers: Hicheme BEN GAIED, Gaël LANE LÉPINE
- 
+
  ControlGris is free software: you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as
  published by the Free Software Foundation, either version 3 of the
  License, or (at your option) any later version.
- 
+
  ControlGris is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with ControlGris.  If not, see
- <http://www.gnu.org/licenses/>. 
+ <http://www.gnu.org/licenses/>.
 */
 
 //==============================================================================
 
 #pragma once
-#include "algorithms/public/SpectralShape.hpp"
 #include "algorithms/public/STFT.hpp"
+#include "algorithms/public/SpectralShape.hpp"
 #include "cg_Descriptors.hpp"
 
 namespace gris
@@ -102,13 +102,12 @@ private:
     std::unique_ptr<fluid::algorithm::STFT> mStft;
 
     // SPECTRAL SHAPE FOR CENTROID, FLATNESS AND SPREAD
-    fluid::index mNBinsSpectral = 257;
-    fluid::index mHopSizeSpectral = 64;
-    fluid::index mWindowSizeSpectral = 256;
+    fluid::index mNBinsSpectral = 4097;      // 257
+    fluid::index mHopSizeSpectral = 512;     // 64
+    fluid::index mWindowSizeSpectral = 4096; // 256
     fluid::index mHalfWindowSpectral = mWindowSizeSpectral / 2;
-    fluid::index mFftSizeSpectral = 512;
-    fluid::index mNBandsSpectral = 40;
-    fluid::index mMinFreqSpectral = 20; // 20 pour la
+    fluid::index mFftSizeSpectral = 8192; // 512
+    fluid::index mMinFreqSpectral = 20;
     fluid::index mMaxFreqSpectral = 20000;
 
     //==============================================================================
