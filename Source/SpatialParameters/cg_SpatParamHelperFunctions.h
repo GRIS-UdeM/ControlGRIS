@@ -39,8 +39,7 @@ public:
         }
         double midiNoteNumber = 69.0 + 12.0 * std::log2(frequency / 440.0);
 
-        // Round to the nearest MIDI note
-        return std::round(midiNoteNumber);
+        return midiNoteNumber;
     }
 
     double zmap(double value, double inputMin, double inputMax)
