@@ -63,7 +63,7 @@ private:
 }; // class DataGraph
 
 //==============================================================================
-class SectionSoundReactiveSpatialization final
+class SectionSoundReactiveTrajectories final
     : public juce::Component
     , private juce::MultiTimer
 {
@@ -181,17 +181,17 @@ private:
 
 public:
     //==============================================================================
-    explicit SectionSoundReactiveSpatialization(GrisLookAndFeel & grisLookAndFeel,
+    explicit SectionSoundReactiveTrajectories(GrisLookAndFeel & grisLookAndFeel,
                                                 ControlGrisAudioProcessor & audioProcessor);
     //==============================================================================
-    SectionSoundReactiveSpatialization() = delete;
-    ~SectionSoundReactiveSpatialization() override = default;
+    SectionSoundReactiveTrajectories() = delete;
+    ~SectionSoundReactiveTrajectories() override = default;
 
-    SectionSoundReactiveSpatialization(SectionSoundReactiveSpatialization const &) = delete;
-    SectionSoundReactiveSpatialization(SectionSoundReactiveSpatialization &&) = delete;
+    SectionSoundReactiveTrajectories(SectionSoundReactiveTrajectories const &) = delete;
+    SectionSoundReactiveTrajectories(SectionSoundReactiveTrajectories &&) = delete;
 
-    SectionSoundReactiveSpatialization & operator=(SectionSoundReactiveSpatialization const &) = delete;
-    SectionSoundReactiveSpatialization & operator=(SectionSoundReactiveSpatialization &&) = delete;
+    SectionSoundReactiveTrajectories & operator=(SectionSoundReactiveTrajectories const &) = delete;
+    SectionSoundReactiveTrajectories & operator=(SectionSoundReactiveTrajectories &&) = delete;
     //==============================================================================
 
     //==============================================================================
@@ -223,6 +223,6 @@ private:
     void setAudioAnalysisComponentsInvisible();
 
     //==============================================================================
-    JUCE_LEAK_DETECTOR(SectionSoundReactiveSpatialization)
+    JUCE_LEAK_DETECTOR(SectionSoundReactiveTrajectories)
 };
 } // namespace gris

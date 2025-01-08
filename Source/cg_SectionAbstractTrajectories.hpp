@@ -29,7 +29,7 @@
 namespace gris
 {
 //==============================================================================
-class SectionAbstractSpatialization final
+class SectionAbstractTrajectories final
     : public juce::Component
     , private juce::TextEditor::Listener
 {
@@ -145,17 +145,17 @@ private:
 
 public:
     //==============================================================================
-    explicit SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel,
+    explicit SectionAbstractTrajectories(GrisLookAndFeel & grisLookAndFeel,
                                            juce::AudioProcessorValueTreeState & apvts);
     //==============================================================================
-    SectionAbstractSpatialization() = delete;
-    ~SectionAbstractSpatialization() override = default;
+    SectionAbstractTrajectories() = delete;
+    ~SectionAbstractTrajectories() override = default;
 
-    SectionAbstractSpatialization(SectionAbstractSpatialization const &) = delete;
-    SectionAbstractSpatialization(SectionAbstractSpatialization &&) = delete;
+    SectionAbstractTrajectories(SectionAbstractTrajectories const &) = delete;
+    SectionAbstractTrajectories(SectionAbstractTrajectories &&) = delete;
 
-    SectionAbstractSpatialization & operator=(SectionAbstractSpatialization const &) = delete;
-    SectionAbstractSpatialization & operator=(SectionAbstractSpatialization &&) = delete;
+    SectionAbstractTrajectories & operator=(SectionAbstractTrajectories const &) = delete;
+    SectionAbstractTrajectories & operator=(SectionAbstractTrajectories &&) = delete;
     //==============================================================================
     void mouseDown(juce::MouseEvent const & event) override;
     void textEditorFocusLost(juce::TextEditor & textEd) override;
@@ -189,7 +189,7 @@ public:
 
 private:
     //==============================================================================
-    JUCE_LEAK_DETECTOR(SectionAbstractSpatialization)
+    JUCE_LEAK_DETECTOR(SectionAbstractTrajectories)
 };
 
 } // namespace gris

@@ -20,10 +20,10 @@
 
 //==============================================================================
 
-#include "cg_SectionSoundReactiveSpatialization.h"
+#include "cg_SectionSoundReactiveTrajectories.h"
 
 //==============================================================================
-gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(GrisLookAndFeel & grisLookAndFeel,
+gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFeel & grisLookAndFeel,
                                                                              ControlGrisAudioProcessor & audioProcessor)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAudioProcessor(audioProcessor)
@@ -124,7 +124,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
               }
           };
 
-    setName("Sound Reactive Spatialization");
+    setName("Sound Reactive Trajectories");
 
     mXYParamLinked = mAudioProcessor.getXYParamLink();
 
@@ -1233,7 +1233,7 @@ gris::SectionSoundReactiveSpatialization::SectionSoundReactiveSpatialization(Gri
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::paint(juce::Graphics & g)
+void gris::SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
 {
     // g.setColour(mGrisLookAndFeel.getDarkColor());
     g.setColour(juce::Colour(100, 100, 100));
@@ -1285,7 +1285,7 @@ void gris::SectionSoundReactiveSpatialization::paint(juce::Graphics & g)
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::resized()
+void gris::SectionSoundReactiveTrajectories::resized()
 {
     auto area{ getLocalBounds() };
     auto bannerArea{ area.removeFromTop(20) };
@@ -1583,7 +1583,7 @@ void gris::SectionSoundReactiveSpatialization::resized()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::mouseDown(juce::MouseEvent const & event)
+void gris::SectionSoundReactiveTrajectories::mouseDown(juce::MouseEvent const & event)
 {
     // Area where the XYLinked line is shown.
     juce::Rectangle<float> const xyLinkedLineArea{ 1.0f, 41.0f, 15.0f, 22.0f };
@@ -1604,7 +1604,7 @@ void gris::SectionSoundReactiveSpatialization::mouseDown(juce::MouseEvent const 
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::timerCallback(int timerID)
+void gris::SectionSoundReactiveTrajectories::timerCallback(int timerID)
 {
     auto const checkTimer = [&](int timerID, int & counter) {
         if (counter >= 1000 * 120) {
@@ -1701,7 +1701,7 @@ void gris::SectionSoundReactiveSpatialization::timerCallback(int timerID)
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::setSpatMode(SpatMode spatMode)
+void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
 {
     auto const updateParameterCombo = [&](juce::ComboBox & combo, juce::String APVTSProperty) {
         combo.setSelectedId(mAPVTS.state.getProperty(APVTSProperty), juce::dontSendNotification);
@@ -1901,7 +1901,7 @@ void gris::SectionSoundReactiveSpatialization::setSpatMode(SpatMode spatMode)
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::addNewParamValueToDataGraph()
+void gris::SectionSoundReactiveTrajectories::addNewParamValueToDataGraph()
 {
     // this is called by the audio thread
 
@@ -1948,19 +1948,19 @@ void gris::SectionSoundReactiveSpatialization::addNewParamValueToDataGraph()
 }
 
 //==============================================================================
-bool gris::SectionSoundReactiveSpatialization::getAudioAnalysisActivateState()
+bool gris::SectionSoundReactiveTrajectories::getAudioAnalysisActivateState()
 {
     return mAudioAnalysisActivateButton.getToggleState();
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::setAudioAnalysisActivateState(bool state)
+void gris::SectionSoundReactiveTrajectories::setAudioAnalysisActivateState(bool state)
 {
     mAudioAnalysisActivateButton.setToggleState(state, juce::dontSendNotification);
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::updateChannelMixCombo()
+void gris::SectionSoundReactiveTrajectories::updateChannelMixCombo()
 {
     auto numInputChannels{ mAudioProcessor.getTotalNumInputChannels() };
     juce::StringArray chanArray;
@@ -1981,7 +1981,7 @@ void gris::SectionSoundReactiveSpatialization::updateChannelMixCombo()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::unselectAllParamButtons()
+void gris::SectionSoundReactiveTrajectories::unselectAllParamButtons()
 {
     mParameterAzimuthButton.setToggleState(false, juce::dontSendNotification);
     mParameterElevationButton.setToggleState(false, juce::dontSendNotification);
@@ -1993,7 +1993,7 @@ void gris::SectionSoundReactiveSpatialization::unselectAllParamButtons()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::refreshDescriptorPanel()
+void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
 {
     bool shouldShowDescriptorPanel{};
     if (mSpatMode == SpatMode::dome) {
@@ -2078,7 +2078,7 @@ void gris::SectionSoundReactiveSpatialization::refreshDescriptorPanel()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::loudnessSpreadNoiseDescriptorLayout()
+void gris::SectionSoundReactiveTrajectories::loudnessSpreadNoiseDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
 
@@ -2120,7 +2120,7 @@ void gris::SectionSoundReactiveSpatialization::loudnessSpreadNoiseDescriptorLayo
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::pitchCentroidDescriptorLayout()
+void gris::SectionSoundReactiveTrajectories::pitchCentroidDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
 
@@ -2172,7 +2172,7 @@ void gris::SectionSoundReactiveSpatialization::pitchCentroidDescriptorLayout()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::iterSpeedDescriptorLayout()
+void gris::SectionSoundReactiveTrajectories::iterSpeedDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
 
@@ -2246,7 +2246,7 @@ void gris::SectionSoundReactiveSpatialization::iterSpeedDescriptorLayout()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveSpatialization::setAudioAnalysisComponentsInvisible()
+void gris::SectionSoundReactiveTrajectories::setAudioAnalysisComponentsInvisible()
 {
     mDescriptorMetricLabel.setVisible(false);
     mDescriptorFactorLabel.setVisible(false);

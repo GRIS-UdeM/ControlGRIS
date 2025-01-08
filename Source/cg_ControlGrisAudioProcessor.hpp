@@ -128,7 +128,7 @@ class ControlGrisAudioProcessor final
 
     ElevationMode mElevationMode{};
 
-    int mSelectedSoundSpatializationTabIdx{};
+    int mSelectedSoundTrajectoriesTabIdx{};
 
     //==============================================================================
     // Audio Descriptors
@@ -324,7 +324,7 @@ public:
     void updatePrimarySourceParameters(Source::ChangeType changeType);
     void setGainForAudioAnalysis(double gain);
     void setNumChannelsForAudioAnalysis(int numChannels);
-    void setSelectedSoundSpatializationTab(int newCurrentTabIndex);
+    void setSelectedSoundTrajectoriesTab(int newCurrentTabIndex);
     void processParameterValues();
     bool getXYParamLink();
     void setXYParamLink(bool isXYParamLinked);

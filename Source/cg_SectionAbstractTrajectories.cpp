@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.                                        *
  *************************************************************************/
 
-#include "cg_SectionAbstractSpatialization.hpp"
+#include "cg_SectionAbstractTrajectories.hpp"
 
 #include "cg_constants.hpp"
 
@@ -32,7 +32,7 @@ auto constexpr SPEED_SLIDER_MID_VAL{ 1.0 };
 } // namespace
 
 //==============================================================================
-SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & grisLookAndFeel,
+SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisLookAndFeel,
                                                              juce::AudioProcessorValueTreeState & apvts)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAPVTS(apvts)
@@ -43,7 +43,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
     , mRandomTimeMinZSlider(grisLookAndFeel)
     , mRandomTimeMaxZSlider(grisLookAndFeel)
 {
-    setName("SectionAbstractSpatialization");
+    setName("SectionAbstractTrajectories");
 
     mSpatMode = SpatMode::dome;
 
@@ -552,7 +552,7 @@ SectionAbstractSpatialization::SectionAbstractSpatialization(GrisLookAndFeel & g
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::actualizeValueTreeState()
+void SectionAbstractTrajectories::actualizeValueTreeState()
 {
     mPositionCycleSpeedSlider.onValueChange();
     mRandomXYToggle.onClick();
@@ -574,40 +574,40 @@ void SectionAbstractSpatialization::actualizeValueTreeState()
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setSpatMode(SpatMode const spatMode)
+void SectionAbstractTrajectories::setSpatMode(SpatMode const spatMode)
 {
     mSpatMode = spatMode;
     resized();
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setTrajectoryType(int const type)
+void SectionAbstractTrajectories::setTrajectoryType(int const type)
 {
     mPositionTrajectoryTypeCombo.setSelectedId(type);
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setElevationTrajectoryType(int const type)
+void SectionAbstractTrajectories::setElevationTrajectoryType(int const type)
 {
     mElevationTrajectoryTypeCombo.setSelectedId(type);
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setPositionBackAndForth(bool const state)
+void SectionAbstractTrajectories::setPositionBackAndForth(bool const state)
 {
     mPositionBackAndForthToggle.setToggleState(state, juce::NotificationType::sendNotification);
     setPositionDampeningEnabled(state);
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setElevationBackAndForth(bool const state)
+void SectionAbstractTrajectories::setElevationBackAndForth(bool const state)
 {
     mElevationBackAndForthToggle.setToggleState(state, juce::NotificationType::sendNotification);
     setElevationDampeningEnabled(state);
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setPositionDampeningEnabled(bool const state)
+void SectionAbstractTrajectories::setPositionDampeningEnabled(bool const state)
 {
     mPositionDampeningEditor.setEnabled(state);
     juce::String text = mPositionDampeningEditor.getText();
@@ -620,7 +620,7 @@ void SectionAbstractSpatialization::setPositionDampeningEnabled(bool const state
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setElevationDampeningEnabled(bool const state)
+void SectionAbstractTrajectories::setElevationDampeningEnabled(bool const state)
 {
     mElevationDampeningEditor.setEnabled(state);
     juce::String text = mElevationDampeningEditor.getText();
@@ -633,44 +633,44 @@ void SectionAbstractSpatialization::setElevationDampeningEnabled(bool const stat
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setPositionDampeningCycles(int const value)
+void SectionAbstractTrajectories::setPositionDampeningCycles(int const value)
 {
     mPositionDampeningEditor.setText(juce::String(value));
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setElevationDampeningCycles(int const value)
+void SectionAbstractTrajectories::setElevationDampeningCycles(int const value)
 {
     mElevationDampeningEditor.setText(juce::String(value));
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setDeviationPerCycle(float const value)
+void SectionAbstractTrajectories::setDeviationPerCycle(float const value)
 {
     mDeviationEditor.setText(juce::String(value));
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setPositionActivateState(bool const state)
+void SectionAbstractTrajectories::setPositionActivateState(bool const state)
 {
     mPositionActivateButton.setToggleState(state, juce::NotificationType::dontSendNotification);
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setElevationActivateState(bool const state)
+void SectionAbstractTrajectories::setElevationActivateState(bool const state)
 {
     mElevationActivateButton.setToggleState(state, juce::NotificationType::dontSendNotification);
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setSpeedLinkState(bool state)
+void SectionAbstractTrajectories::setSpeedLinkState(bool state)
 {
     mSpeedLinked = state;
     repaint();
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setCycleDuration(double const value)
+void SectionAbstractTrajectories::setCycleDuration(double const value)
 {
     mDurationEditor.setText(juce::String(value));
     mListeners.call([&](Listener & l) {
@@ -680,7 +680,7 @@ void SectionAbstractSpatialization::setCycleDuration(double const value)
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::setDurationUnit(int const value)
+void SectionAbstractTrajectories::setDurationUnit(int const value)
 {
     mDurationUnitCombo.setSelectedId(value, juce::NotificationType::sendNotificationSync);
     mListeners.call([&](Listener & l) {
@@ -690,7 +690,7 @@ void SectionAbstractSpatialization::setDurationUnit(int const value)
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::mouseDown(juce::MouseEvent const & event)
+void SectionAbstractTrajectories::mouseDown(juce::MouseEvent const & event)
 {
     if (mSpatMode == SpatMode::cube) {
         // Area where the speedLinked arrow is shown.
@@ -703,13 +703,13 @@ void SectionAbstractSpatialization::mouseDown(juce::MouseEvent const & event)
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::textEditorFocusLost(juce::TextEditor & textEd)
+void SectionAbstractTrajectories::textEditorFocusLost(juce::TextEditor & textEd)
 {
     textEditorReturnKeyPressed(textEd);
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::paint(juce::Graphics & g)
+void SectionAbstractTrajectories::paint(juce::Graphics & g)
 {
     if (mSpatMode == SpatMode::cube) {
         if (mSpeedLinked)
@@ -754,7 +754,7 @@ void SectionAbstractSpatialization::paint(juce::Graphics & g)
 }
 
 //==============================================================================
-void SectionAbstractSpatialization::resized()
+void SectionAbstractTrajectories::resized()
 {
     mTrajectoryTypeLabel.setBounds(5, 7, 150, 10);
     mTrajectoryTypeXYLabel.setBounds(90, 7, 150, 10);

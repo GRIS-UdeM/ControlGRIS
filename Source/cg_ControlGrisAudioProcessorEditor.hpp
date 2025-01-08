@@ -24,16 +24,16 @@
 
 #include "cg_BannerComponent.hpp"
 #include "cg_FieldComponent.hpp"
-#include "cg_SectionAbstractSpatialization.hpp"
+#include "cg_SectionAbstractTrajectories.hpp"
 #include "cg_SectionOscController.hpp"
 #include "cg_SectionPositionPresets.hpp"
-#include "cg_SectionSoundReactiveSpatialization.h"
+#include "cg_SectionSoundReactiveTrajectories.h"
 #include "cg_SectionSourcePosition.hpp"
 
 namespace gris
 {
 //==============================================================================
-class TabbedSpatializationComponent final : public juce::TabbedComponent
+class TabbedTrajectoriesComponent final : public juce::TabbedComponent
 {
 private:
     //==============================================================================
@@ -41,14 +41,14 @@ private:
 
 public:
     //==============================================================================
-    TabbedSpatializationComponent() = delete;
-    TabbedSpatializationComponent(juce::TabbedButtonBar::Orientation orientation,
+    TabbedTrajectoriesComponent() = delete;
+    TabbedTrajectoriesComponent(juce::TabbedButtonBar::Orientation orientation,
                                   ControlGrisAudioProcessor & audioProcessor);
     //==============================================================================
-    TabbedSpatializationComponent(TabbedSpatializationComponent const &) = delete;
-    TabbedSpatializationComponent(TabbedSpatializationComponent &&) = delete;
-    TabbedSpatializationComponent & operator=(TabbedSpatializationComponent const &) = delete;
-    TabbedSpatializationComponent & operator=(TabbedSpatializationComponent &&) = delete;
+    TabbedTrajectoriesComponent(TabbedTrajectoriesComponent const &) = delete;
+    TabbedTrajectoriesComponent(TabbedTrajectoriesComponent &&) = delete;
+    TabbedTrajectoriesComponent & operator=(TabbedTrajectoriesComponent const &) = delete;
+    TabbedTrajectoriesComponent & operator=(TabbedTrajectoriesComponent &&) = delete;
     //==============================================================================
     void currentTabChanged(int newCurrentTabIndex, const juce::String & newCurrentTabName) override;
 };
@@ -61,7 +61,7 @@ class ControlGrisAudioProcessorEditor final
     , public SectionSourceSpan::Listener
     , public SectionGeneralSettings::Listener
     , public SectionSourcePosition::Listener
-    , public SectionAbstractSpatialization::Listener
+    , public SectionAbstractTrajectories::Listener
     , public SectionOscController::Listener
     , public PositionPresetComponent::Listener
 {
@@ -76,7 +76,7 @@ private:
 
     BannerComponent mMainBanner;
     BannerComponent mElevationBanner;
-    BannerComponent mSpatializationBanner;
+    BannerComponent mTrajectoriesBanner;
     BannerComponent mSettingsBanner;
     BannerComponent mPositionPresetBanner;
     BannerComponent mSourcesBanner;
@@ -88,11 +88,11 @@ private:
     ElevationFieldComponent mElevationField;
 
     SectionSourceSpan mSectionSourceSpan;
-    SectionAbstractSpatialization mSectionAbstractSpatialization;
-    SectionSoundReactiveSpatialization mSectionSoundReactiveSpatialization;
+    SectionAbstractTrajectories mSectionAbstractTrajectories;
+    SectionSoundReactiveTrajectories mSectionSoundReactiveTrajectories;
 
     juce::TabbedComponent mConfigurationComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop };
-    TabbedSpatializationComponent mSpatializationComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop, mProcessor };
+    TabbedTrajectoriesComponent mTrajectoriesComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop, mProcessor };
 
     SectionGeneralSettings mSectionGeneralSettings;
     SectionSourcePosition mSectionSourcePosition;
@@ -157,7 +157,7 @@ public:
     void positionSourceLinkChangedCallback(PositionSourceLink sourceLink) override;
     void selectedSourceClickedCallback() override;
 
-    // SectionAbstractSpatialization::Listeners
+    // SectionAbstractTrajectories::Listeners
     void elevationSourceLinkChangedCallback(ElevationSourceLink sourceLink) override;
     void positionTrajectoryTypeChangedCallback(PositionTrajectoryType value) override;
     void elevationTrajectoryTypeChangedCallback(ElevationTrajectoryType value) override;

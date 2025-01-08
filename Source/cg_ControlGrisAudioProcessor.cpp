@@ -1208,7 +1208,7 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
     mLastTime = mCurrentTime;
 
     // Audio Descriptors section
-    if (mSelectedSoundSpatializationTabIdx == 0) {
+    if (mSelectedSoundTrajectoriesTabIdx == 0) {
         mAzimuthDomeValue = 0.0;
         mElevationDomeValue = 0.0;
         mHspanDomeValue = 0.0;
@@ -1490,7 +1490,7 @@ void ControlGrisAudioProcessor::getStateInformation(juce::MemoryBlock & destData
         mAudioProcessorValueTreeState.state.setProperty(distanceId, distance, nullptr);
     }
 
-    mAudioProcessorValueTreeState.state.setProperty("soundSpatSelTab", mSelectedSoundSpatializationTabIdx, nullptr);
+    mAudioProcessorValueTreeState.state.setProperty("soundTrajSelTab", mSelectedSoundTrajectoriesTabIdx, nullptr);
 
     auto const state{ mAudioProcessorValueTreeState.copyState() };
 
@@ -1542,9 +1542,9 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
                 valueTree.getProperty("oscOutputPortNumber", 8000)) };
         }
 
-        // Load last used Sound Spatialization tab
-        auto tabIdx{ valueTree.getProperty("soundSpatSelTab", 0) };
-        setSelectedSoundSpatializationTab(tabIdx);
+        // Load last used Sound Trajectories tab
+        auto tabIdx{ valueTree.getProperty("soundTrajSelTab", 0) };
+        setSelectedSoundTrajectoriesTab(tabIdx);
 
         // Load stored sources positions
         for (int sourceIndex{}; sourceIndex < MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
@@ -1729,9 +1729,9 @@ void ControlGrisAudioProcessor::setNumChannelsForAudioAnalysis(int numChannels)
 }
 
 //==============================================================================
-void ControlGrisAudioProcessor::setSelectedSoundSpatializationTab(int newCurrentTabIndex)
+void ControlGrisAudioProcessor::setSelectedSoundTrajectoriesTab(int newCurrentTabIndex)
 {
-    mSelectedSoundSpatializationTabIdx = newCurrentTabIndex;
+    mSelectedSoundTrajectoriesTabIdx = newCurrentTabIndex;
 }
 
 //==============================================================================

@@ -43,8 +43,8 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
                      mProcessor.getPersistentStorage())
     , mElevationField(controlGrisAudioProcessor.getSources(), elevationAutomationManager)
     , mSectionSourceSpan(mGrisLookAndFeel)
-    , mSectionAbstractSpatialization(mGrisLookAndFeel, vts)
-    , mSectionSoundReactiveSpatialization(mGrisLookAndFeel, mProcessor)
+    , mSectionAbstractTrajectories(mGrisLookAndFeel, vts)
+    , mSectionSoundReactiveTrajectories(mGrisLookAndFeel, mProcessor)
     , mSectionGeneralSettings(mGrisLookAndFeel)
     , mSectionSourcePosition(mGrisLookAndFeel,
                              controlGrisAudioProcessor.getSpatMode(),
@@ -103,9 +103,9 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
                                   60,
                                   12);
 
-    mSpatializationBanner.setLookAndFeel(&mGrisLookAndFeel);
-    mSpatializationBanner.setText("Spatialization", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mSpatializationBanner);
+    mTrajectoriesBanner.setLookAndFeel(&mGrisLookAndFeel);
+    mTrajectoriesBanner.setText("Trajectories", juce::NotificationType::dontSendNotification);
+    addAndMakeVisible(&mTrajectoriesBanner);
 
     mSettingsBanner.setLookAndFeel(&mGrisLookAndFeel);
     mSettingsBanner.setText("Configuration", juce::NotificationType::dontSendNotification);
@@ -126,8 +126,8 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     mSectionSourceSpan.setLookAndFeel(&mGrisLookAndFeel);
     mSectionSourceSpan.addListener(this);
 
-    mSectionAbstractSpatialization.setLookAndFeel(&mGrisLookAndFeel);
-    mSectionAbstractSpatialization.addListener(this);
+    mSectionAbstractTrajectories.setLookAndFeel(&mGrisLookAndFeel);
+    mSectionAbstractTrajectories.addListener(this);
 
     mSectionGeneralSettings.setLookAndFeel(&mGrisLookAndFeel);
     mSectionGeneralSettings.addListener(this);
@@ -152,16 +152,16 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     mConfigurationComponent.addTab("Controllers", bg, &mSectionOscController, false);
     addAndMakeVisible(mConfigurationComponent);
 
-    mSpatializationComponent.setLookAndFeel(&mGrisLookAndFeel);
-    mSpatializationComponent.setColour(juce::TabbedComponent::backgroundColourId, bg);
-    mSpatializationComponent.setColour(mSpatializationComponent.outlineColourId, mGrisLookAndFeel.getDarkColor());
-    mSpatializationComponent.setTabBarDepth(24);
-    mSpatializationComponent.addTab(mSectionSoundReactiveSpatialization.getName(),
+    mTrajectoriesComponent.setLookAndFeel(&mGrisLookAndFeel);
+    mTrajectoriesComponent.setColour(juce::TabbedComponent::backgroundColourId, bg);
+    mTrajectoriesComponent.setColour(mTrajectoriesComponent.outlineColourId, mGrisLookAndFeel.getDarkColor());
+    mTrajectoriesComponent.setTabBarDepth(24);
+    mTrajectoriesComponent.addTab(mSectionSoundReactiveTrajectories.getName(),
                                     bg,
-                                    &mSectionSoundReactiveSpatialization,
+                                    &mSectionSoundReactiveTrajectories,
                                     false);
-    mSpatializationComponent.addTab("Abstract Spatialization", bg, &mSectionAbstractSpatialization, false);
-    addAndMakeVisible(mSpatializationComponent);
+    mTrajectoriesComponent.addTab("Abstract Trajectories", bg, &mSectionAbstractTrajectories, false);
+    addAndMakeVisible(mTrajectoriesComponent);
 
     mPositionPresetComponent.setLookAndFeel(&mGrisLookAndFeel);
     mPositionPresetComponent.addListener(this);
@@ -208,7 +208,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 ControlGrisAudioProcessorEditor::~ControlGrisAudioProcessorEditor()
 {
     mConfigurationComponent.setLookAndFeel(nullptr);
-    mSpatializationComponent.setLookAndFeel(nullptr);
+    mTrajectoriesComponent.setLookAndFeel(nullptr);
     setLookAndFeel(nullptr);
 }
 
@@ -241,29 +241,29 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
 
     // Set state for abstraction spatialization box persistent values.
     //------------------------------------------------
-    mSectionAbstractSpatialization.setTrajectoryType(
+    mSectionAbstractTrajectories.setTrajectoryType(
         mAudioProcessorValueTreeState.state.getProperty("trajectoryType", 1));
-    mSectionAbstractSpatialization.setElevationTrajectoryType(
+    mSectionAbstractTrajectories.setElevationTrajectoryType(
         mAudioProcessorValueTreeState.state.getProperty("trajectoryTypeAlt", 1));
-    mSectionAbstractSpatialization.setPositionBackAndForth(
+    mSectionAbstractTrajectories.setPositionBackAndForth(
         mAudioProcessorValueTreeState.state.getProperty("backAndForth", false));
-    mSectionAbstractSpatialization.setElevationBackAndForth(
+    mSectionAbstractTrajectories.setElevationBackAndForth(
         mAudioProcessorValueTreeState.state.getProperty("backAndForthAlt", false));
-    mSectionAbstractSpatialization.setPositionDampeningCycles(
+    mSectionAbstractTrajectories.setPositionDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCycles", 0));
     mPositionTrajectoryManager.setPositionDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCycles", 0));
-    mSectionAbstractSpatialization.setElevationDampeningCycles(
+    mSectionAbstractTrajectories.setElevationDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCyclesAlt", 0));
     mElevationTrajectoryManager.setPositionDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCyclesAlt", 0));
-    mSectionAbstractSpatialization.setDeviationPerCycle(
+    mSectionAbstractTrajectories.setDeviationPerCycle(
         mAudioProcessorValueTreeState.state.getProperty("deviationPerCycle", 0));
     mPositionTrajectoryManager.setDeviationPerCycle(
         Degrees{ mAudioProcessorValueTreeState.state.getProperty("deviationPerCycle", 0) });
-    mSectionAbstractSpatialization.setCycleDuration(
+    mSectionAbstractTrajectories.setCycleDuration(
         mAudioProcessorValueTreeState.state.getProperty("cycleDuration", 5.0));
-    mSectionAbstractSpatialization.setDurationUnit(mAudioProcessorValueTreeState.state.getProperty("durationUnit", 1));
+    mSectionAbstractTrajectories.setDurationUnit(mAudioProcessorValueTreeState.state.getProperty("durationUnit", 1));
 
     // Update the position preset box.
     //--------------------------------
@@ -273,9 +273,9 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
         mPositionPresetComponent.presetSaved(index++, saved);
     }
 
-    // Update the Spatialization Tab
-    mSpatializationComponent.setCurrentTabIndex(mAudioProcessorValueTreeState.state.getProperty("soundSpatSelTab", 0));
-    mSectionAbstractSpatialization.actualizeValueTreeState();
+    // Update the Trajectories Tab
+    mTrajectoriesComponent.setCurrentTabIndex(mAudioProcessorValueTreeState.state.getProperty("soundTrajSelTab", 0));
+    mSectionAbstractTrajectories.actualizeValueTreeState();
 
     // Update the interface.
     //----------------------
@@ -307,7 +307,7 @@ void ControlGrisAudioProcessorEditor::updateSpanLinkButton(bool state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateSpeedLinkButton(bool state)
 {
-    mSectionAbstractSpatialization.setSpeedLinkState(state);
+    mSectionAbstractTrajectories.setSpeedLinkState(state);
 }
 
 //==============================================================================
@@ -372,7 +372,7 @@ void ControlGrisAudioProcessorEditor::elevationModeChangedEndedCallback()
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateAudioAnalysisNumInputChannels()
 {
-    mSectionSoundReactiveSpatialization.updateChannelMixCombo();
+    mSectionSoundReactiveTrajectories.updateChannelMixCombo();
 }
 
 //==============================================================================
@@ -391,7 +391,7 @@ void ControlGrisAudioProcessorEditor::oscFormatChangedCallback(SpatMode mode)
     auto const selectionIsLBAP{ mode == SpatMode::cube };
     mSectionSourceSpan.setDistanceEnabled(selectionIsLBAP);
     mPositionField.setSpatMode(mode);
-    mSectionAbstractSpatialization.setSpatMode(mode);
+    mSectionAbstractTrajectories.setSpatMode(mode);
     repaint();
     resized();
 }
@@ -652,7 +652,7 @@ void ControlGrisAudioProcessorEditor::elevationSpanDragEndedCallback()
 }
 
 //==============================================================================
-// SectionAbstractSpatialization::Listener callbacks.
+// SectionAbstractTrajectories::Listener callbacks.
 void ControlGrisAudioProcessorEditor::positionSourceLinkChangedCallback(PositionSourceLink const sourceLink)
 {
     mProcessor.setPositionSourceLink(sourceLink, SourceLinkEnforcer::OriginOfChange::user);
@@ -884,17 +884,17 @@ void ControlGrisAudioProcessorEditor::refresh()
     mPositionField.setIsPlaying(mProcessor.isPlaying());
     mElevationField.setIsPlaying(mProcessor.isPlaying());
 
-    if (mSectionAbstractSpatialization.getPositionActivateState()
+    if (mSectionAbstractTrajectories.getPositionActivateState()
         != mPositionTrajectoryManager.getPositionActivateState()) {
-        mSectionAbstractSpatialization.setPositionActivateState(mPositionTrajectoryManager.getPositionActivateState());
+        mSectionAbstractTrajectories.setPositionActivateState(mPositionTrajectoryManager.getPositionActivateState());
     }
-    if (mSectionAbstractSpatialization.getElevationActivateState()
+    if (mSectionAbstractTrajectories.getElevationActivateState()
         != mElevationTrajectoryManager.getPositionActivateState()) {
-        mSectionAbstractSpatialization.setElevationActivateState(
+        mSectionAbstractTrajectories.setElevationActivateState(
             mElevationTrajectoryManager.getPositionActivateState());
     }
-    if (mSectionSoundReactiveSpatialization.getAudioAnalysisActivateState() != mProcessor.getAudioAnalysisState()) {
-        mSectionSoundReactiveSpatialization.setAudioAnalysisActivateState(mProcessor.getAudioAnalysisState());
+    if (mSectionSoundReactiveTrajectories.getAudioAnalysisActivateState() != mProcessor.getAudioAnalysisState()) {
+        mSectionSoundReactiveTrajectories.setAudioAnalysisActivateState(mProcessor.getAudioAnalysisState());
     }
 }
 
@@ -902,7 +902,7 @@ void ControlGrisAudioProcessorEditor::refresh()
 void ControlGrisAudioProcessorEditor::addNewParamValueToDataGraph()
 {
     // called by the audio thread
-    mSectionSoundReactiveSpatialization.addNewParamValueToDataGraph();
+    mSectionSoundReactiveTrajectories.addNewParamValueToDataGraph();
 }
 
 //==============================================================================
@@ -1016,8 +1016,8 @@ void ControlGrisAudioProcessorEditor::resized()
                                   60,
                                   12);
 
-    mSpatializationBanner.setBounds(0, fieldSize + 70 + 100 + 20, std::max(width + 1, MIN_FIELD_WIDTH * 2), 20);
-    mSpatializationComponent.setBounds(0, fieldSize + 90 + 100 + 20, std::max(width - 1, MIN_FIELD_WIDTH * 2), 190);
+    mTrajectoriesBanner.setBounds(0, fieldSize + 70 + 100 + 20, std::max(width + 1, MIN_FIELD_WIDTH * 2), 20);
+    mTrajectoriesComponent.setBounds(0, fieldSize + 90 + 100 + 20, std::max(width - 1, MIN_FIELD_WIDTH * 2), 190);
 
     if (mProcessor.getSpatMode() == SpatMode::cube) {
         mMainBanner.setText("X - Y", juce::NotificationType::dontSendNotification);
@@ -1046,11 +1046,11 @@ void ControlGrisAudioProcessorEditor::resized()
 void ControlGrisAudioProcessorEditor::setSpatMode(SpatMode spatMode)
 {
     mSectionSourcePosition.setSpatMode(spatMode);
-    mSectionSoundReactiveSpatialization.setSpatMode(spatMode);
+    mSectionSoundReactiveTrajectories.setSpatMode(spatMode);
 }
 
 //==============================================================================
-TabbedSpatializationComponent::TabbedSpatializationComponent(juce::TabbedButtonBar::Orientation orientation,
+TabbedTrajectoriesComponent::TabbedTrajectoriesComponent(juce::TabbedButtonBar::Orientation orientation,
                                                              ControlGrisAudioProcessor & audioProcessor)
     : juce::TabbedComponent(orientation)
     , mAudioProcessor(audioProcessor)
@@ -1058,9 +1058,9 @@ TabbedSpatializationComponent::TabbedSpatializationComponent(juce::TabbedButtonB
 }
 
 //==============================================================================
-void TabbedSpatializationComponent::currentTabChanged(int newCurrentTabIndex, const juce::String & newCurrentTabName)
+void TabbedTrajectoriesComponent::currentTabChanged(int newCurrentTabIndex, const juce::String & newCurrentTabName)
 {
-    mAudioProcessor.setSelectedSoundSpatializationTab(newCurrentTabIndex);
+    mAudioProcessor.setSelectedSoundTrajectoriesTab(newCurrentTabIndex);
 }
 
 } // namespace gris
