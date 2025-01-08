@@ -326,7 +326,7 @@ void SectionSourcePosition::paint(juce::Graphics & g)
 void SectionSourcePosition::resized()
 {
     mSourceNumberLabel.setBounds(5, 10, 150, 10);
-    mSourceNumberCombo.setBounds(85, 7, 35, 15);
+    mSourceNumberCombo.setBounds(70, 7, 50, 15);
 
     mDomeControls.setBounds(5, 30, 300, 15);
     mCubeControls.setBounds(5, 30, 300, 15);
