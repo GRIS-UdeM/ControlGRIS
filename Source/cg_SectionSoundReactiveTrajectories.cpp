@@ -496,10 +496,12 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         case DescriptorID::pitch:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangePitch());
             mParameterLapEditor.setText(juce::String(param.getParamLapPitch()));
+            changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangeCentroid());
             mParameterLapEditor.setText(juce::String(param.getParamLapCentroid()));
+            changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangeSpread());
@@ -554,10 +556,12 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         case DescriptorID::pitch:
             mParameterElevationRangeSlider.setValue(param.getParamRangePitch());
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetPitch());
+            changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterElevationRangeSlider.setValue(param.getParamRangeCentroid());
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetCentroid());
+            changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterElevationRangeSlider.setValue(param.getParamRangeSpread());
@@ -608,10 +612,12 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         case DescriptorID::pitch:
             mParameterXRangeSlider.setValue(param.getParamRangePitch());
             mParameterLapEditor.setText(juce::String(param.getParamLapPitch()));
+            changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterXRangeSlider.setValue(param.getParamRangeCentroid());
             mParameterLapEditor.setText(juce::String(param.getParamLapCentroid()));
+            changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterXRangeSlider.setValue(param.getParamRangeSpread());
@@ -659,9 +665,11 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             break;
         case DescriptorID::pitch:
             mParameterYRangeSlider.setValue(param.getParamRangePitch());
+            changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterYRangeSlider.setValue(param.getParamRangeCentroid());
+            changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterYRangeSlider.setValue(param.getParamRangeSpread());
@@ -708,10 +716,12 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         case DescriptorID::pitch:
             mParameterZRangeSlider.setValue(param.getParamRangePitch());
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetPitch());
+            changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterZRangeSlider.setValue(param.getParamRangeCentroid());
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetCentroid());
+            changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterZRangeSlider.setValue(param.getParamRangeSpread());
@@ -780,9 +790,11 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
                 break;
             case DescriptorID::pitch:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangePitch());
+                changeMinMaxSlidersRange(20, 5000);
                 break;
             case DescriptorID::centroid:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangeCentroid());
+                changeMinMaxSlidersRange(20, 20000);
                 break;
             case DescriptorID::spread:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangeSpread());
@@ -852,10 +864,12 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             case DescriptorID::pitch:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangePitch());
                 mParameterEleZSpanOffsetSlider.setValue(param.getParamOffsetPitch());
+                changeMinMaxSlidersRange(20, 5000);
                 break;
             case DescriptorID::centroid:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangeCentroid());
                 mParameterEleZSpanOffsetSlider.setValue(param.getParamOffsetCentroid());
+                changeMinMaxSlidersRange(20, 20000);
                 break;
             case DescriptorID::spread:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangeSpread());
@@ -931,8 +945,6 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mDescriptorFactorSlider.setDoubleClickReturnValue(true, 100.0);
     mDescriptorSmoothSlider.setDoubleClickReturnValue(true, 5.0);
     mDescriptorSmoothCoefSlider.setDoubleClickReturnValue(true, 0.0);
-    mDescriptorMinFreqSlider.setDoubleClickReturnValue(true, 20.0);
-    mDescriptorMaxFreqSlider.setDoubleClickReturnValue(true, 5000.0);
     mDescriptorThresholdSlider.setDoubleClickReturnValue(true, 0.1);
     mDescriptorMinTimeSlider.setDoubleClickReturnValue(true, 0.1);
     mDescriptorMaxTimeSlider.setDoubleClickReturnValue(true, 10.0);
@@ -949,8 +961,6 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mDescriptorFactorSlider.setRange(0, 500);
     mDescriptorSmoothSlider.setRange(0, 100);
     mDescriptorSmoothCoefSlider.setRange(0, 100);
-    mDescriptorMinFreqSlider.setRange(20, 5000);
-    mDescriptorMaxFreqSlider.setRange(20, 5000);
     mDescriptorThresholdSlider.setRange(0.0, 1.0);
     mDescriptorMinTimeSlider.setRange(0.0, 30.0 + ALMOST_ZERO);
     mDescriptorMaxTimeSlider.setRange(ALMOST_ZERO, 30.0);
@@ -2271,6 +2281,17 @@ void gris::SectionSoundReactiveTrajectories::setAudioAnalysisComponentsInvisible
 
     mDataGraph.setVisible(false);
     mClickTimerButton.setVisible(false);
+}
+
+//==============================================================================
+void gris::SectionSoundReactiveTrajectories::changeMinMaxSlidersRange(int min, int max)
+{
+    mDescriptorMinFreqSlider.setRange(min, max);
+    mDescriptorMaxFreqSlider.setRange(min, max);
+    mDescriptorMinFreqSlider.setDoubleClickReturnValue(true, min);
+    mDescriptorMaxFreqSlider.setDoubleClickReturnValue(true, max);
+    mDescriptorMaxFreqSlider.setValue(mDescriptorMaxFreqSlider.getValue());
+    mDescriptorMinFreqSlider.setValue(mDescriptorMinFreqSlider.getValue());
 }
 
 //==============================================================================

@@ -221,6 +221,7 @@ private:
     void pitchCentroidDescriptorLayout();
     void iterSpeedDescriptorLayout();
     void setAudioAnalysisComponentsInvisible();
+    void changeMinMaxSlidersRange(int min, int max);
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(SectionSoundReactiveTrajectories)
