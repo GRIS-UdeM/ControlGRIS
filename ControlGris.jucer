@@ -138,10 +138,10 @@
               resource="0" file="Source/cg_SectionPositionPresets.cpp"/>
         <FILE id="fzL7XR" name="cg_SectionPositionPresets.hpp" compile="0"
               resource="0" file="Source/cg_SectionPositionPresets.hpp"/>
-        <FILE id="ukgkiJ" name="cg_SectionSoundReactiveSpatialization.cpp"
-              compile="1" resource="0" file="Source/cg_SectionSoundReactiveSpatialization.cpp"/>
-        <FILE id="dxj6DN" name="cg_SectionSoundReactiveSpatialization.h" compile="0"
-              resource="0" file="Source/cg_SectionSoundReactiveSpatialization.h"/>
+        <FILE id="ukgkiJ" name="cg_SectionSoundReactiveTrajectories.cpp" compile="1"
+              resource="0" file="Source/cg_SectionSoundReactiveTrajectories.cpp"/>
+        <FILE id="dxj6DN" name="cg_SectionSoundReactiveTrajectories.h" compile="0"
+              resource="0" file="Source/cg_SectionSoundReactiveTrajectories.h"/>
         <FILE id="tr9Qib" name="cg_SectionSourcePosition.cpp" compile="1" resource="0"
               file="Source/cg_SectionSourcePosition.cpp"/>
         <FILE id="nU1MFT" name="cg_SectionSourcePosition.hpp" compile="0" resource="0"
@@ -150,10 +150,10 @@
               file="Source/cg_SectionSourceSpan.cpp"/>
         <FILE id="qmk3iz" name="cg_SectionSourceSpan.hpp" compile="0" resource="0"
               file="Source/cg_SectionSourceSpan.hpp"/>
-        <FILE id="avAyHe" name="cg_SectionAbstractSpatialization.cpp" compile="1"
-              resource="0" file="Source/cg_SectionAbstractSpatialization.cpp"/>
-        <FILE id="PxuaoO" name="cg_SectionAbstractSpatialization.hpp" compile="0"
-              resource="0" file="Source/cg_SectionAbstractSpatialization.hpp"/>
+        <FILE id="avAyHe" name="cg_SectionAbstractTrajectories.cpp" compile="1"
+              resource="0" file="Source/cg_SectionAbstractTrajectories.cpp"/>
+        <FILE id="PxuaoO" name="cg_SectionAbstractTrajectories.hpp" compile="0"
+              resource="0" file="Source/cg_SectionAbstractTrajectories.hpp"/>
         <FILE id="acz4Ei" name="cg_TitledComponent.cpp" compile="1" resource="0"
               file="Source/cg_TitledComponent.cpp"/>
         <FILE id="ZPfmQN" name="cg_TitledComponent.hpp" compile="0" resource="0"
