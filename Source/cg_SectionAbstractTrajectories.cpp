@@ -33,7 +33,7 @@ auto constexpr SPEED_SLIDER_MID_VAL{ 1.0 };
 
 //==============================================================================
 SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisLookAndFeel,
-                                                             juce::AudioProcessorValueTreeState & apvts)
+                                                         juce::AudioProcessorValueTreeState & apvts)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAPVTS(apvts)
     , mRandomProximityXYSlider(grisLookAndFeel)

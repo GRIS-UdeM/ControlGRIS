@@ -1,27 +1,27 @@
 /*
  This file is part of ControlGris.
- 
+
  Developers: Hicheme BEN GAIED, Gaël LANE LÉPINE
- 
+
  ControlGris is free software: you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as
  published by the Free Software Foundation, either version 3 of the
  License, or (at your option) any later version.
- 
+
  ControlGris is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with ControlGris.  If not, see
- <http://www.gnu.org/licenses/>. 
+ <http://www.gnu.org/licenses/>.
 */
 
 //==============================================================================
 
 #include "cg_SpatialParameter.h"
-//#include "../PanelView.h"
+// #include "../PanelView.h"
 
 namespace gris
 {
@@ -41,34 +41,34 @@ juce::String const & SpatialParameter::getParameterName() const
 }
 
 ////==============================================================================
-//void SpatialParameter::addObserver(PanelView * observer)
+// void SpatialParameter::addObserver(PanelView * observer)
 //{
-//    mObservers.push_back(observer);
-//}
+//     mObservers.push_back(observer);
+// }
 //
 ////==============================================================================
-//void SpatialParameter::removeObserver(PanelView * observer)
+// void SpatialParameter::removeObserver(PanelView * observer)
 //{
-//    auto it = std::find(mObservers.begin(), mObservers.end(), observer);
-//    if (it != mObservers.end()) {
-//        mObservers.erase(it);
-//    }
-//}
+//     auto it = std::find(mObservers.begin(), mObservers.end(), observer);
+//     if (it != mObservers.end()) {
+//         mObservers.erase(it);
+//     }
+// }
 //
 ////==============================================================================
-//void SpatialParameter::notifyObservers()
+// void SpatialParameter::notifyObservers()
 //{
-//    for (auto observer : mObservers) {
-//        observer->addNewParamValueToDataGraph(lastRes);
-//    }
-//}
+//     for (auto observer : mObservers) {
+//         observer->addNewParamValueToDataGraph(lastRes);
+//     }
+// }
 
 //==============================================================================
 double SpatialParameter::getDiffValue()
 {
     auto diff = lastRes - res;
     lastRes = res;
-    //notifyObservers();
+    // notifyObservers();
     return diff;
 }
 
@@ -104,7 +104,9 @@ double SpatialParameter::processPitch(double valueToProcess)
     auto val{ 0.0 };
     double minFreq = mFunctions.frequencyToMidiNoteNumber(paramMinFreqPitch);
     double maxFreq = mFunctions.frequencyToMidiNoteNumber(paramMaxFreqPitch);
-    double zmap = mFunctions.zmap(valueToProcess, minFreq, maxFreq); // zmap can be nan if frequency range for analysis is not wide enough...
+    double zmap = mFunctions.zmap(valueToProcess,
+                                  minFreq,
+                                  maxFreq); // zmap can be nan if frequency range for analysis is not wide enough...
     val = processSmoothedPitch(zmap);
     return val;
 }

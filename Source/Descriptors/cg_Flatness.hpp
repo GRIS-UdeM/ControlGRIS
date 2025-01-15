@@ -1,21 +1,21 @@
 /*
  This file is part of ControlGris.
- 
- Developers: Hicheme BEN GAIED, Gaël LANE LÉPINE
- 
+
+ Developers: Hicheme BEN GAIED, Ga‘l LANE LƒPINE
+
  ControlGris is free software: you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as
  published by the Free Software Foundation, either version 3 of the
  License, or (at your option) any later version.
- 
+
  ControlGris is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with ControlGris.  If not, see
- <http://www.gnu.org/licenses/>. 
+ <http://www.gnu.org/licenses/>.
 */
 
 //==============================================================================
@@ -45,10 +45,10 @@ public:
         fluid::RealVector flatnessStdDevRes = fluid::RealVector(1);
         fluid::RealVectorView flatnessData = fluid::RealVectorView(shapeStats(fluid::Slice(5 * 7, 1)));
         // we don't really need mean and stdDev...
-        //fluid::RealVectorView flatnessMeanOut = fluid::RealVectorView(flatnessMeanRes);
-        //fluid::RealVectorView flatnessStdDevOut = fluid::RealVectorView(flatnessStdDevRes);
-        //mFlatnessRunningStats->process(flatnessData, flatnessMeanOut, flatnessStdDevOut);
-        //mDescFlatness = flatnessMeanOut[0];
+        // fluid::RealVectorView flatnessMeanOut = fluid::RealVectorView(flatnessMeanRes);
+        // fluid::RealVectorView flatnessStdDevOut = fluid::RealVectorView(flatnessStdDevRes);
+        // mFlatnessRunningStats->process(flatnessData, flatnessMeanOut, flatnessStdDevOut);
+        // mDescFlatness = flatnessMeanOut[0];
         mDescFlatness = flatnessData[0];
     }
 

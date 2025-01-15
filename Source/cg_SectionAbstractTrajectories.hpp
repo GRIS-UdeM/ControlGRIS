@@ -145,8 +145,7 @@ private:
 
 public:
     //==============================================================================
-    explicit SectionAbstractTrajectories(GrisLookAndFeel & grisLookAndFeel,
-                                           juce::AudioProcessorValueTreeState & apvts);
+    explicit SectionAbstractTrajectories(GrisLookAndFeel & grisLookAndFeel, juce::AudioProcessorValueTreeState & apvts);
     //==============================================================================
     SectionAbstractTrajectories() = delete;
     ~SectionAbstractTrajectories() override = default;

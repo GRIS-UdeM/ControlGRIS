@@ -1,7 +1,7 @@
 /*
  This file is part of ControlGris.
 
- Developers: Olivier BELANGER, Gaël LANE LÉPINE
+ Developers: Olivier BELANGER, Ga‘l LANE LƒPINE
 
  ControlGris is free software: you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as
@@ -157,9 +157,9 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     mTrajectoriesComponent.setColour(mTrajectoriesComponent.outlineColourId, mGrisLookAndFeel.getDarkColor());
     mTrajectoriesComponent.setTabBarDepth(24);
     mTrajectoriesComponent.addTab(mSectionSoundReactiveTrajectories.getName(),
-                                    bg,
-                                    &mSectionSoundReactiveTrajectories,
-                                    false);
+                                  bg,
+                                  &mSectionSoundReactiveTrajectories,
+                                  false);
     mTrajectoriesComponent.addTab("Abstract Trajectories", bg, &mSectionAbstractTrajectories, false);
     addAndMakeVisible(mTrajectoriesComponent);
 
@@ -890,8 +890,7 @@ void ControlGrisAudioProcessorEditor::refresh()
     }
     if (mSectionAbstractTrajectories.getElevationActivateState()
         != mElevationTrajectoryManager.getPositionActivateState()) {
-        mSectionAbstractTrajectories.setElevationActivateState(
-            mElevationTrajectoryManager.getPositionActivateState());
+        mSectionAbstractTrajectories.setElevationActivateState(mElevationTrajectoryManager.getPositionActivateState());
     }
     if (mSectionSoundReactiveTrajectories.getAudioAnalysisActivateState() != mProcessor.getAudioAnalysisState()) {
         mSectionSoundReactiveTrajectories.setAudioAnalysisActivateState(mProcessor.getAudioAnalysisState());
@@ -1051,7 +1050,7 @@ void ControlGrisAudioProcessorEditor::setSpatMode(SpatMode spatMode)
 
 //==============================================================================
 TabbedTrajectoriesComponent::TabbedTrajectoriesComponent(juce::TabbedButtonBar::Orientation orientation,
-                                                             ControlGrisAudioProcessor & audioProcessor)
+                                                         ControlGrisAudioProcessor & audioProcessor)
     : juce::TabbedComponent(orientation)
     , mAudioProcessor(audioProcessor)
 {

@@ -24,7 +24,7 @@
 
 //==============================================================================
 gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFeel & grisLookAndFeel,
-                                                                             ControlGrisAudioProcessor & audioProcessor)
+                                                                         ControlGrisAudioProcessor & audioProcessor)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAudioProcessor(audioProcessor)
     , mAPVTS(mAudioProcessor.getValueTreeState())
@@ -314,7 +314,8 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
     };
     mParameterLapEditor.onReturnKey = [this] {
-        mSpatMode == SpatMode::dome ? mParameterAzimuthButton.grabKeyboardFocus() : mParameterXButton.grabKeyboardFocus();
+        mSpatMode == SpatMode::dome ? mParameterAzimuthButton.grabKeyboardFocus()
+                                    : mParameterXButton.grabKeyboardFocus();
     };
 
     addAndMakeVisible(&mParameterAzimuthButton);
@@ -1342,7 +1343,7 @@ void gris::SectionSoundReactiveTrajectories::resized()
         auto const showEleRangeSlider{ Descriptor::fromInt(mParameterElevationDescriptorCombo.getSelectedId())
                                        != DescriptorID::invalid };
         auto const showLapEd{ Descriptor::fromInt(mParameterAzimuthDescriptorCombo.getSelectedId())
-                                 != DescriptorID::invalid };
+                              != DescriptorID::invalid };
 
         mParameterXButton.setVisible(false);
         mParameterYButton.setVisible(false);
@@ -1577,7 +1578,7 @@ void gris::SectionSoundReactiveTrajectories::resized()
 
         if (mXYParamLinked) {
             auto const showLapEd{ Descriptor::fromInt(mParameterXDescriptorCombo.getSelectedId())
-                                     != DescriptorID::invalid };
+                                  != DescriptorID::invalid };
 
             mParameterLapLabel.setVisible(true);
             mParameterLapEditor.setVisible(showLapEd);

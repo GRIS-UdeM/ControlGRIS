@@ -182,7 +182,7 @@ private:
 public:
     //==============================================================================
     explicit SectionSoundReactiveTrajectories(GrisLookAndFeel & grisLookAndFeel,
-                                                ControlGrisAudioProcessor & audioProcessor);
+                                              ControlGrisAudioProcessor & audioProcessor);
     //==============================================================================
     SectionSoundReactiveTrajectories() = delete;
     ~SectionSoundReactiveTrajectories() override = default;

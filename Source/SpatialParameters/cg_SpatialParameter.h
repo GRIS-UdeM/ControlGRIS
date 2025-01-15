@@ -1,21 +1,21 @@
 /*
  This file is part of ControlGris.
- 
+
  Developers: Hicheme BEN GAIED, Gaël LANE LÉPINE
- 
+
  ControlGris is free software: you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as
  published by the Free Software Foundation, either version 3 of the
  License, or (at your option) any later version.
- 
+
  ControlGris is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with ControlGris.  If not, see
- <http://www.gnu.org/licenses/>. 
+ <http://www.gnu.org/licenses/>.
 */
 
 //==============================================================================
@@ -23,21 +23,21 @@
 #pragma once
 
 #if JUCE_LINUX
-#include "../PCH.h"
+    #include "../PCH.h"
 #endif
 
 #include <JuceHeader.h>
 #include <cmath>
 
+#include "../Descriptors/cg_Descriptors.hpp"
+#include "../cg_constants.hpp"
 #include "cg_Smooth.hpp"
 #include "cg_SpatParamHelperFunctions.h"
-#include "../cg_constants.hpp"
-#include "../Descriptors/cg_Descriptors.hpp"
 
 namespace gris
 {
 //==============================================================================
-//class PanelView;
+// class PanelView;
 enum class ParameterID { invalid = -1, azimuth = 0, elevation, x, y, z, azimuthspan, elevationspan };
 
 class SpatialParameter
@@ -53,9 +53,9 @@ public:
 
     virtual juce::String const & getParameterName() const;
 
-    //virtual void addObserver(PanelView * observer);
-    //virtual void removeObserver(PanelView * observer);
-    //virtual void notifyObservers();
+    // virtual void addObserver(PanelView * observer);
+    // virtual void removeObserver(PanelView * observer);
+    // virtual void notifyObservers();
 
     double getDiffValue();
     double getValue();
@@ -904,7 +904,7 @@ protected:
 
 private:
     //==============================================================================
-    //std::vector<PanelView *> mObservers;
+    // std::vector<PanelView *> mObservers;
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(SpatialParameter)
