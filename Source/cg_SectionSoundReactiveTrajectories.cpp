@@ -143,30 +143,27 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     updateChannelMixCombo();
     mChannelMixCombo.onChange = [this] {
         auto numChannels{ mChannelMixCombo.getSelectedId() };
-        auto newGain{ 1.0 / numChannels };
         mAPVTS.state.setProperty("numInputChannelsForAnalysis", numChannels, nullptr);
         mAudioProcessor.setNumChannelsForAudioAnalysis(numChannels);
-        mAudioProcessor.setGainForAudioAnalysis(newGain);
-        mGainSlider.setRange(0.0, 2.0 / numChannels, 0.001);
-        mGainSlider.setValue(newGain);
     };
 
     addAndMakeVisible(&mGainLabel);
     mGainLabel.setText("Gain", juce::dontSendNotification);
 
     addAndMakeVisible(&mGainSlider);
-    mGainSlider.setNumDecimalPlacesToDisplay(3);
-    mGainSlider.setRange(0.0, 2.0, 0.001);
+    mGainSlider.setNumDecimalPlacesToDisplay(1);
+    mGainSlider.setRange(0.0, 2.0, 0.1);
+    mGainSlider.setDoubleClickReturnValue(true, 1.0);
     auto gain{ mAPVTS.state.getProperty("audioGainForAnalysis") };
     if (gain.isVoid()) {
-        mGainSlider.setValue(1.0 / mAudioProcessor.getTotalNumInputChannels());
+        mGainSlider.setValue(1.0);
     } else {
         mGainSlider.setValue(gain, juce::sendNotification);
     }
     mGainSlider.onValueChange = [this] {
         auto gainSliderVal{ mGainSlider.getValue() };
         mAPVTS.state.setProperty("audioGainForAnalysis", gainSliderVal, nullptr);
-        mAudioProcessor.setGainForAudioAnalysis(gainSliderVal);
+        mAudioProcessor.setGainMultiplierForAudioAnalysis(gainSliderVal);
     };
 
     // default values

@@ -1232,7 +1232,7 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
         for (int i{}; i < mNumChannelsToAnalyse; ++i) {
             mDescriptorsBuffer.addFrom(0, 0, buffer, i, 0, buffer.getNumSamples());
         }
-        mDescriptorsBuffer.applyGain(mAudioAnalysisInputGain);
+        mDescriptorsBuffer.applyGain((1.0 / mNumChannelsToAnalyse) * mAudioAnalysisInputGainMultiplier);
 
         auto bufferMagnitude = mDescriptorsBuffer.getMagnitude(0, mDescriptorsBuffer.getNumSamples());
         auto * channelData = mDescriptorsBuffer.getReadPointer(0);
@@ -1717,9 +1717,9 @@ void ControlGrisAudioProcessor::updatePrimarySourceParameters(Source::ChangeType
 }
 
 //==============================================================================
-void ControlGrisAudioProcessor::setGainForAudioAnalysis(double gain)
+void ControlGrisAudioProcessor::setGainMultiplierForAudioAnalysis(double gainMult)
 {
-    mAudioAnalysisInputGain = gain;
+    mAudioAnalysisInputGainMultiplier = gainMult;
 }
 
 //==============================================================================
