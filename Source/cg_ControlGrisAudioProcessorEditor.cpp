@@ -172,7 +172,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     addAndMakeVisible(&mPositionPresetViewport);
 
     mPositionPresetInfoComponent.setAppVersionLabelText(juce::String("v. ") + JucePlugin_VersionString
-                                                            + juce::String("\n") + juce::String("RC.3"),
+                                                            + juce::String("\n") + juce::String("RC.4"),
                                                         juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mPositionPresetInfoComponent);
 
