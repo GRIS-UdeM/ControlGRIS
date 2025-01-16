@@ -358,6 +358,17 @@ void ControlGrisAudioProcessorEditor::updateElevationMode(ElevationMode mode)
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::setShowTrajectories(bool shouldShowTrajectories)
+{
+    mPositionField.setShowTrajectory(shouldShowTrajectories);
+    mElevationField.setShowTrajectory(shouldShowTrajectories);
+    mPositionTrajectoryManager.setPositionActivateState(shouldShowTrajectories);
+    mElevationTrajectoryManager.setPositionActivateState(shouldShowTrajectories);
+    mPositionField.repaint();
+    mElevationField.repaint();
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::elevationModeChangedStartedCallback()
 {
     mProcessor.getChangeGestureManager().beginGesture(Automation::Ids::ELEVATION_MODE);
@@ -898,6 +909,15 @@ void ControlGrisAudioProcessorEditor::refresh()
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::refreshActivateButtonsState()
+{
+    mPositionTrajectoryManager.setPositionActivateState(false);
+    mElevationTrajectoryManager.setPositionActivateState(false);
+    mSectionSoundReactiveTrajectories.setAudioAnalysisActivateState(false);
+    mProcessor.setAudioAnalysisState(false);
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::addNewParamValueToDataGraph()
 {
     // called by the audio thread
@@ -1060,6 +1080,14 @@ TabbedTrajectoriesComponent::TabbedTrajectoriesComponent(juce::TabbedButtonBar::
 void TabbedTrajectoriesComponent::currentTabChanged(int newCurrentTabIndex, const juce::String & newCurrentTabName)
 {
     mAudioProcessor.setSelectedSoundTrajectoriesTab(newCurrentTabIndex);
+
+    auto * ed{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getParentComponent()) };
+    if (ed != nullptr) {
+        bool showTraj{ newCurrentTabIndex == 1 };
+        ed->setShowTrajectories(showTraj);
+        ed->refreshActivateButtonsState();
+        ed->refresh();
+    }
 }
 
 } // namespace gris

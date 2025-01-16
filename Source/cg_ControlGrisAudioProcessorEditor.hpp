@@ -206,12 +206,15 @@ public:
     void updatePositionPreset(int presetNumber);
     void updateElevationMode(ElevationMode mode);
 
+    void setShowTrajectories(bool shouldShowTrajectories);
+
     void elevationModeChangedStartedCallback();
     void elevationModeChangedEndedCallback();
 
     void updateAudioAnalysisNumInputChannels();
 
     void refresh();
+    void refreshActivateButtonsState();
 
     void addNewParamValueToDataGraph();
 

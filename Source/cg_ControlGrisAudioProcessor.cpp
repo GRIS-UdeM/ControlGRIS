@@ -896,7 +896,7 @@ void ControlGrisAudioProcessor::timerCallback()
     auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
 
     // automation
-    if (mLastTimerTime != getCurrentTime()) {
+    if (mLastTimerTime != getCurrentTime() && mSelectedSoundTrajectoriesTabIdx == 1) {
         auto const deltaTime{ getCurrentTime() - getInitTimeOnPlay() };
         if (mPositionTrajectoryManager.getPositionActivateState()) {
             mPositionTrajectoryManager.setTrajectoryDeltaTime(deltaTime);

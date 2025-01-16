@@ -301,6 +301,12 @@ void PositionFieldComponent::notifySourcePositionChanged(SourceIndex const sourc
 }
 
 //==============================================================================
+void PositionFieldComponent::setShowTrajectory(bool shouldShowTrajectory)
+{
+    mShowTrajectory = shouldShowTrajectory;
+}
+
+//==============================================================================
 void PositionFieldComponent::rebuildSourceComponents(int const numberOfSources)
 {
     mSourceComponents.clearQuick(true);
@@ -427,27 +433,31 @@ void PositionFieldComponent::paint(juce::Graphics & g)
     FieldComponent::paint(g);
 
     mDrawingHandleComponent.setVisible(mAutomationManager.getTrajectoryType() == PositionTrajectoryType::drawing
-                                       && !mIsPlaying);
+                                       && !mIsPlaying && mShowTrajectory);
 
-    // Draw recording trajectory path and current position dot.
-    g.setColour(juce::Colour::fromRGB(176, 176, 228));
-    if (mLineDrawingStartPosition.has_value() && mLineDrawingEndPosition.has_value()) {
-        juce::Line<float> lineInSourceSpace{ *mLineDrawingStartPosition, *mLineDrawingEndPosition };
-        auto const lineInComponentSpace{ sourcePositionToComponentPosition(lineInSourceSpace) };
-        g.drawLine(lineInComponentSpace, 0.75f);
-    }
-    if (mAutomationManager.getTrajectory().has_value()) {
-        auto const trajectoryPath{ mAutomationManager.getTrajectory()->getDrawablePath(getEffectiveArea(), mSpatMode) };
-        g.strokePath(trajectoryPath, juce::PathStrokeType(.75f));
-    }
-    // position dot
-    if (mIsPlaying && !isMouseButtonDown() && mAutomationManager.getTrajectoryType() != PositionTrajectoryType::realtime
-        && mAutomationManager.getPositionActivateState()) {
-        constexpr float radius = 4.0f;
-        constexpr float diameter = radius * 2.0f;
-        juce::Point<float> const dotCenter{ sourcePositionToComponentPosition(
-            mAutomationManager.getCurrentTrajectoryPoint()) };
-        g.fillEllipse(dotCenter.getX() - radius, dotCenter.getY() - radius, diameter, diameter);
+    if (mShowTrajectory) {
+        // Draw recording trajectory path and current position dot.
+        g.setColour(juce::Colour::fromRGB(176, 176, 228));
+        if (mLineDrawingStartPosition.has_value() && mLineDrawingEndPosition.has_value()) {
+            juce::Line<float> lineInSourceSpace{ *mLineDrawingStartPosition, *mLineDrawingEndPosition };
+            auto const lineInComponentSpace{ sourcePositionToComponentPosition(lineInSourceSpace) };
+            g.drawLine(lineInComponentSpace, 0.75f);
+        }
+        if (mAutomationManager.getTrajectory().has_value()) {
+            auto const trajectoryPath{ mAutomationManager.getTrajectory()->getDrawablePath(getEffectiveArea(),
+                                                                                           mSpatMode) };
+            g.strokePath(trajectoryPath, juce::PathStrokeType(.75f));
+        }
+        // position dot
+        if (mIsPlaying && !isMouseButtonDown()
+            && mAutomationManager.getTrajectoryType() != PositionTrajectoryType::realtime
+            && mAutomationManager.getPositionActivateState()) {
+            constexpr float radius = 4.0f;
+            constexpr float diameter = radius * 2.0f;
+            juce::Point<float> const dotCenter{ sourcePositionToComponentPosition(
+                mAutomationManager.getCurrentTrajectoryPoint()) };
+            g.fillEllipse(dotCenter.getX() - radius, dotCenter.getY() - radius, diameter, diameter);
+        }
     }
 }
 
@@ -476,7 +486,7 @@ void PositionFieldComponent::mouseDown(juce::MouseEvent const & event)
 {
     setSelectedSource(std::nullopt);
 
-    if (mAutomationManager.getTrajectoryType() == PositionTrajectoryType::drawing) {
+    if (mAutomationManager.getTrajectoryType() == PositionTrajectoryType::drawing && mShowTrajectory) {
         auto const mousePosition{ event.getPosition().toFloat() };
         auto const unclippedPosition{ componentPositionToSourcePosition(mousePosition) };
         auto const position{ Source::clipPosition(unclippedPosition, mSpatMode) };
@@ -523,7 +533,7 @@ void PositionFieldComponent::mouseDown(juce::MouseEvent const & event)
 //==============================================================================
 void PositionFieldComponent::mouseDrag(const juce::MouseEvent & event)
 {
-    if (mAutomationManager.getTrajectoryType() == PositionTrajectoryType::drawing) {
+    if (mAutomationManager.getTrajectoryType() == PositionTrajectoryType::drawing && mShowTrajectory) {
         auto const mousePosition{ event.getPosition() };
         auto const positionAsSource_unclipped{ componentPositionToSourcePosition(mousePosition.toFloat()) };
         auto const positionAsSource{ Source::clipPosition(positionAsSource_unclipped, mSpatMode) };
@@ -601,7 +611,7 @@ void ElevationFieldComponent::drawSpans(juce::Graphics & g) const
         sourceIndex += 1.0f;
     }
 
-    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing) {
+    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing && mShowTrajectory) {
         auto const handlePosition{ mDrawingHandle.getBounds().getCentre().toFloat() };
         drawAnchor(g, handlePosition, mDrawingHandle.getColour(), 0.75f, componentSize);
     }
@@ -624,26 +634,29 @@ void ElevationFieldComponent::paint(juce::Graphics & g)
 
     auto const trajectoryType{ mAutomationManager.getTrajectoryType() };
     auto const effectiveArea{ getEffectiveArea() };
-    mDrawingHandle.setVisible(trajectoryType == ElevationTrajectoryType::drawing && !mIsPlaying);
+    mDrawingHandle.setVisible(trajectoryType == ElevationTrajectoryType::drawing && !mIsPlaying && mShowTrajectory);
 
-    // Draw recording trajectory path and current position dot.
-    g.setColour(juce::Colour::fromRGB(176, 176, 228));
-    if (mAutomationManager.getTrajectory().has_value()) {
-        auto const trajectoryPath{ mAutomationManager.getTrajectory()->getDrawablePath(
-            effectiveArea,
-            mSources.getPrimarySource().getSpatMode()) };
-        g.strokePath(trajectoryPath, juce::PathStrokeType{ .75f });
-    }
-    if (mIsPlaying && !isMouseButtonDown()
-        && static_cast<ElevationTrajectoryType>(mAutomationManager.getTrajectoryType())
-               != ElevationTrajectoryType::realtime
-        && mAutomationManager.getPositionActivateState()) {
-        auto const currentTrajectoryPosition{ mAutomationManager.getCurrentTrajectoryPoint() };
-        auto const normalizedCurrentTrajectoryPosition{ (currentTrajectoryPosition + juce::Point<float>{ 1.0f, 1.0f })
-                                                        / 2.0f };
-        auto const positionDot{ normalizedCurrentTrajectoryPosition * effectiveArea.getWidth()
-                                + effectiveArea.getPosition() };
-        g.fillEllipse(positionDot.getX() - 4, positionDot.getY() - 4, 8, 8);
+    if (mShowTrajectory) {
+        // Draw recording trajectory path and current position dot.
+        g.setColour(juce::Colour::fromRGB(176, 176, 228));
+        if (mAutomationManager.getTrajectory().has_value()) {
+            auto const trajectoryPath{ mAutomationManager.getTrajectory()->getDrawablePath(
+                effectiveArea,
+                mSources.getPrimarySource().getSpatMode()) };
+            g.strokePath(trajectoryPath, juce::PathStrokeType{ .75f });
+        }
+        if (mIsPlaying && !isMouseButtonDown()
+            && static_cast<ElevationTrajectoryType>(mAutomationManager.getTrajectoryType())
+                   != ElevationTrajectoryType::realtime
+            && mAutomationManager.getPositionActivateState()) {
+            auto const currentTrajectoryPosition{ mAutomationManager.getCurrentTrajectoryPoint() };
+            auto const normalizedCurrentTrajectoryPosition{
+                (currentTrajectoryPosition + juce::Point<float>{ 1.0f, 1.0f }) / 2.0f
+            };
+            auto const positionDot{ normalizedCurrentTrajectoryPosition * effectiveArea.getWidth()
+                                    + effectiveArea.getPosition() };
+            g.fillEllipse(positionDot.getX() - 4, positionDot.getY() - 4, 8, 8);
+        }
     }
 }
 
@@ -664,7 +677,7 @@ void ElevationFieldComponent::mouseDown([[maybe_unused]] juce::MouseEvent const 
     mOldSelectedSource.reset();
     setSelectedSource(std::nullopt);
 
-    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing) {
+    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing && mShowTrajectory) {
         mDrawingHandle.mouseDown(event);
     }
 
@@ -680,7 +693,7 @@ void ElevationFieldComponent::notifySourcePositionChanged(SourceIndex const sour
 //==============================================================================
 void ElevationFieldComponent::mouseDrag([[maybe_unused]] const juce::MouseEvent & event)
 {
-    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing) {
+    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing && mShowTrajectory) {
         mDrawingHandle.mouseDrag(event);
     }
 }
@@ -688,7 +701,7 @@ void ElevationFieldComponent::mouseDrag([[maybe_unused]] const juce::MouseEvent 
 //==============================================================================
 void ElevationFieldComponent::mouseUp([[maybe_unused]] const juce::MouseEvent & event)
 {
-    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing) {
+    if (mAutomationManager.getTrajectoryType() == ElevationTrajectoryType::drawing && mShowTrajectory) {
         mDrawingHandle.mouseDrag(event);
     }
 }
@@ -754,6 +767,12 @@ juce::Rectangle<float> ElevationFieldComponent::getEffectiveArea() const
 
     juce::Rectangle<float> const result{ LEFT_PADDING, TOP_PADDING, effectiveWidth, effectiveHeight };
     return result;
+}
+
+//==============================================================================
+void ElevationFieldComponent::setShowTrajectory(bool shouldShowTrajectory)
+{
+    mShowTrajectory = shouldShowTrajectory;
 }
 
 } // namespace gris
