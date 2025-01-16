@@ -12,7 +12,7 @@ sudo apt-get install clang-15 git ladspa-sdk freeglut3-dev libasound2-dev libcur
 
 ### Download Juce
 
-Download and extract [Juce 7.0.12](https://github.com/juce-framework/JUCE/releases/tag/7.0.12)
+Download and extract [Juce 8.0.6](https://github.com/juce-framework/JUCE/releases/tag/8.0.6)
 
 ### Download the Steinberg VST SDK
 
