@@ -83,7 +83,10 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
 
     mNumOfSourcesEditor.setExplicitFocusOrder(2);
     mNumOfSourcesEditor.setText("2");
-    mNumOfSourcesEditor.setInputRestrictions(1, "12345678");
+
+    if (! juce::JUCEApplication::getInstance()->isStandaloneApp())
+        mNumOfSourcesEditor.setInputRestrictions(1, "12345678");
+
     mNumOfSourcesEditor.onReturnKey = [this] { mOscFormatCombo.grabKeyboardFocus(); };
     mNumOfSourcesEditor.onFocusLost = [this] {
         if (!mNumOfSourcesEditor.isEmpty()) {
