@@ -288,6 +288,10 @@ class Sources
 
 public:
     //==============================================================================
+    Sources()
+    {
+        mSecondarySources.resize(MAX_NUMBER_OF_SOURCES - 1);
+    }
 
     [[nodiscard]] int size() const { return mSize; }
     void setSize(int size);
