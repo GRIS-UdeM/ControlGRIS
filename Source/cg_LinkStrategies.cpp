@@ -223,7 +223,7 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
 
     // initialize distance ratios of secondary sources
     if (!mSecSourcesLengthRatioInitialized) {
-        mSecSourcesLengthRatio.fill(0.0f);
+        std::fill(mSecSourcesLengthRatio.begin(), mSecSourcesLengthRatio.end(), 0.f);
         for (auto const & finalState : finalStates) {
             auto const sourceIndex{ finalState.getIndex() };
             auto const primaryDistFromOrig{ primarySourceInitialState.position.getDistanceFromOrigin() };
@@ -250,7 +250,8 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
     mRotation = mPrimarySourceFinalAngle - primarySourceInitialAngle;
 
     // copy initialAngles
-    std::array<std::pair<Degrees, SourceIndex>, MAX_NUMBER_OF_SOURCES> initialAngles{};
+    std::vector<std::pair<Degrees, SourceIndex>> initialAngles{};
+    initialAngles.resize(MAX_NUMBER_OF_SOURCES);
     for (auto const & finalState : finalStates) {
         auto const sourceIndex{ finalState.getIndex() };
 
@@ -329,13 +330,13 @@ SourceSnapshot
 }
 
 //==============================================================================
-std::array<float, MAX_NUMBER_OF_SOURCES> CircularFixedAngle::getSecSourcesLengthRatio()
+std::vector<float> CircularFixedAngle::getSecSourcesLengthRatio()
 {
     return mSecSourcesLengthRatio;
 }
 
 //==============================================================================
-void CircularFixedAngle::setSecSourcesLengthRatio(std::array<float, MAX_NUMBER_OF_SOURCES> & secSourcesLengthRatio)
+void CircularFixedAngle::setSecSourcesLengthRatio(std::vector<float> & secSourcesLengthRatio)
 {
     mSecSourcesLengthRatio = secSourcesLengthRatio;
 }
@@ -363,7 +364,8 @@ void CircularFullyFixed::computeParameters_implementation(Sources const & finalS
 
     if (!mOrderingInitialized) {
         // copy initialAngles
-        std::array<std::pair<Degrees, SourceIndex>, MAX_NUMBER_OF_SOURCES> initialAngles{};
+        std::vector<std::pair<Degrees, SourceIndex>> initialAngles{};
+        initialAngles.resize(MAX_NUMBER_OF_SOURCES);
         for (auto const & finalState : finalStates) {
             auto const sourceIndex{ finalState.getIndex() };
 
@@ -432,13 +434,13 @@ SourceSnapshot
 }
 
 //==============================================================================
-std::array<int, MAX_NUMBER_OF_SOURCES> CircularFullyFixed::getOrdering()
+std::vector<int> CircularFullyFixed::getOrdering()
 {
     return mOrdering;
 }
 
 //==============================================================================
-void CircularFullyFixed::setOrdering(std::array<int, MAX_NUMBER_OF_SOURCES> & ordering)
+void CircularFullyFixed::setOrdering(std::vector<int> & ordering)
 {
     mOrdering = ordering;
 }

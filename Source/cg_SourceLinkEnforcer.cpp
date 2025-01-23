@@ -160,7 +160,7 @@ void SourceLinkEnforcer::secondarySourceMoved(SourceIndex const sourceIndex)
         SourceSnapshot const secondaryEnd{ mSources[sourceIndex] };
 
         // take a snapshot of sources length ratios if mLinkStrategy is circularFixedAngle
-        std::array<float, MAX_NUMBER_OF_SOURCES> tmpFixedAngleSecSourcesLengthRatio;
+        std::vector<float> tmpFixedAngleSecSourcesLengthRatio;
         if (mLinkStrategy.get()->isInitialized()) {
             if (mPositionSourceLink == PositionSourceLink::circularFixedAngle) {
                 source_link_strategies::CircularFixedAngle * circularFixedLinkStrategy
@@ -170,7 +170,7 @@ void SourceLinkEnforcer::secondarySourceMoved(SourceIndex const sourceIndex)
         }
 
         // take a snapshot of source ordering if mLinkStrategy is circularFullyFixed
-        std::array<int, MAX_NUMBER_OF_SOURCES> tmpCircularFullyFixedOrdering;
+        std::vector<int> tmpCircularFullyFixedOrdering;
         if (mLinkStrategy.get()->isInitialized()) {
             if (mPositionSourceLink == PositionSourceLink::circularFullyFixed) {
                 source_link_strategies::CircularFullyFixed * circularFullyFixedLinkStrategy
