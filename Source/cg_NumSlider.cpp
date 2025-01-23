@@ -80,6 +80,8 @@ void NumSlider::paint(juce::Graphics & g)
 
         if (rangeVals.getStart() < 0) {
             xLimitProportion = (val + rangeVals.getLength() / 2) / rangeVals.getLength();
+        } else if (rangeVals.getStart() > 0) {
+            xLimitProportion = (val - rangeVals.getStart()) / rangeVals.getLength();
         } else {
             xLimitProportion = val / rangeVals.getLength();
         }
