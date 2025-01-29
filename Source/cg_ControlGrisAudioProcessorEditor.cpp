@@ -431,90 +431,23 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
 
     auto const numOfSources = mProcessor.getSources().size();
-    if (false /*numOfSources <= 8*/)
-    {
-        auto const getAzimuthValue = [sourcePlacement, numOfSources](int const sourceIndex) {
-            auto const offset{ Degrees{ 360.0f } / static_cast<float>(numOfSources) / 2.0f };
 
-            auto const azimuths = [numOfSources]() {
-                const std::vector<Degrees> azims2{ Degrees{ -90.0f }, Degrees{ 90.0f } };
-                const std::vector<Degrees> azims4{ Degrees{ -45.0f }, Degrees{ 45.0f }, Degrees{ -135.0f }, Degrees{ 135.0f } };
-                const std::vector<Degrees> azims6{ Degrees{ -30.0f }, Degrees{ 30.0f }, Degrees{ -90.0f }, Degrees{ 90.0f },  Degrees{ -150.0f }, Degrees{ 150.0f } };
-                const std::vector<Degrees> azims8{ Degrees{ -22.5f }, Degrees{ 22.5f }, Degrees{ -67.5f }, Degrees{ 67.5f },   Degrees{ -112.5f }, Degrees{ 112.5f }, Degrees{ -157.5f }, Degrees{ 157.5f } };
+    auto const increment = 360.0f / numOfSources;
+    auto curOddAzimuth{ 0.0f + increment / 2 };
+    auto curEvenAzimuth{ 360.0f - increment / 2 };
 
-                if (numOfSources <= 2) {
-                    return azims2;
-                }
-                if (numOfSources <= 4) {
-                    return azims4;
-                }
-                if (numOfSources <= 6) {
-                    return azims6;
-                }
-                jassert (numOfSources <= 8);
-                return azims8;
-            }();
+    int i = -1;
+    for (auto & source : mProcessor.getSources()) {
+        auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
+        auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
+        auto const distance{ isCubeMode ? 0.7f : 1.0f };
 
-            switch (sourcePlacement) {
-            case SourcePlacement::leftAlternate:
-                return azimuths[sourceIndex];
-            case SourcePlacement::rightAlternate:
-                return -azimuths[sourceIndex];
-            case SourcePlacement::leftClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex) - offset;
-            case SourcePlacement::leftCounterClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex) - offset;
-            case SourcePlacement::rightClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex) + offset;
-            case SourcePlacement::rightCounterClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex) + offset;
-            case SourcePlacement::topClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex);
-            case SourcePlacement::topCounterClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex);
-            case SourcePlacement::undefined:
-            default:
-                jassertfalse;
-            }
-            return Degrees{};
-        };
-
-        //position sources, iterating backwards
-        for (auto sourceIndex{ numOfSources - 1 }; sourceIndex >= 0; --sourceIndex) {
-            auto & source{ mProcessor.getSources()[sourceIndex] };
-            auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-            auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-            auto const distance{ isCubeMode ? 0.7f : 1.0f };
-
-            source.setCoordinates(getAzimuthValue(sourceIndex),
-                                  elevation,
-                                  distance,
-                                  Source::OriginOfChange::userAnchorMove);
-        }
-    }
-    else
-    {
-        auto const increment =  360.0f / numOfSources;
-        auto curEvenAzimuth{ 0.0f + increment/2 };
-        auto curOddAzimuth{ 360.0f - increment / 2 };
-
-        int i = -1;
-        for (auto & source : mProcessor.getSources())
-        {
-            auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-            auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-            auto const distance{ isCubeMode ? 0.7f : 1.0f };
-
-            if (++i % 2 == 0)
-            {
-                source.setCoordinates(Degrees (curEvenAzimuth), elevation, distance, Source::OriginOfChange::userAnchorMove);
-                curEvenAzimuth += increment;
-            }
-            else
-            {
-                source.setCoordinates(Degrees (curOddAzimuth), elevation, distance, Source::OriginOfChange::userAnchorMove);
-                curOddAzimuth -= increment;
-            }
+        if (++i % 2 == 0) {
+            source.setCoordinates(Degrees(curEvenAzimuth), elevation, distance, Source::OriginOfChange::userAnchorMove);
+            curEvenAzimuth -= increment;
+        } else {
+            source.setCoordinates(Degrees(curOddAzimuth), elevation, distance, Source::OriginOfChange::userAnchorMove);
+            curOddAzimuth += increment;
         }
     }
 
