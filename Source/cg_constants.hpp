@@ -27,17 +27,7 @@ namespace gris
 // Global variables.
 constexpr int MIN_FIELD_WIDTH = 300;
 
-static int initializeMaxNumberOfSources()
-{
-    if (!juce::JUCEApplication::getInstance()->isStandaloneApp()) {
-        return 128; // or any other value you want to set
-    } else {
-        return 8; // or any other value you want to set for standalone app
-    }
-}
-
-const int MAX_NUMBER_OF_SOURCES = initializeMaxNumberOfSources();
-
+const int MAX_NUMBER_OF_SOURCES { juce::JUCEApplication::getInstance()->isStandaloneApp() ? 128 : 9 };
 
 constexpr int NUMBER_OF_POSITION_PRESETS = 50;
 constexpr float SOURCE_FIELD_COMPONENT_RADIUS = 12.0f;

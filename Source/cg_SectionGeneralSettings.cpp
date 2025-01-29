@@ -23,6 +23,42 @@
 namespace gris
 {
 //==============================================================================
+/**
+ * @class NumberRangeInputFilter
+ * @brief A filter to restrict text input to a specified numeric range.
+ */
+class NumberRangeInputFilter : public juce::TextEditor::InputFilter
+{
+public:
+    NumberRangeInputFilter(int _minValue, int _maxValue) : minValue(_minValue), maxValue(_maxValue) {}
+
+    /**
+     * @brief Filters the new text input to ensure it falls within the specified range.
+     * @param editor The text editor where the input is being entered.
+     * @param newInput The new text input.
+     * @return The filtered text input.
+     */
+    juce::String filterNewText(juce::TextEditor & editor, const juce::String & newInput) override
+    {
+        const auto currentText{ editor.getText() };
+        const auto newText{ currentText + newInput };
+
+        if (newText.isEmpty())
+            return newText;
+
+        const auto value{ newText.getIntValue() };
+        if (value >= minValue && value <= maxValue)
+            return newInput;
+
+        return {};
+    }
+
+private:
+    int minValue;
+    int maxValue;
+};
+
+//==============================================================================
 SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
 {
     mOscFormatLabel.setText("Mode:", juce::NotificationType::dontSendNotification);
@@ -83,9 +119,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
 
     mNumOfSourcesEditor.setExplicitFocusOrder(2);
     mNumOfSourcesEditor.setText("2");
-
-    if (! juce::JUCEApplication::getInstance()->isStandaloneApp())
-        mNumOfSourcesEditor.setInputRestrictions(1, "12345678");
+    mNumOfSourcesEditor.setInputFilter(new NumberRangeInputFilter(1, gris::MAX_NUMBER_OF_SOURCES), true);
 
     mNumOfSourcesEditor.onReturnKey = [this] { mOscFormatCombo.grabKeyboardFocus(); };
     mNumOfSourcesEditor.onFocusLost = [this] {
