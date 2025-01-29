@@ -431,7 +431,7 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
 
     auto const numOfSources = mProcessor.getSources().size();
-    if (numOfSources <= 8)
+    if (false /*numOfSources <= 8*/)
     {
         auto const getAzimuthValue = [sourcePlacement, numOfSources](int const sourceIndex) {
             auto const offset{ Degrees{ 360.0f } / static_cast<float>(numOfSources) / 2.0f };
@@ -494,20 +494,27 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     }
     else
     {
-        auto const increment = Degrees{ 360.0f } / static_cast<float>(numOfSources);
-        Degrees curAzimuth{ 0.0f };
+        auto const increment =  360.0f / numOfSources;
+        auto curEvenAzimuth{ 0.0f + increment/2 };
+        auto curOddAzimuth{ 360.0f - increment / 2 };
 
-        for (auto & source : mProcessor.getSources()) {
+        int i = -1;
+        for (auto & source : mProcessor.getSources())
+        {
             auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
             auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
             auto const distance{ isCubeMode ? 0.7f : 1.0f };
 
-            source.setCoordinates(curAzimuth,
-                                  elevation,
-                                  distance,
-                                  Source::OriginOfChange::userAnchorMove);
-
-            curAzimuth += increment;
+            if (++i % 2 == 0)
+            {
+                source.setCoordinates(Degrees (curEvenAzimuth), elevation, distance, Source::OriginOfChange::userAnchorMove);
+                curEvenAzimuth += increment;
+            }
+            else
+            {
+                source.setCoordinates(Degrees (curOddAzimuth), elevation, distance, Source::OriginOfChange::userAnchorMove);
+                curOddAzimuth -= increment;
+            }
         }
     }
 
