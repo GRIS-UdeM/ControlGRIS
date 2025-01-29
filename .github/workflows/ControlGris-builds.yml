@@ -1,4 +1,4 @@
-name: ControlGRIS Linux build 
+name: ControlGris Linux build
 on:
   push:
     branches: ['*']
@@ -25,16 +25,16 @@ jobs:
             mesa-common-dev libjack-dev
 
       - name: set global JUCE search paths
-        run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /home/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
+        run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /home/runner/work/ControlGris/ControlGris/JUCE/modules
 
       - name: generate makefile
         run: cd JUCE && ./Projucer --resave ../ControlGris.jucer
 
-      - name: Compile ControlGRIS
+      - name: Compile ControlGris
         run: cd Builds/LinuxMakefile && make CXX=clang++-10 CONFIG=Release -j 8
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ControlGRIS-Build
+          name: ControlGris-Build
           path: Builds/LinuxMakefile/build/*
