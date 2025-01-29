@@ -28,7 +28,7 @@ jobs:
         run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /home/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
 
       - name: generate makefile
-        run: cd JUCE && ./Projucer --resave ../ControlGRIS.jucer
+        run: cd JUCE && ./Projucer --resave ../ControlGris.jucer
 
       - name: Compile ControlGRIS
         run: cd Builds/LinuxMakefile && make CXX=clang++-10 CONFIG=Release -j 8
