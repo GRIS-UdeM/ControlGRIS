@@ -431,138 +431,58 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
 
     auto const numOfSources = mProcessor.getSources().size();
-    if (numOfSources <= 8) {
-        auto const getAzimuthValue = [sourcePlacement, numOfSources](int const sourceIndex) {
-            auto const offset{ Degrees{ 360.0f } / static_cast<float>(numOfSources) / 2.0f };
-            auto const azimuths = [numOfSources]() {
-                const std::vector<Degrees> azims2{ Degrees{ -90.0f }, Degrees{ 90.0f } };
-                const std::vector<Degrees> azims4{ Degrees{ -45.0f }, Degrees{ 45.0f }, Degrees{ -135.0f }, Degrees{ 135.0f } };
-                const std::vector<Degrees> azims6{ Degrees{ -30.0f }, Degrees{ 30.0f },   Degrees{ -90.0f }, Degrees{ 90.0f },  Degrees{ -150.0f }, Degrees{ 150.0f } };
-                const std::vector<Degrees> azims8{ Degrees{ -22.5f },  Degrees{ 22.5f },   Degrees{ -67.5f }, Degrees{ 67.5f },   Degrees{ -112.5f }, Degrees{ 112.5f }, Degrees{ -157.5f }, Degrees{ 157.5f } };
-                if (numOfSources <= 2) {
-                    return azims2;
-                }
-                if (numOfSources <= 4) {
-                    return azims4;
-                }
-                if (numOfSources <= 6) {
-                    return azims6;
-                }
-                jassert(numOfSources <= 8);
-                return azims8;
-            }();
-            switch (sourcePlacement) {
-            case SourcePlacement::leftAlternate:
-                return azimuths[sourceIndex];
-            case SourcePlacement::rightAlternate:
-                return -azimuths[sourceIndex];
-            case SourcePlacement::leftClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex) - offset;
-            case SourcePlacement::leftCounterClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex) - offset;
-            case SourcePlacement::rightClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex) + offset;
-            case SourcePlacement::rightCounterClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex) + offset;
-            case SourcePlacement::topClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex);
-            case SourcePlacement::topCounterClockwise:
-                return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex);
-            case SourcePlacement::undefined:
-            default:
-                jassertfalse;
-            }
-            return Degrees{};
-        };
-
-        // position sources, iterating backwards
-        for (auto sourceIndex{ numOfSources - 1 }; sourceIndex >= 0; --sourceIndex) {
-            auto & source{ mProcessor.getSources()[sourceIndex] };
-            auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-            auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-            auto const distance{ isCubeMode ? 0.7f : 1.0f };
-            source.setCoordinates(getAzimuthValue(sourceIndex), elevation, distance, Source::OriginOfChange::userAnchorMove);
-        }
-    } else {
-
-        auto const increment = 360.0f / numOfSources;
-        auto curOddAzimuth{ 0.0f + increment / 2 };
-        auto curEvenAzimuth{ 360.0f - increment / 2 };
-#if 0
-        int i = -1;
-        // for (int i = 0; i < numOfSources; ++i) {
-        for (auto & source : mProcessor.getSources()) {
-            auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-            auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-            auto const distance{ isCubeMode ? 0.7f : 1.0f };
-
-            if (++i % 2 == 0) {
-                source.setCoordinates(Degrees(curEvenAzimuth), elevation, distance, Source::OriginOfChange::userAnchorMove);
+    auto const increment = 360.0f / numOfSources;
+    auto curOddAzimuth{ 0.0f + increment / 2 };
+    auto curEvenAzimuth{ 360.0f - increment / 2 };
+    auto const getAzimuthValue = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth](int const sourceIndex) {
+        switch (sourcePlacement) {
+        case SourcePlacement::leftAlternate:
+            if (sourceIndex % 2 == 0) {
+                auto const temp{ curEvenAzimuth };
                 curEvenAzimuth -= increment;
+                return temp;
             } else {
-                source.setCoordinates(Degrees(curOddAzimuth), elevation, distance, Source::OriginOfChange::userAnchorMove);
+                auto const temp{ curOddAzimuth };
                 curOddAzimuth += increment;
+                return temp;
             }
-        }
-#else
-        auto const getAzimuthValue = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth](int const sourceIndex) {
-            switch (sourcePlacement) {
-            case SourcePlacement::leftAlternate:
-                if (sourceIndex % 2 == 0)
-                {
-                    auto const temp { curEvenAzimuth };
-                    curEvenAzimuth -= increment;
-                    return temp;
-                }
-                else
-                {
-                    auto const temp{ curOddAzimuth };
-                    curOddAzimuth += increment;
-                    return temp;
-                }
-            case SourcePlacement::rightAlternate:
-                if (sourceIndex % 2 == 0) {
-                    auto const temp{ curOddAzimuth };
-                    curOddAzimuth += increment;
-                    return temp;
-                } else {
-                    auto const temp{ curEvenAzimuth };
-                    curEvenAzimuth -= increment;
-                    return temp;
-                }
-            case SourcePlacement::leftClockwise:
-                return 360.0f / numOfSources * sourceIndex - increment;
-            case SourcePlacement::leftCounterClockwise:
-                return 360.0f / numOfSources * -sourceIndex - increment;
-            case SourcePlacement::rightClockwise:
-                return 360.0f / numOfSources * sourceIndex + increment;
-            case SourcePlacement::rightCounterClockwise:
-                return 360.0f / numOfSources * -sourceIndex + increment;
-            case SourcePlacement::topClockwise:
-                return 360.0f / numOfSources * sourceIndex;
-            case SourcePlacement::topCounterClockwise:
-                return 360.0f / numOfSources * -sourceIndex;
-            case SourcePlacement::undefined:
-            default:
-                jassertfalse;
-                return 0.f;
+        case SourcePlacement::rightAlternate:
+            if (sourceIndex % 2 == 0) {
+                auto const temp{ curOddAzimuth };
+                curOddAzimuth += increment;
+                return temp;
+            } else {
+                auto const temp{ curEvenAzimuth };
+                curEvenAzimuth -= increment;
+                return temp;
             }
-        };
-
-        auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-        auto const distance{ isCubeMode ? 0.7f : 1.0f };
-
-        // position sources, iterating backwards
-        for (auto i = 0; i < numOfSources; ++i)
-        {
-            auto & source{ mProcessor.getSources()[i] };
-            auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-            source.setCoordinates(Degrees {getAzimuthValue(i)}, elevation, distance, Source::OriginOfChange::userAnchorMove);
+        case SourcePlacement::leftClockwise:
+            return 360.0f / numOfSources * sourceIndex - increment / 2;
+        case SourcePlacement::leftCounterClockwise:
+            return 360.0f / numOfSources * -sourceIndex - increment / 2;
+        case SourcePlacement::rightClockwise:
+            return 360.0f / numOfSources * sourceIndex + increment / 2;
+        case SourcePlacement::rightCounterClockwise:
+            return 360.0f / numOfSources * -sourceIndex + increment / 2;
+        case SourcePlacement::topClockwise:
+            return 360.0f / numOfSources * sourceIndex;
+        case SourcePlacement::topCounterClockwise:
+            return 360.0f / numOfSources * -sourceIndex;
+        case SourcePlacement::undefined:
+        default:
+            jassertfalse;
+            return 0.f;
         }
-        #endif
+    };
+
+    auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
+    auto const distance{ isCubeMode ? 0.7f : 1.0f };
+
+    for (auto i = 0; i < numOfSources; ++i) {
+        auto & source{ mProcessor.getSources()[i] };
+        auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
+        source.setCoordinates(Degrees{ getAzimuthValue(i) }, elevation, distance, Source::OriginOfChange::userAnchorMove);
     }
-
-    // mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
 
     for (SourceIndex i{}; i < SourceIndex{ numOfSources }; ++i) {
         mProcessor.setSourceParameterValue(i,
