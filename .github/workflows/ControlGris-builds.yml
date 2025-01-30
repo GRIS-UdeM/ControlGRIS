@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout
 
       - name: download JUCE
         run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-linux.zip --output JUCE.zip
@@ -31,10 +31,10 @@ jobs:
         run: cd JUCE && ./Projucer --resave ../ControlGris.jucer
 
       - name: Compile ControlGris
-        run: cd Builds/LinuxMakefile && make CXX=clang++-10 CONFIG=Release -j 8
+        run: cd Builds/LinuxMakefile && make CXX=clang++-10 CONFIG=Release -j8
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact
         with:
           name: ControlGris-Build
           path: Builds/LinuxMakefile/build/*
