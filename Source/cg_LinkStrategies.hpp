@@ -155,6 +155,7 @@ class CircularFixedAngle final : public Base
 public:
     CircularFixedAngle ()
     {
+        auto const MAX_NUMBER_OF_SOURCES { juce::JUCEApplicationBase::isStandaloneApp() ? 128 : 8};
         mSecSourcesLengthRatio.resize(MAX_NUMBER_OF_SOURCES);
         mOrdering.resize(MAX_NUMBER_OF_SOURCES);
     }
@@ -188,7 +189,8 @@ class CircularFullyFixed final : public Base
     //==============================================================================
 public:
     CircularFullyFixed()
-    { 
+    {
+        auto const MAX_NUMBER_OF_SOURCES { juce::JUCEApplicationBase::isStandaloneApp() ? 128 : 8};
         mOrdering.resize(MAX_NUMBER_OF_SOURCES);
     }
 

@@ -251,7 +251,7 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
 
     // copy initialAngles
     std::vector<std::pair<Degrees, SourceIndex>> initialAngles{};
-    initialAngles.resize(MAX_NUMBER_OF_SOURCES);
+    initialAngles.resize(finalStates.MAX_NUMBER_OF_SOURCES);
     for (auto const & finalState : finalStates) {
         auto const sourceIndex{ finalState.getIndex() };
 
@@ -365,7 +365,7 @@ void CircularFullyFixed::computeParameters_implementation(Sources const & finalS
     if (!mOrderingInitialized) {
         // copy initialAngles
         std::vector<std::pair<Degrees, SourceIndex>> initialAngles{};
-        initialAngles.resize(MAX_NUMBER_OF_SOURCES);
+        initialAngles.resize(finalStates.MAX_NUMBER_OF_SOURCES);
         for (auto const & finalState : finalStates) {
             auto const sourceIndex{ finalState.getIndex() };
 

@@ -87,8 +87,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 }
 
 //==============================================================================
-ControlGrisAudioProcessor::ControlGrisAudioProcessor()
-    :
+ControlGrisAudioProcessor::ControlGrisAudioProcessor() :
 #ifndef JucePlugin_PreferredChannelConfigurations
     AudioProcessor(BusesProperties()
     #if !JucePlugin_IsMidiEffect
@@ -145,7 +144,7 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     // Per source mAudioProcessorValueTreeState. Because there is no attachment to the automatable
     // mAudioProcessorValueTreeState, we need to keep track of the current parameter values to be
     // able to reload the last state of the plugin when we close/open the UI.
-    for (int i{}; i < MAX_NUMBER_OF_SOURCES; ++i) {
+    for (int i{}; i < mSources.MAX_NUMBER_OF_SOURCES; ++i) {
         juce::String oscId(i);
         // Non-automatable, per source, mAudioProcessorValueTreeState.
         mAudioProcessorValueTreeState.state.setProperty(juce::String("p_azimuth_") + oscId,
@@ -291,7 +290,7 @@ void ControlGrisAudioProcessor::setSpatMode(SpatMode const spatMode)
 {
     mSpatMode = spatMode;
     mAudioProcessorValueTreeState.state.setProperty("oscFormat", static_cast<int>(mSpatMode), nullptr);
-    for (int i{}; i < MAX_NUMBER_OF_SOURCES; ++i) {
+    for (int i{}; i < mSources.MAX_NUMBER_OF_SOURCES; ++i) {
         mSources.get(i).setSpatMode(spatMode);
     }
 
@@ -332,7 +331,7 @@ void ControlGrisAudioProcessor::setFirstSourceId(SourceId const firstSourceId, b
 {
     mFirstSourceId = firstSourceId;
     mAudioProcessorValueTreeState.state.setProperty("firstSourceId", mFirstSourceId.get(), nullptr);
-    for (int i{}; i < MAX_NUMBER_OF_SOURCES; ++i) {
+    for (int i{}; i < mSources.MAX_NUMBER_OF_SOURCES; ++i) {
         mSources.get(i).setId(SourceId{ i + mFirstSourceId.get() });
     }
 
@@ -1150,7 +1149,7 @@ juce::AudioProcessorEditor * ControlGrisAudioProcessor::createEditor()
 //==============================================================================
 void ControlGrisAudioProcessor::getStateInformation(juce::MemoryBlock & destData)
 {
-    for (int sourceIndex{}; sourceIndex < MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
+    for (int sourceIndex{}; sourceIndex < mSources.MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
         juce::String const id{ sourceIndex };
         juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };
         juce::Identifier const elevationId{ juce::String{ "p_elevation_" } + id };
@@ -1215,7 +1214,7 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
         }
 
         // Load stored sources positions
-        for (int sourceIndex{}; sourceIndex < MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
+        for (int sourceIndex{}; sourceIndex < mSources.MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
             juce::String const id{ sourceIndex };
             juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };
             juce::Identifier const elevationId{ juce::String{ "p_elevation_" } + id };
