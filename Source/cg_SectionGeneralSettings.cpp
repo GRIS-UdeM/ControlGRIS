@@ -41,26 +41,112 @@ public:
     juce::String filterNewText(juce::TextEditor & editor, const juce::String & newInput) override
     {
         auto const currentText{ editor.getText() };
-        auto newText{ currentText + newInput };
-
+        auto const isNewInputDigit { newInput.containsOnly("0123456789") };
+        auto const validNewInput {isNewInputDigit ? newInput : ""};
+        auto newText{ currentText + validNewInput };
         auto const selectedRange { editor.getHighlightedRegion() };
-        if (! selectedRange.isEmpty())
-            newText = currentText.replaceSection(selectedRange.getStart(), selectedRange.getLength(), newInput);
+
+        if (! selectedRange.isEmpty() && ! validNewInput.isEmpty())
+            newText = currentText.replaceSection(selectedRange.getStart(), selectedRange.getLength(), validNewInput);
 
         if (newText.isEmpty())
             return newText;
 
         const auto value{ newText.getIntValue() };
-        if (value >= minValue && value <= maxValue)
-            return newInput;
+        if (value >= minValue && value <= maxValue && isNewInputDigit)
+            return validNewInput;
 
-        return {};
+        if (selectedRange.isEmpty())
+            return {};
+        else
+            return currentText.substring(selectedRange.getStart(), selectedRange.getEnd());
     }
 
 private:
     int minValue;
     int maxValue;
 };
+
+// Unit test for NumberRangeInputFilter
+class NumberRangeInputFilterTest : public juce::UnitTest
+{
+public:
+    NumberRangeInputFilterTest() : juce::UnitTest("NumberRangeInputFilterTest") {}
+
+    void runTest() override
+    {
+        beginTest("NumberRangeInputFilter allows valid input");
+
+        {
+            juce::TextEditor editor;
+            editor.setInputFilter(new NumberRangeInputFilter(1, 128), true);
+
+            editor.insertTextAtCaret("12");
+            expectEquals(editor.getText().getIntValue(), 12);
+        }
+
+        beginTest("NumberRangeInputFilter disallows out-of-bound inputs");
+
+        {
+            juce::TextEditor editor;
+            editor.setInputFilter(new NumberRangeInputFilter(1, 8), true);
+
+            editor.insertTextAtCaret("-1");
+            expectEquals(editor.getText().getIntValue(), 0);
+
+            editor.insertTextAtCaret("9");
+            expectEquals(editor.getText().getIntValue(), 0);
+
+            editor.insertTextAtCaret("&");
+            expectEquals(editor.getText().getIntValue(), 0);
+
+            editor.insertTextAtCaret(juce::CharPointer_UTF8 ("é"));
+            expectEquals(editor.getText().getIntValue(), 0);
+        }
+
+        beginTest("NumberRangeInputFilter handles partial input");
+
+        {
+            juce::TextEditor editor;
+            editor.setInputFilter(new NumberRangeInputFilter(1, 128), true);
+
+            // append 3 to 12 --> should be 123
+            editor.insertTextAtCaret("12");
+            editor.insertTextAtCaret("3");
+            expectEquals(editor.getText().getIntValue(), 123);
+
+            //append 9 to 12 --> should stay at 12
+            editor.clear();
+            editor.insertTextAtCaret("12");
+            editor.insertTextAtCaret("9");
+            expectEquals(editor.getText().getIntValue(), 12);
+
+            // replace the middle 1 in 111 with 2 --> should be 121
+            editor.clear();
+            editor.insertTextAtCaret("111");
+            editor.setHighlightedRegion({1,2});
+            editor.insertTextAtCaret("2");
+            expectEquals(editor.getText().getIntValue(), 121);
+
+            // replace the middle 1 in 111 with 222 --> should stay 111
+            editor.clear();
+            editor.insertTextAtCaret("111");
+            editor.setHighlightedRegion({ 1, 2 });
+            editor.insertTextAtCaret("222");
+            expectEquals(editor.getText().getIntValue(), 111);
+
+            // replace the 23 in 123 with random garbage --> should stay 111
+            editor.clear();
+            editor.insertTextAtCaret("123");
+            editor.setHighlightedRegion({ 1, 3 });
+            editor.insertTextAtCaret(juce::CharPointer_UTF8("ééé123ööö"));
+            expectEquals(editor.getText().getIntValue(), 123);
+        }
+    }
+};
+
+// This will automatically create an instance of the test class and add it to the list of tests to be run.
+static NumberRangeInputFilterTest numberRangeInputFilterTest;
 
 //==============================================================================
 SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)

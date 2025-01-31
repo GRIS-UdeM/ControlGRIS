@@ -103,6 +103,11 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     mAudioProcessorValueTreeState(*this, nullptr, juce::Identifier(JucePlugin_Name), createParameterLayout())
 
 {
+#if JUCE_DEBUG
+    juce::UnitTestRunner testRunner;
+    testRunner.runAllTests();
+#endif
+
     setLatencySamples(0);
 
     // Size of the plugin window.
