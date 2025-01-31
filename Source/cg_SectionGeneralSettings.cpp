@@ -40,8 +40,12 @@ public:
      */
     juce::String filterNewText(juce::TextEditor & editor, const juce::String & newInput) override
     {
-        const auto currentText{ editor.getText() };
-        const auto newText{ currentText + newInput };
+        auto const currentText{ editor.getText() };
+        auto newText{ currentText + newInput };
+
+        auto const selectedRange { editor.getHighlightedRegion() };
+        if (! selectedRange.isEmpty())
+            newText = currentText.replaceSection(selectedRange.getStart(), selectedRange.getLength(), newInput);
 
         if (newText.isEmpty())
             return newText;
