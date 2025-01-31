@@ -87,7 +87,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 }
 
 //==============================================================================
-ControlGrisAudioProcessor::ControlGrisAudioProcessor() :
+ControlGrisAudioProcessor::ControlGrisAudioProcessor()
+    :
 #ifndef JucePlugin_PreferredChannelConfigurations
     AudioProcessor(BusesProperties()
     #if !JucePlugin_IsMidiEffect

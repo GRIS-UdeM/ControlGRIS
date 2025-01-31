@@ -430,14 +430,18 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
     mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
 
-    auto const numOfSources = mProcessor.getSources().size();
-    auto const increment = 360.0f / numOfSources;
+    auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
+    auto const distance{ isCubeMode ? 0.7f : 1.0f };
+    auto const numOfSources{mProcessor.getSources().size()};
+    auto const increment{360.0f / numOfSources};
     auto curOddAzimuth{ 0.0f + increment / 2 };
     auto curEvenAzimuth{ 360.0f - increment / 2 };
+
     auto const getAzimuthValue = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth](int const sourceIndex) {
         switch (sourcePlacement) {
         case SourcePlacement::leftAlternate:
             if (sourceIndex % 2 == 0) {
+                // TODO VB: get rid of these temp values
                 auto const temp{ curEvenAzimuth };
                 curEvenAzimuth -= increment;
                 return temp;
@@ -474,9 +478,6 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
             return 0.f;
         }
     };
-
-    auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-    auto const distance{ isCubeMode ? 0.7f : 1.0f };
 
     for (auto i = 0; i < numOfSources; ++i) {
         auto & source{ mProcessor.getSources()[i] };
