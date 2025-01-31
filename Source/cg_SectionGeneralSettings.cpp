@@ -23,6 +23,8 @@
 namespace gris
 {
 //==============================================================================
+
+// TODO: handle negative values when _minValue is negative
 /**
  * @class NumberRangeInputFilter
  * @brief A filter to restrict text input to a specified numeric range.
