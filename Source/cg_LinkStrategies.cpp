@@ -215,6 +215,9 @@ SourceSnapshot
 void CircularFixedAngle::computeParameters_implementation(Sources const & finalStates,
                                                           SourcesSnapshots const & initialStates)
 {
+    mSecSourcesLengthRatio.resize(finalStates.MAX_NUMBER_OF_SOURCES);
+    mOrdering.resize(finalStates.MAX_NUMBER_OF_SOURCES);
+
     auto const & primarySourceInitialState{ initialStates.primary };
     auto const & primarySourceFinalState{ finalStates.getPrimarySource() };
 
@@ -351,6 +354,8 @@ void CircularFixedAngle::setSecSourcesLengthRatioInitialized()
 void CircularFullyFixed::computeParameters_implementation(Sources const & finalStates,
                                                           SourcesSnapshots const & initialStates)
 {
+    mOrdering.resize(finalStates.MAX_NUMBER_OF_SOURCES);
+
     auto const & primarySourceInitialState{ initialStates.primary };
     auto const & primarySourceFinalState{ finalStates.getPrimarySource() };
 

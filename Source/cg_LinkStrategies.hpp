@@ -153,13 +153,6 @@ class CircularFixedAngle final : public Base
                                                          SourceIndex sourceIndex) const override;
     //==============================================================================
 public:
-    CircularFixedAngle ()
-    {
-        auto const MAX_NUMBER_OF_SOURCES { juce::JUCEApplicationBase::isStandaloneApp() ? 128 : 8};
-        mSecSourcesLengthRatio.resize(MAX_NUMBER_OF_SOURCES);
-        mOrdering.resize(MAX_NUMBER_OF_SOURCES);
-    }
-
     std::vector<float> getSecSourcesLengthRatio();
     void setSecSourcesLengthRatio(std::vector<float> & secSourcesLengthRatio);
     void setSecSourcesLengthRatioInitialized();
@@ -188,12 +181,6 @@ class CircularFullyFixed final : public Base
                                                          SourceIndex sourceIndex) const override;
     //==============================================================================
 public:
-    CircularFullyFixed()
-    {
-        auto const MAX_NUMBER_OF_SOURCES { juce::JUCEApplicationBase::isStandaloneApp() ? 128 : 8};
-        mOrdering.resize(MAX_NUMBER_OF_SOURCES);
-    }
-
     std::vector<int> getOrdering();
     void setOrdering(std::vector<int> & ordering);
     void setOrderingInitialized();
