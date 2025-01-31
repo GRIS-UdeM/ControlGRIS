@@ -440,26 +440,11 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     auto const getAzimuthValue = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth](int const sourceIndex) {
         switch (sourcePlacement) {
         case SourcePlacement::leftAlternate:
-            if (sourceIndex % 2 == 0) {
-                // TODO VB: get rid of these temp values
-                auto const temp{ curEvenAzimuth };
-                curEvenAzimuth -= increment;
-                return temp;
-            } else {
-                auto const temp{ curOddAzimuth };
-                curOddAzimuth += increment;
-                return temp;
-            }
+            return (sourceIndex % 2 == 0) ? std::exchange(curEvenAzimuth, curEvenAzimuth - increment)
+                                          : std::exchange(curOddAzimuth, curOddAzimuth + increment);
         case SourcePlacement::rightAlternate:
-            if (sourceIndex % 2 == 0) {
-                auto const temp{ curOddAzimuth };
-                curOddAzimuth += increment;
-                return temp;
-            } else {
-                auto const temp{ curEvenAzimuth };
-                curEvenAzimuth -= increment;
-                return temp;
-            }
+            return (sourceIndex % 2 == 0) ? std::exchange(curOddAzimuth, curOddAzimuth + increment)
+                                          : std::exchange(curEvenAzimuth, curEvenAzimuth - increment);
         case SourcePlacement::leftClockwise:
             return 360.0f / numOfSources * sourceIndex - increment / 2;
         case SourcePlacement::leftCounterClockwise:
