@@ -464,28 +464,26 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
         }
     };
 
+    //position all sources
     for (auto i = 0; i < numOfSources; ++i) {
         auto & source{ mProcessor.getSources()[i] };
         auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-        source.setCoordinates(Degrees{ getAzimuthValue(i) }, elevation, distance, Source::OriginOfChange::userAnchorMove);
+        auto const azimuth{Degrees{ getAzimuthValue(i) }};
+        source.setCoordinates(azimuth, elevation, distance, Source::OriginOfChange::userAnchorMove);
     }
 
+    // TODO: why are we storing the _normalized_ positions in the processor?
+    //then as a second pass, give the processor the normalized positions
     for (SourceIndex i{}; i < SourceIndex{ numOfSources }; ++i) {
-        mProcessor.setSourceParameterValue(i,
-                                           SourceParameter::azimuth,
-                                           mProcessor.getSources()[i].getNormalizedAzimuth().get());
-        mProcessor.setSourceParameterValue(i,
-                                           SourceParameter::elevation,
-                                           mProcessor.getSources()[i].getNormalizedElevation().get());
-        mProcessor.setSourceParameterValue(i, SourceParameter::distance, mProcessor.getSources()[i].getDistance());
+        auto const & source{ mProcessor.getSources()[i] };
+        mProcessor.setSourceParameterValue(i, SourceParameter::azimuth, source.getNormalizedAzimuth().get());
+        mProcessor.setSourceParameterValue(i, SourceParameter::elevation, source.getNormalizedElevation().get());
+        mProcessor.setSourceParameterValue(i, SourceParameter::distance, source.getDistance());
     }
 
-    mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource],
-                                                SourceIndex{},
-                                                mProcessor.getSpatMode());
-
-    mPositionTrajectoryManager.setTrajectoryType(mPositionTrajectoryManager.getTrajectoryType(),
-                                                 mProcessor.getSources().getPrimarySource().getPos());
+    // update selected source
+    mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource], SourceIndex{}, mProcessor.getSpatMode());
+    mPositionTrajectoryManager.setTrajectoryType(mPositionTrajectoryManager.getTrajectoryType(), mProcessor.getSources().getPrimarySource().getPos());
 
     //set source link back to its cached value
     mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
