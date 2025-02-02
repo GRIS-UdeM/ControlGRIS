@@ -51,7 +51,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     , mParameterAziXYSpanOffsetSlider(grisLookAndFeel)
     , mParameterEleZSpanOffsetSlider(grisLookAndFeel)
     , mDataGraph(grisLookAndFeel)
-    , mDescriptorFactorSlider(grisLookAndFeel)
+    , mDescriptorExpanderSlider(grisLookAndFeel)
     , mDescriptorThresholdSlider(grisLookAndFeel)
     , mDescriptorMinFreqSlider(grisLookAndFeel)
     , mDescriptorMaxFreqSlider(grisLookAndFeel)
@@ -1040,7 +1040,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     // Audio Analysis
 
     mDescriptorMetricLabel.setText("Metric", juce::dontSendNotification);
-    mDescriptorFactorLabel.setText("Factor", juce::dontSendNotification);
+    mDescriptorExpanderLabel.setText("Expander", juce::dontSendNotification);
     mDescriptorThresholdLabel.setText("Threshold", juce::dontSendNotification);
     mDescriptorMinFreqLabel.setText("Min. Freq", juce::dontSendNotification);
     mDescriptorMaxFreqLabel.setText("Max. Freq", juce::dontSendNotification);
@@ -1050,14 +1050,14 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mDescriptorSmoothCoefLabel.setText("Smooth Coef.", juce::dontSendNotification);
 
     // default values
-    mDescriptorFactorSlider.setDoubleClickReturnValue(true, 100.0);
+    mDescriptorExpanderSlider.setDoubleClickReturnValue(true, 100.0);
     mDescriptorSmoothSlider.setDoubleClickReturnValue(true, 5.0);
     mDescriptorSmoothCoefSlider.setDoubleClickReturnValue(true, 0.0);
     mDescriptorThresholdSlider.setDoubleClickReturnValue(true, 0.1);
     mDescriptorMinTimeSlider.setDoubleClickReturnValue(true, 0.1);
     mDescriptorMaxTimeSlider.setDoubleClickReturnValue(true, 10.0);
 
-    mDescriptorFactorSlider.setDefaultNumDecimalPlacesToDisplay(1);
+    mDescriptorExpanderSlider.setDefaultNumDecimalPlacesToDisplay(1);
     mDescriptorSmoothSlider.setDefaultNumDecimalPlacesToDisplay(2);
     mDescriptorSmoothCoefSlider.setDefaultNumDecimalPlacesToDisplay(2);
     mDescriptorMinFreqSlider.setDefaultNumDecimalPlacesToDisplay(1);
@@ -1066,26 +1066,26 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mDescriptorMinTimeSlider.setDefaultNumDecimalPlacesToDisplay(3);
     mDescriptorMaxTimeSlider.setDefaultNumDecimalPlacesToDisplay(3);
 
-    mDescriptorFactorSlider.setRange(0, 500);
+    mDescriptorExpanderSlider.setRange(0, 500);
     mDescriptorSmoothSlider.setRange(0, 100);
     mDescriptorSmoothCoefSlider.setRange(0, 100);
     mDescriptorThresholdSlider.setRange(0.0, 1.0);
     mDescriptorMinTimeSlider.setRange(0.0, 30.0 + ALMOST_ZERO);
     mDescriptorMaxTimeSlider.setRange(ALMOST_ZERO, 30.0);
 
-    mDescriptorFactorSlider.onValueChange = [this] {
+    mDescriptorExpanderSlider.onValueChange = [this] {
         if (mParameterToShow) {
             auto & param = mParameterToShow->get();
-            auto value = mDescriptorFactorSlider.getValue();
+            auto value = mDescriptorExpanderSlider.getValue();
             switch (mDescriptorIdToUse) {
             case DescriptorID::loudness:
-                param.setParamFactorLoudness(value);
+                param.setParamExpanderLoudness(value);
                 break;
             case DescriptorID::spread:
-                param.setParamFactorSpread(value);
+                param.setParamExpanderSpread(value);
                 break;
             case DescriptorID::noise:
-                param.setParamFactorNoise(value);
+                param.setParamExpanderNoise(value);
                 break;
             case DescriptorID::pitch:
             case DescriptorID::centroid:
@@ -1253,7 +1253,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
     };
 
-    addAndMakeVisible(&mDescriptorFactorSlider);
+    addAndMakeVisible(&mDescriptorExpanderSlider);
     addAndMakeVisible(&mDescriptorSmoothSlider);
     addAndMakeVisible(&mDescriptorSmoothCoefSlider);
     addAndMakeVisible(&mDescriptorMinFreqSlider);
@@ -1263,7 +1263,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     addAndMakeVisible(&mDescriptorMaxTimeSlider);
 
     addAndMakeVisible(&mDescriptorMetricLabel);
-    addAndMakeVisible(&mDescriptorFactorLabel);
+    addAndMakeVisible(&mDescriptorExpanderLabel);
     addAndMakeVisible(&mDescriptorThresholdLabel);
     addAndMakeVisible(&mDescriptorMinFreqLabel);
     addAndMakeVisible(&mDescriptorMaxFreqLabel);
@@ -2149,7 +2149,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
         case DescriptorID::loudness:
             if (mParameterToShow) {
                 auto & param = mParameterToShow->get();
-                mDescriptorFactorSlider.setValue(param.getParamFactorLoudness());
+                mDescriptorExpanderSlider.setValue(param.getParamExpanderLoudness());
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothLoudness());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefLoudness());
             }
@@ -2158,7 +2158,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
         case DescriptorID::spread:
             if (mParameterToShow) {
                 auto & param = mParameterToShow->get();
-                mDescriptorFactorSlider.setValue(param.getParamFactorSpread());
+                mDescriptorExpanderSlider.setValue(param.getParamExpanderSpread());
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothSpread());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefSpread());
             }
@@ -2167,7 +2167,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
         case DescriptorID::noise:
             if (mParameterToShow) {
                 auto & param = mParameterToShow->get();
-                mDescriptorFactorSlider.setValue(param.getParamFactorNoise());
+                mDescriptorExpanderSlider.setValue(param.getParamExpanderNoise());
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothNoise());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefNoise());
             }
@@ -2222,11 +2222,11 @@ void gris::SectionSoundReactiveTrajectories::loudnessSpreadNoiseDescriptorLayout
 {
     setAudioAnalysisComponentsInvisible();
 
-    mDescriptorFactorLabel.setVisible(true);
+    mDescriptorExpanderLabel.setVisible(true);
     mDescriptorSmoothLabel.setVisible(true);
     mDescriptorSmoothCoefLabel.setVisible(true);
 
-    mDescriptorFactorSlider.setVisible(true);
+    mDescriptorExpanderSlider.setVisible(true);
     mDescriptorSmoothSlider.setVisible(true);
     mDescriptorSmoothCoefSlider.setVisible(true);
 
@@ -2234,19 +2234,19 @@ void gris::SectionSoundReactiveTrajectories::loudnessSpreadNoiseDescriptorLayout
 
     auto area = mAreaAudioAnalysis;
 
-    mDescriptorFactorLabel.setBounds(area.getTopLeft().getX() + 5, area.getTopLeft().getY() + 15, 75, 15);
-    mDescriptorSmoothLabel.setBounds(mDescriptorFactorLabel.getBounds().getTopLeft().getX(),
-                                     mDescriptorFactorLabel.getBounds().getBottom() + 5,
+    mDescriptorExpanderLabel.setBounds(area.getTopLeft().getX() + 5, area.getTopLeft().getY() + 15, 75, 15);
+    mDescriptorSmoothLabel.setBounds(mDescriptorExpanderLabel.getBounds().getTopLeft().getX(),
+                                     mDescriptorExpanderLabel.getBounds().getBottom() + 5,
                                      75,
                                      15);
     mDescriptorSmoothCoefLabel.setBounds(mDescriptorSmoothLabel.getBounds().getTopLeft().getX(),
                                          mDescriptorSmoothLabel.getBounds().getBottom() + 5,
                                          75,
                                          15);
-    mDescriptorFactorSlider.setBounds(mDescriptorFactorLabel.getBounds().getRight(),
-                                      mDescriptorFactorLabel.getBounds().getY(),
-                                      35,
-                                      12);
+    mDescriptorExpanderSlider.setBounds(mDescriptorExpanderLabel.getBounds().getRight(),
+                                        mDescriptorExpanderLabel.getBounds().getY(),
+                                        35,
+                                        12);
     mDescriptorSmoothSlider.setBounds(mDescriptorSmoothLabel.getBounds().getRight(),
                                       mDescriptorSmoothLabel.getBounds().getY(),
                                       35,
@@ -2389,7 +2389,7 @@ void gris::SectionSoundReactiveTrajectories::iterSpeedDescriptorLayout()
 void gris::SectionSoundReactiveTrajectories::setAudioAnalysisComponentsInvisible()
 {
     mDescriptorMetricLabel.setVisible(false);
-    mDescriptorFactorLabel.setVisible(false);
+    mDescriptorExpanderLabel.setVisible(false);
     mDescriptorThresholdLabel.setVisible(false);
     mDescriptorMinFreqLabel.setVisible(false);
     mDescriptorMaxFreqLabel.setVisible(false);
@@ -2400,7 +2400,7 @@ void gris::SectionSoundReactiveTrajectories::setAudioAnalysisComponentsInvisible
 
     mDescriptorMetricCombo.setVisible(false);
 
-    mDescriptorFactorSlider.setVisible(false);
+    mDescriptorExpanderSlider.setVisible(false);
     mDescriptorThresholdSlider.setVisible(false);
     mDescriptorMinFreqSlider.setVisible(false);
     mDescriptorMaxFreqSlider.setVisible(false);

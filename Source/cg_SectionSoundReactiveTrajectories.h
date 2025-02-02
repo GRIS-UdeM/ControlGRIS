@@ -149,7 +149,7 @@ private:
     DescriptorID mDescriptorIdToUse{ DescriptorID::invalid };
     DataGraph mDataGraph;
 
-    juce::Label mDescriptorFactorLabel;
+    juce::Label mDescriptorExpanderLabel;
     juce::Label mDescriptorThresholdLabel;
     juce::Label mDescriptorMinFreqLabel;
     juce::Label mDescriptorMaxFreqLabel;
@@ -161,7 +161,7 @@ private:
 
     juce::ComboBox mDescriptorMetricCombo;
 
-    NumSlider mDescriptorFactorSlider;
+    NumSlider mDescriptorExpanderSlider;
     NumSlider mDescriptorThresholdSlider;
     NumSlider mDescriptorMinFreqSlider;
     NumSlider mDescriptorMaxFreqSlider;

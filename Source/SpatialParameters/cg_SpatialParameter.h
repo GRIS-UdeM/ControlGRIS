@@ -100,11 +100,11 @@ public:
     }
 
     //====================================================================
-    double getParamFactorLoudness() const { return paramFactorLoudness; }
+    double getParamExpanderLoudness() const { return paramExpanderLoudness; }
 
-    double getParamFactorSpread() const { return paramFactorSpread; }
+    double getParamExpanderSpread() const { return paramExpanderSpread; }
 
-    double getParamFactorNoise() const { return paramFactorNoise; }
+    double getParamExpanderNoise() const { return paramExpanderNoise; }
 
     double getParamSmoothLoudness() const { return paramSmoothLoudness; }
 
@@ -182,27 +182,27 @@ public:
 
     double getParamMaxTime() const { return paramMaxTime; }
 
-    void setParamFactorLoudness(double value)
+    void setParamExpanderLoudness(double value)
     {
-        paramFactorLoudness = value;
-        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorLoudness") },
-                                 paramFactorLoudness,
+        paramExpanderLoudness = value;
+        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderLoudness") },
+                                 paramExpanderLoudness,
                                  nullptr);
     }
 
-    void setParamFactorSpread(double value)
+    void setParamExpanderSpread(double value)
     {
-        paramFactorSpread = value;
-        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorSpread") },
-                                 paramFactorSpread,
+        paramExpanderSpread = value;
+        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderSpread") },
+                                 paramExpanderSpread,
                                  nullptr);
     }
 
-    void setParamFactorNoise(double value)
+    void setParamExpanderNoise(double value)
     {
-        paramFactorNoise = value;
-        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorNoise") },
-                                 paramFactorNoise,
+        paramExpanderNoise = value;
+        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderNoise") },
+                                 paramExpanderNoise,
                                  nullptr);
     }
 
@@ -518,16 +518,16 @@ public:
                   .toString()
                   .getIntValue();
 
-        paramFactorLoudness
-            = mAPVTS.state.getProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorLoudness") })
+        paramExpanderLoudness
+            = mAPVTS.state.getProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderLoudness") })
                   .toString()
                   .getDoubleValue();
-        paramFactorSpread
-            = mAPVTS.state.getProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorSpread") })
+        paramExpanderSpread
+            = mAPVTS.state.getProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderSpread") })
                   .toString()
                   .getDoubleValue();
-        paramFactorNoise
-            = mAPVTS.state.getProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorNoise") })
+        paramExpanderNoise
+            = mAPVTS.state.getProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderNoise") })
                   .toString()
                   .getDoubleValue();
 
@@ -697,14 +697,14 @@ public:
                                  paramDescriptorComboBoxIndex,
                                  nullptr);
 
-        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorLoudness") },
-                                 paramFactorLoudness,
+        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderLoudness") },
+                                 paramExpanderLoudness,
                                  nullptr);
-        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorSpread") },
-                                 paramFactorSpread,
+        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderSpread") },
+                                 paramExpanderSpread,
                                  nullptr);
-        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_FactorNoise") },
-                                 paramFactorNoise,
+        mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_ExpanderNoise") },
+                                 paramExpanderNoise,
                                  nullptr);
 
         mAPVTS.state.setProperty({ juce::String(parameterName.removeCharacters(" ") + "_SmoothLoudness") },
@@ -852,9 +852,9 @@ protected:
 
     int paramDescriptorComboBoxIndex = 1;
 
-    double paramFactorLoudness = 100.0;
-    double paramFactorSpread = 100.0;
-    double paramFactorNoise = 100.0;
+    double paramExpanderLoudness = 100.0;
+    double paramExpanderSpread = 100.0;
+    double paramExpanderNoise = 100.0;
 
     double paramSmoothLoudness = 5.0;
     double paramSmoothPitch = 5.0;

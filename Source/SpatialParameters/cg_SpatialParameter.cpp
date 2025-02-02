@@ -93,7 +93,7 @@ DescriptorID SpatialParameter::getDescriptorToUse()
 //==============================================================================
 double SpatialParameter::processLoudness(double valueToProcess)
 {
-    valueToProcess = valueToProcess * (paramFactorLoudness * 0.02);
+    valueToProcess = valueToProcess * (paramExpanderLoudness * 0.02);
     valueToProcess = processSmoothedLoudness(valueToProcess);
     return valueToProcess;
 }
@@ -126,12 +126,12 @@ double SpatialParameter::processCentroid(double valueToProcess)
 double SpatialParameter::processSpread(double valueToProcess)
 {
     auto val{ 0.0 };
-    double scaleOne = paramFactorSpread;
+    double scaleOne = paramExpanderSpread;
     scaleOne = mFunctions.zmap(scaleOne, 100.0, 500.0);
     scaleOne = 1.0 - scaleOne;
     double power = pow(valueToProcess, scaleOne);
     double scaleExpr = mFunctions.scaleExpr(power);
-    double scaleTwo = paramFactorSpread;
+    double scaleTwo = paramExpanderSpread;
     scaleTwo = mFunctions.clip(scaleTwo);
     double valueToSmooth = scaleExpr * scaleTwo;
     val = processSmoothedSpread(valueToSmooth);
@@ -141,7 +141,7 @@ double SpatialParameter::processSpread(double valueToProcess)
 //==============================================================================
 double SpatialParameter::processNoise(double valueToProcess)
 {
-    valueToProcess = valueToProcess * (paramFactorNoise * 0.01);
+    valueToProcess = valueToProcess * (paramExpanderNoise * 0.01);
     valueToProcess = processSmoothedNoise(valueToProcess);
     return valueToProcess;
 }
@@ -188,7 +188,7 @@ bool SpatialParameter::needsSpectralAnalysis()
     if (mDescriptorToUse == DescriptorID::centroid || mDescriptorToUse == DescriptorID::spread
         || mDescriptorToUse == DescriptorID::noise) {
         if ((paramRangeCentroid != 0 && paramMaxFreqCentroid > paramMinFreqCentroid)
-            || (paramRangeSpread != 0 && paramFactorSpread > 0) || (paramRangeNoise != 0 && paramFactorNoise > 0)) {
+            || (paramRangeSpread != 0 && paramExpanderSpread > 0) || (paramRangeNoise != 0 && paramExpanderNoise > 0)) {
             return true;
         }
     }
@@ -198,7 +198,7 @@ bool SpatialParameter::needsSpectralAnalysis()
 //==============================================================================
 bool SpatialParameter::shouldProcessLoudnessAnalysis()
 {
-    if (mDescriptorToUse == DescriptorID::loudness && paramFactorLoudness > 0 && paramRangeLoudness != 0) {
+    if (mDescriptorToUse == DescriptorID::loudness && paramExpanderLoudness > 0 && paramRangeLoudness != 0) {
         return true;
     }
     return false;
@@ -226,7 +226,7 @@ bool SpatialParameter::shouldProcessCentroidAnalysis()
 //==============================================================================
 bool SpatialParameter::shouldProcessSpreadAnalysis()
 {
-    if (mDescriptorToUse == DescriptorID::spread && paramFactorSpread > 0 && paramRangeSpread != 0) {
+    if (mDescriptorToUse == DescriptorID::spread && paramExpanderSpread > 0 && paramRangeSpread != 0) {
         return true;
     }
     return false;
@@ -235,7 +235,7 @@ bool SpatialParameter::shouldProcessSpreadAnalysis()
 //==============================================================================
 bool SpatialParameter::shouldProcessNoiseAnalysis()
 {
-    if (mDescriptorToUse == DescriptorID::noise && paramFactorNoise > 0 && paramRangeNoise != 0) {
+    if (mDescriptorToUse == DescriptorID::noise && paramExpanderNoise > 0 && paramRangeNoise != 0) {
         return true;
     }
     return false;
