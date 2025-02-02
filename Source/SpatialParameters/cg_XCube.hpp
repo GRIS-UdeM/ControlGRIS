@@ -41,12 +41,14 @@ public:
     void process(const DescriptorID & descID, double valueToProcess) override
     {
         auto range{ 0.0 };
+        auto offset{ 0.0 };
         auto lap{ 1.0 };
         auto smooth{ 0.0 };
 
         switch (descID) {
         case DescriptorID::loudness:
             range = paramRangeLoudness;
+            offset = paramOffsetLoudness;
             lap = paramLapLoudness;
             smooth = processLoudness(valueToProcess);
             break;
@@ -62,11 +64,13 @@ public:
             break;
         case DescriptorID::spread:
             range = paramRangeSpread;
+            offset = paramOffsetSpread;
             lap = paramLapSpread;
             smooth = processSpread(valueToProcess);
             break;
         case DescriptorID::noise:
             range = paramRangeNoise;
+            offset = paramOffsetNoise;
             lap = paramLapNoise;
             smooth = processNoise(valueToProcess);
             break;
@@ -87,14 +91,15 @@ public:
             double clip = juce::jlimit(0.0, clipMax, smooth);
             double inputRange = range * 0.01;
             res = clip * inputRange * multiplier * lap;
+            res += offset * multiplier;
         } else {
             double clipMax = 1;
 
             double clipOne = juce::jlimit(0.0, clipMax, smooth);
             double inputRange = range * 0.01;
             res = clipOne * inputRange;
-            res = juce::jlimit(-1.0, clipMax, res);
-            res = juce::jmap(res, -1.0, 1.0, -2.0, 2.0);
+            res *= 2.0; // to cover from -1 to 1 on gui
+            res += offset;
         }
 
         if (std::isnan(res)) {

@@ -45,7 +45,10 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     , mParameterZRangeSlider(grisLookAndFeel)
     , mParameterAzimuthOrXYSpanRangeSlider(grisLookAndFeel)
     , mParameterElevationOrZSpanRangeSlider(grisLookAndFeel)
+    , mParameterAzimuthXOffsetSlider(grisLookAndFeel)
+    , mParameterYOffsetSlider(grisLookAndFeel)
     , mParameterElevationZOffsetSlider(grisLookAndFeel)
+    , mParameterAziXYSpanOffsetSlider(grisLookAndFeel)
     , mParameterEleZSpanOffsetSlider(grisLookAndFeel)
     , mDataGraph(grisLookAndFeel)
     , mDescriptorFactorSlider(grisLookAndFeel)
@@ -174,7 +177,10 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mParameterZRangeSlider.setDoubleClickReturnValue(true, 100.0);
     mParameterAzimuthOrXYSpanRangeSlider.setDoubleClickReturnValue(true, 100.0);
     mParameterElevationOrZSpanRangeSlider.setDoubleClickReturnValue(true, 100.0);
+    mParameterAzimuthXOffsetSlider.setDoubleClickReturnValue(true, 0.0);
+    mParameterYOffsetSlider.setDoubleClickReturnValue(true, 0.0);
     mParameterElevationZOffsetSlider.setDoubleClickReturnValue(true, 0.0);
+    mParameterAziXYSpanOffsetSlider.setDoubleClickReturnValue(true, 0.0);
     mParameterEleZSpanOffsetSlider.setDoubleClickReturnValue(true, 0.0);
 
     mParameterAzimuthRangeSlider.setNumDecimalPlacesToDisplay(3);
@@ -184,8 +190,11 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mParameterZRangeSlider.setNumDecimalPlacesToDisplay(3);
     mParameterAzimuthOrXYSpanRangeSlider.setNumDecimalPlacesToDisplay(3);
     mParameterElevationOrZSpanRangeSlider.setNumDecimalPlacesToDisplay(3);
-    mParameterElevationZOffsetSlider.setNumDecimalPlacesToDisplay(3);
-    mParameterEleZSpanOffsetSlider.setNumDecimalPlacesToDisplay(3);
+    mParameterAzimuthXOffsetSlider.setNumDecimalPlacesToDisplay(2);
+    mParameterYOffsetSlider.setNumDecimalPlacesToDisplay(2);
+    mParameterElevationZOffsetSlider.setNumDecimalPlacesToDisplay(2);
+    mParameterAziXYSpanOffsetSlider.setNumDecimalPlacesToDisplay(2);
+    mParameterEleZSpanOffsetSlider.setNumDecimalPlacesToDisplay(2);
 
     // range sliders
     mParameterAzimuthRangeSlider.onValueChange = [this, rangeSliderOnValueChange] {
@@ -237,6 +246,22 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     };
 
     // offset sliders
+    mParameterAzimuthXOffsetSlider.onValueChange = [this, offsetSliderOnValueChange] {
+        if (mSpatMode == SpatMode::dome) {
+            offsetSliderOnValueChange(mParameterAzimuthDescriptorCombo,
+                                      mParameterAzimuthXOffsetSlider,
+                                      mAudioProcessor.getAzimuthDome());
+        } else {
+            offsetSliderOnValueChange(mParameterXDescriptorCombo,
+                                      mParameterAzimuthXOffsetSlider,
+                                      mAudioProcessor.getXCube());
+        }
+    };
+
+    mParameterYOffsetSlider.onValueChange = [this, offsetSliderOnValueChange] {
+        offsetSliderOnValueChange(mParameterYDescriptorCombo, mParameterYOffsetSlider, mAudioProcessor.getYCube());
+    };
+
     mParameterElevationZOffsetSlider.onValueChange = [this, offsetSliderOnValueChange] {
         if (mSpatMode == SpatMode::dome) {
             offsetSliderOnValueChange(mParameterElevationDescriptorCombo,
@@ -258,6 +283,18 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             offsetSliderOnValueChange(mParameterElevationOrZSpanDescriptorCombo,
                                       mParameterEleZSpanOffsetSlider,
                                       mAudioProcessor.getVSpanCube());
+        }
+    };
+
+    mParameterAziXYSpanOffsetSlider.onValueChange = [this, offsetSliderOnValueChange] {
+        if (mSpatMode == SpatMode::dome) {
+            offsetSliderOnValueChange(mParameterAzimuthOrXYSpanDescriptorCombo,
+                                      mParameterAziXYSpanOffsetSlider,
+                                      mAudioProcessor.getHSpanDome());
+        } else {
+            offsetSliderOnValueChange(mParameterAzimuthOrXYSpanDescriptorCombo,
+                                      mParameterAziXYSpanOffsetSlider,
+                                      mAudioProcessor.getHSpanCube());
         }
     };
 
@@ -489,31 +526,42 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         switch (mDescriptorIdToUse) {
         case DescriptorID::loudness:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangeLoudness());
+            mParameterAzimuthXOffsetSlider.setVisible(true);
+            mParameterAzimuthXOffsetSlider.setValue(param.getParamOffsetLoudness());
             mParameterLapEditor.setText(juce::String(param.getParamLapLoudness()));
             break;
         case DescriptorID::pitch:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangePitch());
+            mParameterAzimuthXOffsetSlider.setVisible(false);
             mParameterLapEditor.setText(juce::String(param.getParamLapPitch()));
             changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangeCentroid());
+            mParameterAzimuthXOffsetSlider.setVisible(false);
             mParameterLapEditor.setText(juce::String(param.getParamLapCentroid()));
             changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangeSpread());
+            mParameterAzimuthXOffsetSlider.setVisible(true);
+            mParameterAzimuthXOffsetSlider.setValue(param.getParamOffsetSpread());
             mParameterLapEditor.setText(juce::String(param.getParamLapSpread()));
             break;
         case DescriptorID::noise:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangeNoise());
+            mParameterAzimuthXOffsetSlider.setVisible(true);
+            mParameterAzimuthXOffsetSlider.setValue(param.getParamOffsetNoise());
             mParameterLapEditor.setText(juce::String(param.getParamLapNoise()));
             break;
         case DescriptorID::iterationsSpeed:
             mParameterAzimuthRangeSlider.setValue(param.getParamRangeOnsetDetection());
+            mParameterAzimuthXOffsetSlider.setVisible(false);
             mParameterLapEditor.setText(juce::String(param.getParamLapOnsetDetection()));
             break;
         case DescriptorID::invalid:
+            mParameterAzimuthXOffsetSlider.setVisible(false);
+            break;
         default:
             break;
         }
@@ -549,31 +597,36 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         switch (mDescriptorIdToUse) {
         case DescriptorID::loudness:
             mParameterElevationRangeSlider.setValue(param.getParamRangeLoudness());
+            mParameterElevationZOffsetSlider.setVisible(true);
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetLoudness());
             break;
         case DescriptorID::pitch:
             mParameterElevationRangeSlider.setValue(param.getParamRangePitch());
-            mParameterElevationZOffsetSlider.setValue(param.getParamOffsetPitch());
+            mParameterElevationZOffsetSlider.setVisible(false);
             changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterElevationRangeSlider.setValue(param.getParamRangeCentroid());
-            mParameterElevationZOffsetSlider.setValue(param.getParamOffsetCentroid());
+            mParameterElevationZOffsetSlider.setVisible(false);
             changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterElevationRangeSlider.setValue(param.getParamRangeSpread());
+            mParameterElevationZOffsetSlider.setVisible(true);
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetSpread());
             break;
         case DescriptorID::noise:
             mParameterElevationRangeSlider.setValue(param.getParamRangeNoise());
+            mParameterElevationZOffsetSlider.setVisible(true);
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetNoise());
             break;
         case DescriptorID::iterationsSpeed:
             mParameterElevationRangeSlider.setValue(param.getParamRangeOnsetDetection());
-            mParameterElevationZOffsetSlider.setValue(param.getParamOffsetOnsetDetection());
+            mParameterElevationZOffsetSlider.setVisible(false);
             break;
         case DescriptorID::invalid:
+            mParameterElevationZOffsetSlider.setVisible(false);
+            break;
         default:
             break;
         }
@@ -605,31 +658,42 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         // mParameterLapCombo is visible only if mXYParamLinked is true
         case DescriptorID::loudness:
             mParameterXRangeSlider.setValue(param.getParamRangeLoudness());
+            mParameterAzimuthXOffsetSlider.setVisible(true);
+            mParameterAzimuthXOffsetSlider.setValue(param.getParamOffsetLoudness());
             mParameterLapEditor.setText(juce::String(param.getParamLapLoudness()));
             break;
         case DescriptorID::pitch:
             mParameterXRangeSlider.setValue(param.getParamRangePitch());
+            mParameterAzimuthXOffsetSlider.setVisible(false);
             mParameterLapEditor.setText(juce::String(param.getParamLapPitch()));
             changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterXRangeSlider.setValue(param.getParamRangeCentroid());
+            mParameterAzimuthXOffsetSlider.setVisible(false);
             mParameterLapEditor.setText(juce::String(param.getParamLapCentroid()));
             changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterXRangeSlider.setValue(param.getParamRangeSpread());
+            mParameterAzimuthXOffsetSlider.setVisible(true);
+            mParameterAzimuthXOffsetSlider.setValue(param.getParamOffsetSpread());
             mParameterLapEditor.setText(juce::String(param.getParamLapSpread()));
             break;
         case DescriptorID::noise:
             mParameterXRangeSlider.setValue(param.getParamRangeNoise());
+            mParameterAzimuthXOffsetSlider.setVisible(true);
+            mParameterAzimuthXOffsetSlider.setValue(param.getParamOffsetNoise());
             mParameterLapEditor.setText(juce::String(param.getParamLapNoise()));
             break;
         case DescriptorID::iterationsSpeed:
             mParameterXRangeSlider.setValue(param.getParamRangeOnsetDetection());
+            mParameterAzimuthXOffsetSlider.setVisible(false);
             mParameterLapEditor.setText(juce::String(param.getParamLapOnsetDetection()));
             break;
         case DescriptorID::invalid:
+            mParameterAzimuthXOffsetSlider.setVisible(false);
+            break;
         default:
             break;
         }
@@ -660,25 +724,36 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         switch (mDescriptorIdToUse) {
         case DescriptorID::loudness:
             mParameterYRangeSlider.setValue(param.getParamRangeLoudness());
+            mParameterYOffsetSlider.setVisible(true);
+            mParameterYOffsetSlider.setValue(param.getParamOffsetLoudness());
             break;
         case DescriptorID::pitch:
             mParameterYRangeSlider.setValue(param.getParamRangePitch());
+            mParameterYOffsetSlider.setVisible(false);
             changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterYRangeSlider.setValue(param.getParamRangeCentroid());
+            mParameterYOffsetSlider.setVisible(false);
             changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterYRangeSlider.setValue(param.getParamRangeSpread());
+            mParameterYOffsetSlider.setVisible(true);
+            mParameterYOffsetSlider.setValue(param.getParamOffsetSpread());
             break;
         case DescriptorID::noise:
             mParameterYRangeSlider.setValue(param.getParamRangeNoise());
+            mParameterYOffsetSlider.setVisible(true);
+            mParameterYOffsetSlider.setValue(param.getParamOffsetNoise());
             break;
         case DescriptorID::iterationsSpeed:
             mParameterYRangeSlider.setValue(param.getParamRangeOnsetDetection());
+            mParameterYOffsetSlider.setVisible(false);
             break;
         case DescriptorID::invalid:
+            mParameterYOffsetSlider.setVisible(false);
+            break;
         default:
             break;
         }
@@ -709,31 +784,36 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         switch (mDescriptorIdToUse) {
         case DescriptorID::loudness:
             mParameterZRangeSlider.setValue(param.getParamRangeLoudness());
+            mParameterElevationZOffsetSlider.setVisible(true);
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetLoudness());
             break;
         case DescriptorID::pitch:
             mParameterZRangeSlider.setValue(param.getParamRangePitch());
-            mParameterElevationZOffsetSlider.setValue(param.getParamOffsetPitch());
+            mParameterElevationZOffsetSlider.setVisible(false);
             changeMinMaxSlidersRange(20, 5000);
             break;
         case DescriptorID::centroid:
             mParameterZRangeSlider.setValue(param.getParamRangeCentroid());
-            mParameterElevationZOffsetSlider.setValue(param.getParamOffsetCentroid());
+            mParameterElevationZOffsetSlider.setVisible(false);
             changeMinMaxSlidersRange(20, 20000);
             break;
         case DescriptorID::spread:
             mParameterZRangeSlider.setValue(param.getParamRangeSpread());
+            mParameterElevationZOffsetSlider.setVisible(true);
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetSpread());
             break;
         case DescriptorID::noise:
             mParameterZRangeSlider.setValue(param.getParamRangeNoise());
+            mParameterElevationZOffsetSlider.setVisible(true);
             mParameterElevationZOffsetSlider.setValue(param.getParamOffsetNoise());
             break;
         case DescriptorID::iterationsSpeed:
             mParameterZRangeSlider.setValue(param.getParamRangeOnsetDetection());
-            mParameterElevationZOffsetSlider.setValue(param.getParamOffsetOnsetDetection());
+            mParameterElevationZOffsetSlider.setVisible(false);
             break;
         case DescriptorID::invalid:
+            mParameterElevationZOffsetSlider.setVisible(false);
+            break;
         default:
             break;
         }
@@ -747,6 +827,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         mDescriptorIdToUse = Descriptor::fromInt(mParameterAzimuthOrXYSpanDescriptorCombo.getSelectedId());
         if (mDescriptorIdToUse == DescriptorID::invalid) {
             mParameterToShow.reset();
+            mParameterAziXYSpanOffsetSlider.setVisible(false);
         } else {
             if (mSpatMode == SpatMode::dome) {
                 mParameterToShow = mAudioProcessor.getHSpanDome();
@@ -785,25 +866,36 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             switch (mDescriptorIdToUse) {
             case DescriptorID::loudness:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangeLoudness());
+                mParameterAziXYSpanOffsetSlider.setVisible(true);
+                mParameterAziXYSpanOffsetSlider.setValue(param.getParamOffsetLoudness());
                 break;
             case DescriptorID::pitch:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangePitch());
+                mParameterAziXYSpanOffsetSlider.setVisible(false);
                 changeMinMaxSlidersRange(20, 5000);
                 break;
             case DescriptorID::centroid:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangeCentroid());
+                mParameterAziXYSpanOffsetSlider.setVisible(false);
                 changeMinMaxSlidersRange(20, 20000);
                 break;
             case DescriptorID::spread:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangeSpread());
+                mParameterAziXYSpanOffsetSlider.setVisible(true);
+                mParameterAziXYSpanOffsetSlider.setValue(param.getParamOffsetSpread());
                 break;
             case DescriptorID::noise:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangeNoise());
+                mParameterAziXYSpanOffsetSlider.setVisible(true);
+                mParameterAziXYSpanOffsetSlider.setValue(param.getParamOffsetNoise());
                 break;
             case DescriptorID::iterationsSpeed:
                 mParameterAzimuthOrXYSpanRangeSlider.setValue(param.getParamRangeOnsetDetection());
+                mParameterAziXYSpanOffsetSlider.setVisible(false);
                 break;
             case DescriptorID::invalid:
+                mParameterAziXYSpanOffsetSlider.setVisible(false);
+                break;
             default:
                 break;
             }
@@ -819,6 +911,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         mDescriptorIdToUse = Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId());
         if (mDescriptorIdToUse == DescriptorID::invalid) {
             mParameterToShow.reset();
+            mParameterEleZSpanOffsetSlider.setVisible(false);
         } else {
             if (mSpatMode == SpatMode::dome) {
                 mParameterToShow = mAudioProcessor.getVSpanDome();
@@ -857,31 +950,36 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             switch (mDescriptorIdToUse) {
             case DescriptorID::loudness:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangeLoudness());
+                mParameterEleZSpanOffsetSlider.setVisible(true);
                 mParameterEleZSpanOffsetSlider.setValue(param.getParamOffsetLoudness());
                 break;
             case DescriptorID::pitch:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangePitch());
-                mParameterEleZSpanOffsetSlider.setValue(param.getParamOffsetPitch());
+                mParameterEleZSpanOffsetSlider.setVisible(false);
                 changeMinMaxSlidersRange(20, 5000);
                 break;
             case DescriptorID::centroid:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangeCentroid());
-                mParameterEleZSpanOffsetSlider.setValue(param.getParamOffsetCentroid());
+                mParameterEleZSpanOffsetSlider.setVisible(false);
                 changeMinMaxSlidersRange(20, 20000);
                 break;
             case DescriptorID::spread:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangeSpread());
+                mParameterEleZSpanOffsetSlider.setVisible(true);
                 mParameterEleZSpanOffsetSlider.setValue(param.getParamOffsetSpread());
                 break;
             case DescriptorID::noise:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangeNoise());
+                mParameterEleZSpanOffsetSlider.setVisible(true);
                 mParameterEleZSpanOffsetSlider.setValue(param.getParamOffsetNoise());
                 break;
             case DescriptorID::iterationsSpeed:
                 mParameterElevationOrZSpanRangeSlider.setValue(param.getParamRangeOnsetDetection());
-                mParameterEleZSpanOffsetSlider.setValue(param.getParamOffsetOnsetDetection());
+                mParameterEleZSpanOffsetSlider.setVisible(false);
                 break;
             case DescriptorID::invalid:
+                mParameterEleZSpanOffsetSlider.setVisible(false);
+                break;
             default:
                 break;
             }
@@ -912,12 +1010,24 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     addAndMakeVisible(&mParameterOffsetLabel);
     mParameterOffsetLabel.setText("Offset", juce::dontSendNotification);
 
+    addAndMakeVisible(&mParameterAzimuthXOffsetSlider);
+    mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+    mParameterAzimuthXOffsetSlider.setValue(0.0, juce::dontSendNotification);
+
     addAndMakeVisible(&mParameterElevationZOffsetSlider);
-    mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ 0.0, 90.0, 0.1 });
+    mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
     mParameterElevationZOffsetSlider.setValue(0.0, juce::dontSendNotification);
 
+    addAndMakeVisible(&mParameterYOffsetSlider);
+    mParameterYOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+    mParameterYOffsetSlider.setValue(0.0, juce::dontSendNotification);
+
+    addAndMakeVisible(&mParameterAziXYSpanOffsetSlider);
+    mParameterAziXYSpanOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+    mParameterAziXYSpanOffsetSlider.setValue(0.0, juce::dontSendNotification);
+
     addAndMakeVisible(&mParameterEleZSpanOffsetSlider);
-    mParameterEleZSpanOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ 0.0, 1.0, 0.01 });
+    mParameterEleZSpanOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
     mParameterEleZSpanOffsetSlider.setValue(0.0, juce::dontSendNotification);
 
     addAndMakeVisible(&mAudioAnalysisActivateButton);
@@ -1305,9 +1415,6 @@ void gris::SectionSoundReactiveTrajectories::resized()
                                          != DescriptorID::invalid };
     auto const showEleZSpanRangeSlider{ Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId())
                                         != DescriptorID::invalid };
-    auto const showEleZSpanOffsetSlider{ Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId())
-                                         != DescriptorID::invalid };
-    bool showEleZOffsetSlider{};
 
     mSpatialParameterLabel.setBounds(5, 3, 140, 15);
     mAudioAnalysisLabel.setBounds(bannerAudioAnalysis.getTopLeft().getX() + 5, 3, 140, 15);
@@ -1320,22 +1427,10 @@ void gris::SectionSoundReactiveTrajectories::resized()
     mParameterYButton.setEnabled(true);
     mParameterYDescriptorCombo.setEnabled(true);
     mParameterYRangeSlider.setEnabled(true);
+    mParameterYOffsetSlider.setEnabled(true);
 
     mParameterAzimuthOrXYSpanRangeSlider.setVisible(showAziXYSpanRangeSlider);
     mParameterElevationOrZSpanRangeSlider.setVisible(showEleZSpanRangeSlider);
-
-    if (mSpatMode == SpatMode::dome) {
-        if (Descriptor::fromInt(mParameterElevationDescriptorCombo.getSelectedId()) != DescriptorID::invalid) {
-            showEleZOffsetSlider = true;
-        }
-    } else {
-        if (Descriptor::fromInt(mParameterZDescriptorCombo.getSelectedId()) != DescriptorID::invalid) {
-            showEleZOffsetSlider = true;
-        }
-    }
-
-    mParameterElevationZOffsetSlider.setVisible(showEleZOffsetSlider);
-    mParameterEleZSpanOffsetSlider.setVisible(showEleZSpanOffsetSlider);
 
     if (mSpatMode == SpatMode::dome) {
         auto const showAziRangeSlider{ Descriptor::fromInt(mParameterAzimuthDescriptorCombo.getSelectedId())
@@ -1428,11 +1523,19 @@ void gris::SectionSoundReactiveTrajectories::resized()
                                         40,
                                         15);
 
-        mParameterElevationZOffsetSlider.setBounds(mParameterAzimuthRangeSlider.getRight() + 5,
+        mParameterAzimuthXOffsetSlider.setBounds(mParameterAzimuthRangeSlider.getRight() + 5,
+                                                 mParameterAzimuthRangeSlider.getBounds().getTopLeft().getY(),
+                                                 35,
+                                                 12);
+        mParameterElevationZOffsetSlider.setBounds(mParameterElevationRangeSlider.getRight() + 5,
                                                    mParameterElevationRangeSlider.getBounds().getTopLeft().getY(),
                                                    35,
                                                    12);
-        mParameterEleZSpanOffsetSlider.setBounds(mParameterAzimuthRangeSlider.getRight() + 5,
+        mParameterAziXYSpanOffsetSlider.setBounds(mParameterAzimuthOrXYSpanRangeSlider.getRight() + 5,
+                                                  mParameterAzimuthOrXYSpanRangeSlider.getBounds().getTopLeft().getY(),
+                                                  35,
+                                                  12);
+        mParameterEleZSpanOffsetSlider.setBounds(mParameterElevationOrZSpanRangeSlider.getRight() + 5,
                                                  mParameterElevationOrZSpanRangeSlider.getBounds().getTopLeft().getY(),
                                                  35,
                                                  12);
@@ -1552,10 +1655,22 @@ void gris::SectionSoundReactiveTrajectories::resized()
                                         40,
                                         15);
 
-        mParameterElevationZOffsetSlider.setBounds(mParameterXRangeSlider.getRight() + 5,
+        mParameterAzimuthXOffsetSlider.setBounds(mParameterXRangeSlider.getRight() + 5,
+                                                 mParameterXRangeSlider.getBounds().getTopLeft().getY(),
+                                                 35,
+                                                 12);
+        mParameterYOffsetSlider.setBounds(mParameterYRangeSlider.getRight() + 5,
+                                          mParameterYRangeSlider.getBounds().getTopLeft().getY(),
+                                          35,
+                                          12);
+        mParameterElevationZOffsetSlider.setBounds(mParameterZRangeSlider.getRight() + 5,
                                                    mParameterZRangeSlider.getBounds().getTopLeft().getY(),
                                                    35,
                                                    12);
+        mParameterAziXYSpanOffsetSlider.setBounds(mParameterAzimuthOrXYSpanRangeSlider.getRight() + 5,
+                                                  mParameterAzimuthOrXYSpanRangeSlider.getBounds().getTopLeft().getY(),
+                                                  35,
+                                                  12);
         mParameterEleZSpanOffsetSlider.setBounds(mParameterXRangeSlider.getRight() + 5,
                                                  mParameterElevationOrZSpanRangeSlider.getBounds().getTopLeft().getY(),
                                                  35,
@@ -1586,6 +1701,7 @@ void gris::SectionSoundReactiveTrajectories::resized()
             mParameterYButton.setEnabled(false);
             mParameterYDescriptorCombo.setEnabled(false);
             mParameterYRangeSlider.setEnabled(false);
+            mParameterYOffsetSlider.setEnabled(false);
         }
     }
 }
@@ -1719,6 +1835,7 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
 
     auto const updateOffsetSlider = [&](NumSlider & slider, SpatialParameter & param, DescriptorID descID) {
         switch (descID) {
+        // should be only for loudness, spread and noise
         case DescriptorID::loudness:
             slider.setValue(param.getParamOffsetLoudness());
             break;
@@ -1802,8 +1919,8 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
     if (mSpatMode == SpatMode::dome) {
         mParameterAzimuthOrXYSpanButton.setButtonText("Azimuth Span");
         mParameterElevationOrZSpanButton.setButtonText("Elevation Span");
-        mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ 0.0, 90.0, 0.1 });
-        mParameterElevationZOffsetSlider.setNumDecimalPlacesToDisplay(1);
+        mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+        mParameterYOffsetSlider.setVisible(false);
 
         updateParameterCombo(mParameterAzimuthDescriptorCombo, "LastUsedAzimuthDescriptor");
         updateParameterCombo(mParameterElevationDescriptorCombo, "LastUsedElevationDescriptor");
@@ -1840,9 +1957,15 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
         updateRangeSlider(mParameterElevationOrZSpanRangeSlider,
                           mAudioProcessor.getVSpanDome(),
                           Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId()));
+        updateOffsetSlider(mParameterAzimuthXOffsetSlider,
+                           mAudioProcessor.getAzimuthDome(),
+                           Descriptor::fromInt(mParameterAzimuthDescriptorCombo.getSelectedId()));
         updateOffsetSlider(mParameterElevationZOffsetSlider,
                            mAudioProcessor.getElevationDome(),
                            Descriptor::fromInt(mParameterElevationDescriptorCombo.getSelectedId()));
+        updateOffsetSlider(mParameterAziXYSpanOffsetSlider,
+                           mAudioProcessor.getHSpanDome(),
+                           Descriptor::fromInt(mParameterAzimuthOrXYSpanDescriptorCombo.getSelectedId()));
         updateOffsetSlider(mParameterEleZSpanOffsetSlider,
                            mAudioProcessor.getVSpanDome(),
                            Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId()));
@@ -1852,8 +1975,7 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
     } else {
         mParameterAzimuthOrXYSpanButton.setButtonText("X-Y Span");
         mParameterElevationOrZSpanButton.setButtonText("Z Span");
-        mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ 0.0, 1.0, 0.01 });
-        mParameterElevationZOffsetSlider.setNumDecimalPlacesToDisplay(2);
+        mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
 
         updateParameterCombo(mParameterXDescriptorCombo, "LastUsedXDescriptor");
         updateParameterCombo(mParameterYDescriptorCombo, "LastUsedYDescriptor");
@@ -1894,9 +2016,18 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
         updateRangeSlider(mParameterElevationOrZSpanRangeSlider,
                           mAudioProcessor.getVSpanCube(),
                           Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId()));
+        updateOffsetSlider(mParameterAzimuthXOffsetSlider,
+                           mAudioProcessor.getXCube(),
+                           Descriptor::fromInt(mParameterZDescriptorCombo.getSelectedId()));
+        updateOffsetSlider(mParameterYOffsetSlider,
+                           mAudioProcessor.getYCube(),
+                           Descriptor::fromInt(mParameterYDescriptorCombo.getSelectedId()));
         updateOffsetSlider(mParameterElevationZOffsetSlider,
                            mAudioProcessor.getZCube(),
                            Descriptor::fromInt(mParameterZDescriptorCombo.getSelectedId()));
+        updateOffsetSlider(mParameterAziXYSpanOffsetSlider,
+                           mAudioProcessor.getHSpanCube(),
+                           Descriptor::fromInt(mParameterAzimuthOrXYSpanDescriptorCombo.getSelectedId()));
         updateOffsetSlider(mParameterEleZSpanOffsetSlider,
                            mAudioProcessor.getVSpanCube(),
                            Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId()));
@@ -1923,33 +2054,34 @@ void gris::SectionSoundReactiveTrajectories::addNewParamValueToDataGraph()
 
         switch (param.getParameterID()) {
         case ParameterID::azimuth:
-            value = juce::jmap(std::abs(value), 0.0, 360.0 * lap, 0.0, 1.0);
+            value = juce::jmap(value, -360.0 * lap, 360.0 * lap, -1.0, 1.0);
             break;
         case ParameterID::elevation:
             value = juce::jmap(value, -90.0, 90.0, -1.0, 1.0);
             break;
         case ParameterID::x:
             if (mAudioProcessor.getXYParamLink()) {
-                value = juce::jmap(std::abs(value), 0.0, 360.0 * lap, 0.0, 1.0);
+                value = juce::jmap(value, -360.0 * lap, 360.0 * lap, -1.0, 1.0);
             } else {
-                value = juce::jmap(std::abs(value), 0.0, 1.66, 0.0, 1.0);
+                value *= 0.5;
             }
             break;
         case ParameterID::y:
-            value = juce::jmap(std::abs(value), 0.0, 1.66, 0.0, 1.0);
+            value *= 0.5;
             break;
         case ParameterID::azimuthspan:
-            value = juce::jmap(std::abs(value), 0.0, 100.0, 0.0, 1.0);
+            value = juce::jmap(value, -100.0, 100.0, -1.0, 1.0);
             break;
         case ParameterID::elevationspan:
             value = juce::jmap(value, -100.0, 100.0, -1.0, 1.0);
             break;
         case ParameterID::z:
-            value = juce::jmap(value, -1.0, 1.0, -1.0, 1.0);
+            break;
         case ParameterID::invalid:
         default:
             break;
         }
+        value = juce::jlimit(-1.0, 1.0, value);
 
         mDataGraph.addToBuffer(value);
     }
@@ -2010,7 +2142,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
         shouldShowDescriptorPanel = mLastUsedParameterCubeButton != std::nullopt;
     }
 
-    mDataGraph.setSpatialParameter(mParameterToShow);
+    mDataGraph.setDescriptor(mDescriptorIdToUse);
 
     if (shouldShowDescriptorPanel) {
         switch (mDescriptorIdToUse) {
@@ -2317,14 +2449,13 @@ void gris::DataGraph::paint(juce::Graphics & g)
     auto area = getLocalBounds().reduced(2);
     juce::RectangleList<float> rectList{};
 
-    if (mParam) {
-        auto & param{ mParam->get() };
+    if (mDescId != DescriptorID::invalid) {
         for (int i{}; i < mGUIBuffer.size(); ++i) {
             float initialX{}, initialY{}, width{}, height{};
             float valueToPaint{ static_cast<float>(mGUIBuffer.at(i)) };
 
-            if (param.getParameterID() == ParameterID::elevation || param.getParameterID() == ParameterID::elevationspan
-                || param.getParameterID() == ParameterID::z) {
+            if (mDescId == DescriptorID::loudness || mDescId == DescriptorID::spread
+                || mDescId == DescriptorID::noise) {
                 // parameter has an offset option, the graph can have negative values
                 initialX
                     = ((static_cast<float>(area.getWidth()) / static_cast<float>(mGUIBuffer.size())) * i) + area.getX();
@@ -2396,7 +2527,7 @@ double gris::DataGraph::readBufferMean()
 }
 
 //==============================================================================
-void gris::DataGraph::setSpatialParameter(std::optional<std::reference_wrapper<SpatialParameter>> param)
+void gris::DataGraph::setDescriptor(DescriptorID descId)
 {
-    mParam = param;
+    mDescId = descId;
 }

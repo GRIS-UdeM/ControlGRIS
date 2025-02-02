@@ -48,12 +48,12 @@ public:
 
     void addToBuffer(double value);
     double readBufferMean();
-    void setSpatialParameter(std::optional<std::reference_wrapper<SpatialParameter>> param);
+    void setDescriptor(DescriptorID descId);
 
 private:
     //==============================================================================
     GrisLookAndFeel & mGrisLookAndFeel;
-    std::optional<std::reference_wrapper<SpatialParameter>> mParam;
+    DescriptorID mDescId;
     std::deque<double> mGUIBuffer;
     juce::Atomic<double> mBuffer{};
     juce::Atomic<int> mBufferCount{};
@@ -131,7 +131,10 @@ private:
 
     juce::Label mParameterOffsetLabel;
 
+    NumSlider mParameterAzimuthXOffsetSlider;
+    NumSlider mParameterYOffsetSlider;
     NumSlider mParameterElevationZOffsetSlider;
+    NumSlider mParameterAziXYSpanOffsetSlider;
     NumSlider mParameterEleZSpanOffsetSlider;
 
     juce::Label mParameterLapLabel;

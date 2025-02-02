@@ -41,11 +41,13 @@ public:
     void process(const DescriptorID & descID, double valueToProcess) override
     {
         auto range{ 0.0 };
+        auto offset{ 0.0 };
         auto smooth{ 0.0 };
 
         switch (descID) {
         case DescriptorID::loudness:
             range = paramRangeLoudness;
+            offset = paramOffsetLoudness;
             smooth = processLoudness(valueToProcess);
             break;
         case DescriptorID::pitch:
@@ -58,10 +60,12 @@ public:
             break;
         case DescriptorID::spread:
             range = paramRangeSpread;
+            offset = paramOffsetSpread;
             smooth = processSpread(valueToProcess);
             break;
         case DescriptorID::noise:
             range = paramRangeNoise;
+            offset = paramOffsetNoise;
             smooth = processNoise(valueToProcess);
             break;
         case DescriptorID::iterationsSpeed:
@@ -78,8 +82,8 @@ public:
         double clip = juce::jlimit(0.0, clipMax, smooth);
         double inputRange = range * 0.01;
         res = clip * inputRange;
-        res = juce::jlimit(-1.0, 1.0, res);
-        res = juce::jmap(res, -1.0, 1.0, -2.0, 2.0);
+        res *= 2.0; // to cover from -1 to 1 on gui
+        res += offset;
 
         if (std::isnan(res)) {
             res = 0.0;
