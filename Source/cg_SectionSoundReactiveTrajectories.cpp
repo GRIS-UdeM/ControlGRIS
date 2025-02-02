@@ -304,7 +304,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     // lap textEditor
     addAndMakeVisible(&mParameterLapEditor);
     mParameterLapEditor.setFont(grisLookAndFeel.getFont());
-    mParameterLapEditor.setInputRestrictions(4, "1234567890");
+    mParameterLapEditor.setInputRestrictions(2, "1234567890");
     mParameterLapEditor.setText("1");
     mParameterLapEditor.setJustification(juce::Justification::centred);
     mParameterLapEditor.onFocusLost = [this] {
