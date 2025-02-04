@@ -59,17 +59,17 @@ public:
 
     // Move constructor
     Source(Source && other) noexcept
-        : mIndex(std::move(other.mIndex))
-        , mId(std::move(other.mId))
-        , mSpatMode(std::move(other.mSpatMode))
-        , mAzimuth(std::move(other.mAzimuth))
-        , mElevation(std::move(other.mElevation))
-        , mDistance(std::move(other.mDistance))
-        , mPosition(std::move(other.mPosition))
-        , mAzimuthSpan(std::move(other.mAzimuthSpan))
-        , mElevationSpan(std::move(other.mElevationSpan))
+        : mIndex(other.mIndex)
+        , mId(other.mId)
+        , mSpatMode(other.mSpatMode)
+        , mAzimuth(other.mAzimuth)
+        , mElevation(other.mElevation)
+        , mDistance(other.mDistance)
+        , mPosition(other.mPosition)
+        , mAzimuthSpan(other.mAzimuthSpan)
+        , mElevationSpan(other.mElevationSpan)
         , mColour(std::move(other.mColour))
-        , mProcessor(std::move(other.mProcessor))
+        , mProcessor(other.mProcessor)
     {
     }
 
@@ -289,7 +289,7 @@ class Sources
 public:
     const int MAX_NUMBER_OF_SOURCES;
     //==============================================================================
-    Sources() : MAX_NUMBER_OF_SOURCES(juce::JUCEApplicationBase::isStandaloneApp() ? 128 : 8)
+    Sources() : MAX_NUMBER_OF_SOURCES(juce::JUCEApplicationBase::isStandaloneApp() ? 256 : 8)
     {
         mSecondarySources.resize(MAX_NUMBER_OF_SOURCES - 1);
     }
