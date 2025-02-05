@@ -4,11 +4,9 @@ on:
     branches: ['*']
   pull_request:
     branches: ['*']
-    types: [opened, synchronize]
 jobs:
   Build-Ubuntu-20-04:
     runs-on: ubuntu-20.04
-    if: github.event_name == 'push' && github.event.pull_request == null || github.event_name == 'pull_request'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
