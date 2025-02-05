@@ -4,6 +4,7 @@ on:
     branches: ['*']
   pull_request:
     branches: ['*']
+    types: [opened, synchronize]
 jobs:
   Build-Ubuntu-20-04:
     runs-on: ubuntu-20.04
@@ -52,7 +53,7 @@ jobs:
       - name: Compile ControlGris (Standalone & VST3 only)
         run: |
           cd Builds/LinuxMakefile
-          make CXX=clang++-18 CONFIG=Release -j8 ControlGris_Standalone ControlGris_VST3
+          make CXX=clang++-18 CONFIG=Release -j8 Standalone VST3
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
