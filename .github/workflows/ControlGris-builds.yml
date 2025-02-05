@@ -58,6 +58,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ControlGris-Build
-          path: |
-            Builds/LinuxMakefile/build/ControlGris_Standalone
-            Builds/LinuxMakefile/build/ControlGris_VST3
+          path: Builds/LinuxMakefile/build/*
