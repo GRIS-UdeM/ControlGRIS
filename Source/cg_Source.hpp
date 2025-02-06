@@ -20,31 +20,109 @@
 
 #pragma once
 
-#include <array>
-
-#include <JuceHeader.h>
-
 #include "cg_StrongTypes.hpp"
 #include "cg_constants.hpp"
+#include <JuceHeader.h>
+#include <vector>
 
 namespace gris
 {
 //==============================================================================
+// Forward declaration
 class ControlGrisAudioProcessor;
 
 enum class SourceParameter { azimuth, elevation, distance, x, y, azimuthSpan, elevationSpan };
+
 //==============================================================================
+// Source class definition
 class Source
 {
 public:
+    // Default constructor
+    Source() = default;
+
+    // Copy constructor
+    Source(const Source & other)
+        : mIndex(other.mIndex)
+        , mId(other.mId)
+        , mSpatMode(other.mSpatMode)
+        , mAzimuth(other.mAzimuth)
+        , mElevation(other.mElevation)
+        , mDistance(other.mDistance)
+        , mPosition(other.mPosition)
+        , mAzimuthSpan(other.mAzimuthSpan)
+        , mElevationSpan(other.mElevationSpan)
+        , mColour(other.mColour)
+        , mProcessor(other.mProcessor)
+    {
+    }
+
+    // Move constructor
+    Source(Source && other) noexcept
+        : mIndex(other.mIndex)
+        , mId(other.mId)
+        , mSpatMode(other.mSpatMode)
+        , mAzimuth(other.mAzimuth)
+        , mElevation(other.mElevation)
+        , mDistance(other.mDistance)
+        , mPosition(other.mPosition)
+        , mAzimuthSpan(other.mAzimuthSpan)
+        , mElevationSpan(other.mElevationSpan)
+        , mColour(std::move(other.mColour))
+        , mProcessor(other.mProcessor)
+    {
+    }
+
+    // Copy assignment operator
+    Source & operator=(const Source & other)
+    {
+        if (this != &other) {
+            mIndex = other.mIndex;
+            mId = other.mId;
+            mSpatMode = other.mSpatMode;
+            mAzimuth = other.mAzimuth;
+            mElevation = other.mElevation;
+            mDistance = other.mDistance;
+            mPosition = other.mPosition;
+            mAzimuthSpan = other.mAzimuthSpan;
+            mElevationSpan = other.mElevationSpan;
+            mColour = other.mColour;
+            mProcessor = other.mProcessor;
+        }
+        return *this;
+    }
+
+    // Move assignment operator
+    Source & operator=(Source && other) noexcept
+    {
+        if (this != &other) {
+            mIndex = std::move(other.mIndex);
+            mId = std::move(other.mId);
+            mSpatMode = std::move(other.mSpatMode);
+            mAzimuth = std::move(other.mAzimuth);
+            mElevation = std::move(other.mElevation);
+            mDistance = std::move(other.mDistance);
+            mPosition = std::move(other.mPosition);
+            mAzimuthSpan = std::move(other.mAzimuthSpan);
+            mElevationSpan = std::move(other.mElevationSpan);
+            mColour = std::move(other.mColour);
+            mProcessor = std::move(other.mProcessor);
+        }
+        return *this;
+    }
+
     //==============================================================================
+
     enum class OriginOfChange { none, userMove, userAnchorMove, link, trajectory, automation, presetRecall, osc };
     enum class ChangeType { position, elevation };
+
     //==============================================================================
+
     class Listener : private juce::AsyncUpdater
     {
     public:
         //==============================================================================
+
         Listener() = default;
         virtual ~Listener() override = default;
 
@@ -53,20 +131,25 @@ public:
 
         Listener & operator=(Listener const &) = delete;
         Listener & operator=(Listener &&) = delete;
+
         //==============================================================================
+
         void update() { triggerAsyncUpdate(); }
 
     private:
         //==============================================================================
+
         void handleAsyncUpdate() override { sourceMovedCallback(); }
         virtual void sourceMovedCallback() = 0;
-        //==============================================================================
-        JUCE_LEAK_DETECTOR(Listener)
 
-    }; // class Source::Listener
+        //==============================================================================
+
+        JUCE_LEAK_DETECTOR(Listener)
+    };
 
 private:
     //==============================================================================
+
     juce::ListenerList<Listener> mGuiListeners;
 
     SourceIndex mIndex{};
@@ -87,6 +170,7 @@ private:
 
 public:
     //==============================================================================
+
     void setIndex(SourceIndex const index) { mIndex = index; }
     [[nodiscard]] SourceIndex getIndex() const { return mIndex; }
 
@@ -145,23 +229,30 @@ public:
 
 private:
     //==============================================================================
+
     bool shouldForceNotifications(OriginOfChange origin) const;
     void notify(ChangeType changeType, OriginOfChange origin);
     void notifyGuiListeners();
     static Radians clipElevation(Radians elevation);
     static float clipCoordinate(float coord);
+
     //==============================================================================
+
     JUCE_LEAK_DETECTOR(Source)
 };
 
 //==============================================================================
+// Sources class definition
 class Sources
 {
     //==============================================================================
+
     struct Iterator {
         Sources * sources;
         int index;
+
         //==============================================================================
+
         bool operator!=(Iterator const & other) const { return index != other.index; }
         Iterator & operator++()
         {
@@ -171,11 +262,15 @@ class Sources
         Source & operator*() { return sources->get(index); }
         Source const & operator*() const { return sources->get(index); }
     };
+
     //==============================================================================
+
     struct ConstIterator {
         Sources const * sources;
         int index;
+
         //==============================================================================
+
         bool operator!=(ConstIterator const & other) const { return index != other.index; }
         ConstIterator & operator++()
         {
@@ -184,13 +279,21 @@ class Sources
         }
         Source const & operator*() const { return sources->get(index); }
     };
+
     //==============================================================================
+
     int mSize{ 2 };
     Source mPrimarySource;
-    std::array<Source, MAX_NUMBER_OF_SOURCES - 1> mSecondarySources{};
+    std::vector<Source> mSecondarySources{};
 
 public:
+    const int MAX_NUMBER_OF_SOURCES;
     //==============================================================================
+    Sources() : MAX_NUMBER_OF_SOURCES(juce::JUCEApplicationBase::isStandaloneApp() ? 256 : 8)
+    {
+        mSecondarySources.resize(MAX_NUMBER_OF_SOURCES - 1);
+    }
+
     [[nodiscard]] int size() const { return mSize; }
     void setSize(int size);
 
@@ -236,6 +339,7 @@ public:
         SourceIndex currentIndex{};
         mPrimarySource.setIndex(currentIndex++);
         mPrimarySource.setProcessor(processor);
+        mSecondarySources.resize(MAX_NUMBER_OF_SOURCES - 1);
         for (auto & secondarySource : mSecondarySources) {
             secondarySource.setIndex(currentIndex++);
             secondarySource.setProcessor(processor);
@@ -254,6 +358,7 @@ public:
 
 private:
     //==============================================================================
+
     JUCE_LEAK_DETECTOR(Sources)
 };
 

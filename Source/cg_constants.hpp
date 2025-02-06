@@ -26,7 +26,7 @@ namespace gris
 //==============================================================================
 // Global variables.
 constexpr int MIN_FIELD_WIDTH = 300;
-constexpr int MAX_NUMBER_OF_SOURCES = 8;
+
 constexpr int NUMBER_OF_POSITION_PRESETS = 50;
 constexpr float SOURCE_FIELD_COMPONENT_RADIUS = 12.0f;
 constexpr float SOURCE_FIELD_COMPONENT_DIAMETER = SOURCE_FIELD_COMPONENT_RADIUS * 2.0f;
