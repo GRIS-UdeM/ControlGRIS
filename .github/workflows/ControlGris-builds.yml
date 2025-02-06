@@ -101,6 +101,9 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
+      - name: build shared code
+        run: msbuild Builds/VisualStudio2022/ControlGris_SharedCode.vcxproj -p:Configuration=Release -p:Platform=x64
+
       - name: build standalone
         run: msbuild Builds/VisualStudio2022/ControlGris_StandalonePlugin.vcxproj -p:Configuration=Release -p:Platform=x64
 
