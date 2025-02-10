@@ -98,6 +98,10 @@ jobs:
       - name: generate Visual Studio project
         run: JUCE/Projucer --resave ControlGris.jucer
 
+      - name: Remove copy step from .vcxproj #this is useless on the pipeline, and causes it to fail
+        run: (Get-Content Builds/VisualStudio2022/ControlGris_VST3.vcxproj) -replace '<PostBuildEvent>.*?</PostBuildEvent>', '' | Set-Content Builds/VisualStudio2022/ControlGris_VST3.vcxproj
+        shell: pwsh
+
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
