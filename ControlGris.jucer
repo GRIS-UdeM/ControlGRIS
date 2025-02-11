@@ -159,9 +159,9 @@
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris" osxArchitecture="Native"
                        auBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"
-                       enablePluginBinaryCopyStep="0"/>
+                       enablePluginBinaryCopyStep="1"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris" osxArchitecture="Native"
-                       recommendedWarnings="LLVM" enablePluginBinaryCopyStep="0"/>
+                       recommendedWarnings="LLVM" enablePluginBinaryCopyStep="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
@@ -202,8 +202,10 @@
     </LINUX_MAKE>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" enablePluginBinaryCopyStep="1" vst3BinaryLocation="C:\Program Files\Common Files\VST3"/>
-        <CONFIGURATION isDebug="0" name="Release" enablePluginBinaryCopyStep="1" vst3BinaryLocation="C:\Program Files\Common Files\VST3"/>
+        <CONFIGURATION isDebug="1" name="Debug" vst3BinaryLocation="C:\Program Files\Common Files\VST3"
+                       enablePluginBinaryCopyStep="1"/>
+        <CONFIGURATION isDebug="0" name="Release" vst3BinaryLocation="C:\Program Files\Common Files\VST3"
+                       enablePluginBinaryCopyStep="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics"/>
