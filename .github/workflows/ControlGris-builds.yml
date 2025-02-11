@@ -42,7 +42,7 @@ jobs:
             mesa-common-dev libjack-dev
 
       - name: set global JUCE search paths
-        run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /__w/SpatGRIS/SpatGRIS/JUCE/modules
+        run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /__w/ControlGris/ControlGris/JUCE/modules
 
       - name: Generate makefile (Standalone & VST3 only)
         run: |
