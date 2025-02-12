@@ -56,6 +56,7 @@ PresetsManager::PresetsManager(juce::XmlElement & data,
     , mPositionLinkEnforcer(positionLinkEnforcer)
     , mElevationLinkEnforcer(elevationLinkEnforcer)
 {
+    DBG("adf");
 }
 
 //==============================================================================
@@ -91,9 +92,14 @@ bool PresetsManager::load(int const presetNumber)
 
         auto const * presetData{ *maybe_presetData };
 
-        SourcesSnapshots snapshots{};
+//        if (presetData->hasAttribute("numSources"))
+//            mSources.setSize(<#int size#>)
+//            setNumberOfSources();
+    //        mAudioProcessorValueTreeState.state.setProperty("numberOfSources", 2, nullptr);
+
+        SourcesSnapshots snapshots;
         for (auto & source : mSources) {
-            SourceSnapshot snapshot{};
+            SourceSnapshot snapshot;
             auto const index{ source.getIndex() };
             auto const xPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 0) };
             auto const yPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 1) };
@@ -134,10 +140,8 @@ bool PresetsManager::load(int const presetNumber)
                 static_cast<float>(presetData->getDoubleAttribute(xTerminalPositionId)),
                 static_cast<float>(presetData->getDoubleAttribute(yTerminalPositionId))
             };
-            auto const inversedTerminalPosition{ inversedNormalizedTerminalPosition * 2.0f
-                                                 - juce::Point<float>{ 1.0f, 1.0f } };
-            terminalPosition
-                = juce::Point<float>{ inversedTerminalPosition.getX(), inversedTerminalPosition.getY() * -1.0f };
+            auto const inversedTerminalPosition{ inversedNormalizedTerminalPosition * 2.0f - juce::Point<float>{ 1.0f, 1.0f } };
+            terminalPosition = juce::Point<float>{ inversedTerminalPosition.getX(), inversedTerminalPosition.getY() * -1.0f };
         } else {
             terminalPosition = snapshots.primary.position;
         }
@@ -146,8 +150,7 @@ bool PresetsManager::load(int const presetNumber)
         if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
             Radians elevation;
             if (presetData->hasAttribute(zTerminalPositionId)) {
-                auto const inversedNormalizedTerminalElevation{ static_cast<float>(
-                    presetData->getDoubleAttribute(zTerminalPositionId)) };
+                auto const inversedNormalizedTerminalElevation{ static_cast<float>(presetData->getDoubleAttribute(zTerminalPositionId)) };
                 elevation = MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation);
             } else {
                 elevation = snapshots.primary.z;
@@ -157,7 +160,7 @@ bool PresetsManager::load(int const presetNumber)
         }
     }
     mLastLoadedPreset = presetNumber;
-    sendChangeMessage();
+//    sendChangeMessage();
 
     return true;
 }
@@ -185,17 +188,20 @@ std::optional<juce::XmlElement *> PresetsManager::getPresetData(int const preset
 std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const presetNumber) const
 {
     // Build a new fixed position element.
-    auto result{ std::make_unique<juce::XmlElement>("ITEM") };
-    result->setAttribute("ID", presetNumber);
+    auto preset{ std::make_unique<juce::XmlElement>("ITEM") };
+    preset->setAttribute("ID", presetNumber);
 
     auto const & positionSnapshots{ mPositionLinkEnforcer.getSnapshots() };
     auto const & elevationsSnapshots{ mElevationLinkEnforcer.getSnapshots() };
 
+    //save the number and initial position of all sources
     SourceIndex const numberOfSources{ mSources.size() };
+    preset->setAttribute("numSources", numberOfSources.get());
+
     for (SourceIndex sourceIndex{}; sourceIndex < numberOfSources; ++sourceIndex) {
-        auto const xName{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 0) };
-        auto const yName{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 1) };
-        auto const zName{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 2) };
+        auto const curSourceX{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 0) };
+        auto const curSourceY{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 1) };
+        auto const curSourceZ{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 2) };
 
         auto const position{ positionSnapshots[sourceIndex].position };
         auto const elevation{ elevationsSnapshots[sourceIndex].z };
@@ -206,30 +212,28 @@ std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const pre
         auto const mirroredNormalizedPosition{ (mirroredPosition + juce::Point<float>{ 1.0f, 1.0f }) / 2.0f };
         auto const inversedNormalizedElevation{ 1.0f - normalizedElevation };
 
-        result->setAttribute(xName, mirroredNormalizedPosition.getX());
-        result->setAttribute(yName, mirroredNormalizedPosition.getY());
-        result->setAttribute(zName, inversedNormalizedElevation);
+        preset->setAttribute(curSourceX, mirroredNormalizedPosition.getX());
+        preset->setAttribute(curSourceY, mirroredNormalizedPosition.getY());
+        preset->setAttribute(curSourceZ, inversedNormalizedElevation);
     }
 
-    auto const xName{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
-    auto const yName{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
-    auto const zName{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
+    //TODO VB: is terminal the same as final?
+    //save the terminal position of only the first source
+    auto const firstSourceX{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
+    auto const firstSourceY{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
+    auto const firstSourceZ{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
 
+    // For some legacy reason, we store a normalized value with inversed Y and elevation
     auto const position{ mSources.getPrimarySource().getPos() };
-    juce::Point<float> const mirroredPosition{
-        position.getX(),
-        position.getY() * -1.0f
-    }; // For some legacy reason, we store a normalized value with inversed Y.
+    juce::Point<float> const mirroredPosition{ position.getX(), position.getY() * -1.0f };
     auto const inversedNormalizedPosition{ (mirroredPosition + juce::Point<float>{ 1.0f, 1.0f }) / 2.0f };
-    auto const inversedNormalizedElevation{
-        1.0f - mSources.getPrimarySource().getNormalizedElevation().get()
-    }; // Same this happens with elevation.
+    auto const inversedNormalizedElevation{ 1.0f - mSources.getPrimarySource().getNormalizedElevation().get() };
 
-    result->setAttribute(xName, inversedNormalizedPosition.getX());
-    result->setAttribute(yName, inversedNormalizedPosition.getY());
-    result->setAttribute(zName, inversedNormalizedElevation);
+    preset->setAttribute(firstSourceX, inversedNormalizedPosition.getX());
+    preset->setAttribute(firstSourceY, inversedNormalizedPosition.getY());
+    preset->setAttribute(firstSourceZ, inversedNormalizedElevation);
 
-    return result;
+    return preset;
 }
 
 //==============================================================================

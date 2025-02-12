@@ -34,7 +34,7 @@ enum class FixedPositionType { terminal, initial };
 juce::String
     getFixedPosSourceName(FixedPositionType const fixedPositionType, SourceIndex const index, int const dimension);
 //==============================================================================
-class PresetsManager final : public juce::ChangeBroadcaster
+class PresetsManager final// : public juce::ChangeBroadcaster
 {
     //==============================================================================
     int mLastLoadedPreset{ 0 };
@@ -46,7 +46,7 @@ class PresetsManager final : public juce::ChangeBroadcaster
 public:
     //==============================================================================
     PresetsManager() = delete;
-    ~PresetsManager() noexcept override = default;
+//    ~PresetsManager() noexcept override = default;
 
     PresetsManager(PresetsManager const &) = delete;
     PresetsManager(PresetsManager &&) = delete;
