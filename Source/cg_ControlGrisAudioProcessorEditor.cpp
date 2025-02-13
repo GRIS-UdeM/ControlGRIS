@@ -364,34 +364,24 @@ void ControlGrisAudioProcessorEditor::oscStateChangedCallback(bool const state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const numOfSources)
 {
-    // NOW HERE: had to bypass this logic, how bad is it? Also first time round it looks like the position is reset
-    if (true || mProcessor.getSources().size() != numOfSources || mIsInsideSetPluginState) {
-        auto const initSourcePlacement{ mProcessor.getSources().size() != numOfSources };
-        auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
-        auto const symmetricLinkAllowed{ numOfSources == 2 };
-        mSectionTrajectory.setSymmetricLinkComboState(symmetricLinkAllowed);
-        if (!symmetricLinkAllowed) {
-            auto const isCurrentPositionSourceLinkSymmetric{ currentPositionSourceLink == PositionSourceLink::symmetricX
-                                                             || currentPositionSourceLink
-                                                                    == PositionSourceLink::symmetricY };
-            if (isCurrentPositionSourceLinkSymmetric) {
-                mProcessor.setPositionSourceLink(PositionSourceLink::independent,
-                                                 SourceLinkEnforcer::OriginOfChange::user);
-            }
-        }
-
-        mSelectedSource = {};
-        mProcessor.setNumberOfSources(numOfSources);
-        mSectionGeneralSettings.setNumberOfSources(numOfSources);
-        mSectionTrajectory.setNumberOfSources(numOfSources);
-        mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
-        mPositionField.refreshSources();
-        mElevationField.refreshSources();
-        mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
-        if (initSourcePlacement) {
-            sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
-        }
+    auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
+    auto const symmetricLinkAllowed{ numOfSources == 2 };
+    mSectionTrajectory.setSymmetricLinkComboState(symmetricLinkAllowed);
+    if (!symmetricLinkAllowed) {
+        auto const isCurrentPositionSourceLinkSymmetric{ currentPositionSourceLink == PositionSourceLink::symmetricX
+                                                         || currentPositionSourceLink == PositionSourceLink::symmetricY };
+        if (isCurrentPositionSourceLinkSymmetric)
+            mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::user);
     }
+
+    mSelectedSource = {};
+    mProcessor.setNumberOfSources(numOfSources);
+    mSectionGeneralSettings.setNumberOfSources(numOfSources);
+    mSectionTrajectory.setNumberOfSources(numOfSources);
+    mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
+    mPositionField.refreshSources();
+    mElevationField.refreshSources();
+    mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
 }
 
 //==============================================================================
