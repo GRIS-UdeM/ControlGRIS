@@ -50,11 +50,13 @@ juce::String
 PresetsManager::PresetsManager(juce::XmlElement & data,
                                Sources & sources,
                                SourceLinkEnforcer & positionLinkEnforcer,
-                               SourceLinkEnforcer & elevationLinkEnforcer)
+                               SourceLinkEnforcer & elevationLinkEnforcer,
+                               SourceId & firstSourceId)
     : mData(data)
     , mSources(sources)
     , mPositionLinkEnforcer(positionLinkEnforcer)
     , mElevationLinkEnforcer(elevationLinkEnforcer)
+    , mFirstSourceId(firstSourceId)
 {
 }
 
@@ -62,6 +64,15 @@ PresetsManager::PresetsManager(juce::XmlElement & data,
 int PresetsManager::getCurrentPreset() const
 {
     return mLastLoadedPreset;
+}
+
+std::optional<int> PresetsManager::getPresetSourceId(int presetNumber)
+{
+    auto const presetData { getPresetData(presetNumber) };
+    if (!presetData || ! (*presetData)->hasAttribute("firstSourceId"))
+        return {};
+
+    return (*presetData)->getIntAttribute("firstSourceId");
 }
 
 //==============================================================================
@@ -93,6 +104,9 @@ bool PresetsManager::load(int const presetNumber)
 
         if (presetData->hasAttribute ("numberOfSources"))
             mSources.setSize(presetData->getIntAttribute("numberOfSources"));
+
+        if (presetData->hasAttribute("firstSourceId"))
+            mFirstSourceId = SourceId{ presetData->getIntAttribute("firstSourceId") };
 
         //create a SourcesSnapshots and store in it the source positions from the preset
         SourcesSnapshots snapshots;
@@ -196,6 +210,7 @@ std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const pre
     //save the number and initial position of all sources
     SourceIndex const numberOfSources{ mSources.size() };
     preset->setAttribute("numberOfSources", numberOfSources.get());
+    preset->setAttribute("firstSourceId", mFirstSourceId.get());
 
     for (SourceIndex sourceIndex{}; sourceIndex < numberOfSources; ++sourceIndex) {
         auto const curSourceX{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 0) };
@@ -266,12 +281,6 @@ bool PresetsManager::deletePreset(int const presetNumber) const
     mData.sortChildElements(sorter);
 
     return true;
-}
-
-//==============================================================================
-void PresetsManager::numberOfSourcesChanged()
-{
-    // TODO
 }
 
 //==============================================================================

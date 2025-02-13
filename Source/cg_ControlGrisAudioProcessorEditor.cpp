@@ -712,6 +712,9 @@ void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const pr
     mProcessor.getPresetsManager().forceLoad(presetNumber);
     numberOfSourcesChangedCallback(mProcessor.getSources().size());
 
+    if (auto const presetSourceId {mProcessor.getPresetsManager().getPresetSourceId(presetNumber)})
+        firstSourceIdChangedCallback(SourceId{*presetSourceId});
+
     auto * parameter{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::POSITION_PRESET) };
     auto const newValue{ static_cast<float>(presetNumber) / static_cast<float>(NUMBER_OF_POSITION_PRESETS) };
 
@@ -719,9 +722,8 @@ void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const pr
     parameter->setValueNotifyingHost(newValue);
 
     mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
-    if (mProcessor.getSpatMode() == SpatMode::cube) {
+    if (mProcessor.getSpatMode() == SpatMode::cube)
         mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
-    }
 }
 
 //==============================================================================
