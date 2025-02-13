@@ -74,7 +74,7 @@ void PresetButton::internalClickCallback(juce::ModifierKeys const & mods)
         setToggleState(false, juce::NotificationType::dontSendNotification);
         mLoaded = mSaved = false;
     } else if (mSaved) {
-        TextButton::internalClickCallback(mods);
+        TextButton::internalClickCallback(mods); //this will cause PresetButton::clicked() to be called right above
     }
     refresh();
 }

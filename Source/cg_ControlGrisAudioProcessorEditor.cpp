@@ -364,7 +364,8 @@ void ControlGrisAudioProcessorEditor::oscStateChangedCallback(bool const state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const numOfSources)
 {
-    if (mProcessor.getSources().size() != numOfSources || mIsInsideSetPluginState) {
+    // NOW HERE: had to bypass this logic, how bad is it? Also first time round it looks like the position is reset
+    if (true || mProcessor.getSources().size() != numOfSources || mIsInsideSetPluginState) {
         auto const initSourcePlacement{ mProcessor.getSources().size() != numOfSources };
         auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
         auto const symmetricLinkAllowed{ numOfSources == 2 };
@@ -719,6 +720,7 @@ void ControlGrisAudioProcessorEditor::fieldSourcePositionChangedCallback(SourceI
 void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const presetNumber)
 {
     mProcessor.getPresetsManager().forceLoad(presetNumber);
+    numberOfSourcesChangedCallback(mProcessor.getSources().size());
 
     auto * parameter{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::POSITION_PRESET) };
     auto const newValue{ static_cast<float>(presetNumber) / static_cast<float>(NUMBER_OF_POSITION_PRESETS) };

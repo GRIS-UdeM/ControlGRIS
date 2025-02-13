@@ -56,7 +56,6 @@ PresetsManager::PresetsManager(juce::XmlElement & data,
     , mPositionLinkEnforcer(positionLinkEnforcer)
     , mElevationLinkEnforcer(elevationLinkEnforcer)
 {
-    DBG("adf");
 }
 
 //==============================================================================
@@ -92,11 +91,10 @@ bool PresetsManager::load(int const presetNumber)
 
         auto const * presetData{ *maybe_presetData };
 
-//        if (presetData->hasAttribute("numSources"))
-//            mSources.setSize(<#int size#>)
-//            setNumberOfSources();
-    //        mAudioProcessorValueTreeState.state.setProperty("numberOfSources", 2, nullptr);
+        if (presetData->hasAttribute ("numberOfSources"))
+            mSources.setSize(presetData->getIntAttribute("numberOfSources"));
 
+        //create a SourcesSnapshots and store in it the source positions from the preset
         SourcesSnapshots snapshots;
         for (auto & source : mSources) {
             SourceSnapshot snapshot;
@@ -113,8 +111,8 @@ bool PresetsManager::load(int const presetNumber)
                 snapshot.position = position;
                 auto const zPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 2) };
                 if (presetData->hasAttribute(zPosId)) {
-                    auto const inversedNormalizedElevation{ static_cast<float>(
-                        presetData->getDoubleAttribute(getFixedPosSourceName(FixedPositionType::initial, index, 2))) };
+                    auto const elevation {getFixedPosSourceName(FixedPositionType::initial, index, 2)};
+                    auto const inversedNormalizedElevation{ static_cast<float>(presetData->getDoubleAttribute(elevation)) };
                     snapshot.z = MAX_ELEVATION * (1.0f - inversedNormalizedElevation);
                 }
             }
@@ -125,10 +123,10 @@ bool PresetsManager::load(int const presetNumber)
             }
         }
 
+        //load the snapshots into the enforcers, which are references to the ControlGrisAudioProcessor members
         mPositionLinkEnforcer.loadSnapshots(snapshots);
-        if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
+        if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube)
             mElevationLinkEnforcer.loadSnapshots(snapshots);
-        }
 
         auto const xTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
         auto const yTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
@@ -160,7 +158,8 @@ bool PresetsManager::load(int const presetNumber)
         }
     }
     mLastLoadedPreset = presetNumber;
-//    sendChangeMessage();
+
+    sendChangeMessage();
 
     return true;
 }
@@ -196,7 +195,7 @@ std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const pre
 
     //save the number and initial position of all sources
     SourceIndex const numberOfSources{ mSources.size() };
-    preset->setAttribute("numSources", numberOfSources.get());
+    preset->setAttribute("numberOfSources", numberOfSources.get());
 
     for (SourceIndex sourceIndex{}; sourceIndex < numberOfSources; ++sourceIndex) {
         auto const curSourceX{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 0) };
