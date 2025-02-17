@@ -108,7 +108,7 @@ bool PresetsManager::load(int const presetNumber)
         if (presetData->hasAttribute("firstSourceId"))
             mFirstSourceId = SourceId{ presetData->getIntAttribute("firstSourceId") };
 
-        //create a SourcesSnapshots and store in it the source positions from the preset
+        // Store the preset's source positions in a new SourcesSnapshots
         SourcesSnapshots snapshots;
         for (auto & source : mSources) {
             SourceSnapshot snapshot;
@@ -146,6 +146,7 @@ bool PresetsManager::load(int const presetNumber)
         auto const yTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
         auto const zTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
 
+        // position the first source
         juce::Point<float> terminalPosition;
         if (presetData->hasAttribute(xTerminalPositionId) && presetData->hasAttribute(yTerminalPositionId)) {
             juce::Point<float> const inversedNormalizedTerminalPosition{
@@ -173,6 +174,8 @@ bool PresetsManager::load(int const presetNumber)
     }
     mLastLoadedPreset = presetNumber;
 
+    // send a change message, which will end up calling SourceLinkEnforcer::enforceSourceLink()
+    // to position the secondary sources
     sendChangeMessage();
 
     return true;
