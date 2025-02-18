@@ -56,7 +56,7 @@ struct SourcesSnapshots {
     SourceSnapshot & operator[](SourceIndex const index);
     int size() const { return secondaries.size() + 1; }
 
-    juce::String toString ()
+    juce::String toString () const
     {
         juce::String ret;
         ret += primary.position.toString() + ", " + primary.z.toString() + "; ";

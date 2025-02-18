@@ -109,9 +109,9 @@ bool PresetsManager::load(int const presetNumber)
             mFirstSourceId = SourceId{ presetData->getIntAttribute("firstSourceId") };
 
         // Store the preset's source positions in a new SourcesSnapshots
-        SourcesSnapshots snapshots;
+        SourcesSnapshots snapshots{};
         for (auto & source : mSources) {
-            SourceSnapshot snapshot;
+            SourceSnapshot snapshot{};
             auto const index{ source.getIndex() };
             auto const xPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 0) };
             auto const yPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 1) };
@@ -234,13 +234,12 @@ std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const pre
         preset->setAttribute(curSourceZ, inversedNormalizedElevation);
     }
 
-    //TODO VB: is terminal the same as final?
     //save the terminal position of only the first source
     auto const firstSourceX{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
     auto const firstSourceY{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
     auto const firstSourceZ{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
 
-    // For some legacy reason, we store a normalized value with inversed Y and elevation
+    //The position is stored normalized with inversed Y and elevation
     auto const position{ mSources.getPrimarySource().getPos() };
     juce::Point<float> const mirroredPosition{ position.getX(), position.getY() * -1.0f };
     auto const inversedNormalizedPosition{ (mirroredPosition + juce::Point<float>{ 1.0f, 1.0f }) / 2.0f };
