@@ -84,7 +84,8 @@ class ControlGrisAudioProcessor final
     juce::OSCSender mOscOutputSender;
     juce::OSCReceiver mOscInputReceiver;
 
-    juce::XmlElement mFixPositionData{ FIXED_POSITION_DATA_TAG };
+    juce::XmlElement mPresetData{ FIXED_POSITION_DATA_TAG };
+    void setSourcePositionsFromState();
 
     Sources mSources{};
     SourceLinkEnforcer mPositionSourceLinkEnforcer{ mSources, PositionSourceLink::independent };
@@ -93,7 +94,7 @@ class ControlGrisAudioProcessor final
     juce::AudioProcessorValueTreeState mAudioProcessorValueTreeState;
 
     ChangeGesturesManager mChangeGesturesManager{ mAudioProcessorValueTreeState };
-    PresetsManager mPresetManager{ mFixPositionData,
+    PresetsManager mPresetManager{ mPresetData,
                                    mSources,
                                    mPositionSourceLinkEnforcer,
                                    mElevationSourceLinkEnforcer,
@@ -198,7 +199,6 @@ public:
     void timerCallback() override;
 
     //==============================================================================
-    void setPluginState();
 
     void sourcePositionChanged(SourceIndex sourceIndex, int whichField);
     void setSourceParameterValue(SourceIndex sourceIndex, SourceParameter sourceParameter, float value);
