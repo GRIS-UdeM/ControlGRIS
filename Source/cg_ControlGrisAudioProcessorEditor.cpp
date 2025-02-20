@@ -722,8 +722,9 @@ void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const pr
     parameter->setValueNotifyingHost(newValue);
 
     mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
-    if (mProcessor.getSpatMode() == SpatMode::cube)
+    if (mProcessor.getSpatMode() == SpatMode::cube) {
         mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
+    }
 }
 
 //==============================================================================
