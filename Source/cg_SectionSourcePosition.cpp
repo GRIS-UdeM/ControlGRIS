@@ -181,6 +181,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
 {
     mSelectedSource = SourceIndex{};
 
+    // Source Placement
     mSourcePlacementLabel.setText("Sources Placement:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mSourcePlacementLabel);
 
@@ -194,6 +195,23 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
         });
     };
 
+    // Speaker Setup as Source Placement
+    mSpeakerSetupLabel.setText("Load Speaker Configuration as Source Placement:",
+                               juce::NotificationType::dontSendNotification);
+    addAndMakeVisible(&mSpeakerSetupLabel);
+
+    addAndMakeVisible(&mSpeakerSetupCombo);
+    mSpeakerSetupCombo.setTextWhenNothingSelected("Choose a file...");
+    mSpeakerSetupCombo.addItemList(SOURCE_PLACEMENT_SKETCH, 1);
+    mSpeakerSetupCombo.onChange = [this] {
+        mListeners.call([&](Listener & l) {
+            jassertfalse;
+            //l.sourcesPlacementChangedCallback(static_cast<SourcePlacement>(mSpeakerSetupCombo.getSelectedId()));
+            //mSpeakerSetupCombo.setSelectedId(0, juce::NotificationType::dontSendNotification);
+        });
+    };
+
+    // Source Number
     mSourceNumberLabel.setText("Source Number:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mSourceNumberLabel);
 
@@ -208,6 +226,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
         mListeners.call([&](Listener & l) { l.sourceSelectionChangedCallback(mSelectedSource); });
     };
 
+    // Other controls
     addAndMakeVisible(&mDomeControls);
     addAndMakeVisible(&mCubeControls);
     setSpatMode(spatMode);
@@ -222,14 +241,27 @@ void SectionSourcePosition::paint(juce::Graphics & g)
 //==============================================================================
 void SectionSourcePosition::resized()
 {
-    mSourcePlacementLabel.setBounds(5, 10, 150, 15);
-    mSourcePlacementCombo.setBounds(130, 10, 150, 20);
+    auto const positionLabelAndCombo = [](juce::Rectangle<int> && bounds, juce::Label & label, juce::ComboBox & combo) {
+        auto const labelWidth = label.getFont().getStringWidth(label.getText());
+        label.setBounds(bounds.removeFromLeft(labelWidth));
+        combo.setBounds(bounds);
+    };
 
-    mSourceNumberLabel.setBounds(305, 10, 150, 15);
-    mSourceNumberCombo.setBounds(430, 10, 150, 20);
+    auto bounds = getLocalBounds().reduced(5, 10);
 
-    mDomeControls.setBounds(305, 40, 275, 500);
-    mCubeControls.setBounds(305, 35, 275, 550);
+    //left half
+    auto leftHalf = bounds.removeFromLeft(bounds.getWidth() / 2);
+    positionLabelAndCombo(leftHalf.removeFromTop(20), mSourcePlacementLabel, mSourcePlacementCombo);
+    leftHalf.removeFromTop(5);
+    positionLabelAndCombo(leftHalf.removeFromTop(20), mSpeakerSetupLabel, mSpeakerSetupCombo);
+
+    //right half
+    positionLabelAndCombo(bounds.removeFromTop(20), mSourceNumberLabel, mSourceNumberCombo);
+
+    bounds.removeFromTop(5);
+    auto const domeAndCubeBounds{ bounds.removeFromTop(500) };
+    mDomeControls.setBounds(domeAndCubeBounds);
+    mCubeControls.setBounds(domeAndCubeBounds.withHeight (550));
 }
 
 //==============================================================================

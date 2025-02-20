@@ -364,16 +364,18 @@ void ControlGrisAudioProcessorEditor::oscStateChangedCallback(bool const state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const numOfSources)
 {
+    auto const isNewSourceCount{ mProcessor.getSources().size() != numOfSources };
     auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
     auto const symmetricLinkAllowed{ numOfSources == 2 };
     mSectionTrajectory.setSymmetricLinkComboState(symmetricLinkAllowed);
     if (!symmetricLinkAllowed) {
         auto const isCurrentPositionSourceLinkSymmetric{ currentPositionSourceLink == PositionSourceLink::symmetricX
-                                                         || currentPositionSourceLink == PositionSourceLink::symmetricY };
-        if (isCurrentPositionSourceLinkSymmetric)
+                                                         || currentPositionSourceLink
+                                                                == PositionSourceLink::symmetricY };
+        if (isCurrentPositionSourceLinkSymmetric) {
             mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::user);
+        }
     }
-
     mSelectedSource = {};
     mProcessor.setNumberOfSources(numOfSources);
     mSectionGeneralSettings.setNumberOfSources(numOfSources);
@@ -382,6 +384,9 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
     mPositionField.refreshSources();
     mElevationField.refreshSources();
     mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
+    if (isNewSourceCount) {
+        sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
+    }
 }
 
 //==============================================================================
@@ -709,6 +714,10 @@ void ControlGrisAudioProcessorEditor::fieldSourcePositionChangedCallback(SourceI
 // PositionPresetComponent::Listener callback.
 void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const presetNumber)
 {
+    // cache source link before we position all the sources
+    //auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
+    //mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
+
     mProcessor.getPresetsManager().forceLoad(presetNumber);
     numberOfSourcesChangedCallback(mProcessor.getSources().size());
 
@@ -725,6 +734,9 @@ void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const pr
     if (mProcessor.getSpatMode() == SpatMode::cube) {
         mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
     }
+
+    // set source link back to its cached value
+    //mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
 }
 
 //==============================================================================
