@@ -364,9 +364,6 @@ void ControlGrisAudioProcessorEditor::oscStateChangedCallback(bool const state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const numOfSources)
 {
-    //NOW HERE, I THINK WE SOMETHING LIKE THIS WHEN WE START LOADING THE PRESET AND PUT IT BACK WHEN WE'RE DONE
-    mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
-
     auto const isNewSourceCount{ mProcessor.getSources().size() != numOfSources };
     auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
     auto const symmetricLinkAllowed{ numOfSources == 2 };
@@ -389,9 +386,6 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
     mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
     if (isNewSourceCount) {
         sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
-    }
-    else {
-//        sourcesPlacementChangedCallback(SourcePlacement::);
     }
 }
 
@@ -720,6 +714,10 @@ void ControlGrisAudioProcessorEditor::fieldSourcePositionChangedCallback(SourceI
 // PositionPresetComponent::Listener callback.
 void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const presetNumber)
 {
+    // cache source link before we position all the sources
+    //auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
+    //mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
+
     mProcessor.getPresetsManager().forceLoad(presetNumber);
     numberOfSourcesChangedCallback(mProcessor.getSources().size());
 
@@ -736,6 +734,9 @@ void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const pr
     if (mProcessor.getSpatMode() == SpatMode::cube) {
         mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
     }
+
+    // set source link back to its cached value
+    //mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
 }
 
 //==============================================================================
