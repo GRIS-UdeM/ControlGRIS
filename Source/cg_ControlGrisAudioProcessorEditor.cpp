@@ -364,7 +364,10 @@ void ControlGrisAudioProcessorEditor::oscStateChangedCallback(bool const state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const numOfSources)
 {
-    auto const initSourcePlacement{ mProcessor.getSources().size() != numOfSources };
+    //NOW HERE, I THINK WE SOMETHING LIKE THIS WHEN WE START LOADING THE PRESET AND PUT IT BACK WHEN WE'RE DONE
+    mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
+
+    auto const isNewSourceCount{ mProcessor.getSources().size() != numOfSources };
     auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
     auto const symmetricLinkAllowed{ numOfSources == 2 };
     mSectionTrajectory.setSymmetricLinkComboState(symmetricLinkAllowed);
@@ -384,8 +387,11 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
     mPositionField.refreshSources();
     mElevationField.refreshSources();
     mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
-    if (initSourcePlacement) {
+    if (isNewSourceCount) {
         sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
+    }
+    else {
+//        sourcesPlacementChangedCallback(SourcePlacement::);
     }
 }
 
