@@ -488,6 +488,68 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 }
 
 //==============================================================================
+//TODO VB: file needs to be const
+void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback (juce::File speakerSetupFile)
+{
+    //first make sure our file exists
+    if (!speakerSetupFile.existsAsFile()) {
+        jassertfalse;
+        return;
+    }
+
+    //and is valid xml
+    auto const speakerSetup = juce::ValueTree::fromXml(speakerSetupFile.loadFileAsString());
+    if (!speakerSetup.isValid()) {
+        jassertfalse;
+        return;
+    }
+
+    // cache source link before we position all the sources
+    auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
+    mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
+
+    //Update the number of sources based from the setup file
+    auto const numOfSources{ speakerSetup.getNumChildren() };
+    numberOfSourcesChangedCallback(numOfSources);
+
+    auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
+    auto const distance{ isCubeMode ? 0.7f : 1.0f };
+
+    // position all sources
+    for (int curSource{ 0 }; curSource < numOfSources; ++curSource) {
+        auto const speakerPosition{ speakerSetup.getChild(curSource).getChildWithName("POSITION") };
+        float const x{ speakerPosition["X"] };
+        double const y{ speakerPosition["Y"] };
+        //double const z{ speakerPosition["Z"] };
+
+        auto source{ mProcessor.getSources()[curSource++] };
+        source.setX(x, Source::OriginOfChange::automation);
+        source.setY(y, Source::OriginOfChange::automation);
+    }
+
+    // TODO: why are we storing the _normalized_ positions in the processor?
+    // then as a second pass, give the processor the normalized positions
+    for (SourceIndex i{}; i < SourceIndex{ numOfSources }; ++i) {
+        auto const & source{ mProcessor.getSources()[i] };
+        mProcessor.setSourceParameterValue(i, SourceParameter::azimuth, source.getNormalizedAzimuth().get());
+        mProcessor.setSourceParameterValue(i, SourceParameter::elevation, source.getNormalizedElevation().get());
+        mProcessor.setSourceParameterValue(i, SourceParameter::distance, source.getDistance());
+    }
+
+    // update selected source
+    mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource],
+                                                SourceIndex{},
+                                                mProcessor.getSpatMode());
+    mPositionTrajectoryManager.setTrajectoryType(mPositionTrajectoryManager.getTrajectoryType(),
+                                                 mProcessor.getSources().getPrimarySource().getPos());
+
+    // set source link back to its cached value
+    mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
+
+    repaint();
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::sourcePositionChangedCallback(SourceIndex const sourceIndex,
                                                                     std::optional<Radians> const azimuth,
                                                                     std::optional<Radians> const elevation,

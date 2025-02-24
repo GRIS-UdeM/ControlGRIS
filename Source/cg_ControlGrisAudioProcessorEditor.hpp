@@ -123,6 +123,7 @@ public:
     // SectionSourcePosition::Listeners
     void sourceSelectionChangedCallback(SourceIndex sourceIndex) override;
     void sourcesPlacementChangedCallback(SourcePlacement sourcePlacement) override;
+    void speakerSetupSelectedCallback(juce::File speakerSetupFile) override;
     void sourcePositionChangedCallback(SourceIndex sourceIndex,
                                        std::optional<Radians> azimuth,
                                        std::optional<Radians> elevation,
