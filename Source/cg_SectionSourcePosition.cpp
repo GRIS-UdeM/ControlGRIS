@@ -204,8 +204,11 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
     mSpeakerSetupCombo.addItemList(SOURCE_PLACEMENT_SKETCH, 1);
     mSpeakerSetupCombo.onChange = [this] {
         mListeners.call([&](Listener & l) {
-            l.speakerSetupSelectedCallback({ "C:/Users/barth/Documents/git/sat/GRIS/SpatGRIS/Resources/templates/"
-                                             "Speaker setups/DOME/Dome4(4)Subs1 Quad.xml" });
+#if JUCE_MAC
+            l.speakerSetupSelectedCallback({ "/Users/rymer/Documents/git/sat/GRIS/SpatGRIS/Resources/templates/Speaker setups/DOME/Dome4(4)Subs1 Quad.xml" });
+#else
+            l.speakerSetupSelectedCallback({ "C:/Users/barth/Documents/git/sat/GRIS/SpatGRIS/Resources/templates/Speaker setups/DOME/Dome4(4)Subs1 Quad.xml" });
+#endif
         });
     };
 

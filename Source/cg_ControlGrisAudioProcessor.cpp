@@ -1189,6 +1189,7 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
     // other hosts.
 
     auto const xmlState{ getXmlFromBinary(data, sizeInBytes) };
+    DBG (xmlState->toString());
     if (xmlState != nullptr) {
         // Set global settings values.
         //----------------------------
