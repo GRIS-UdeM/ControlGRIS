@@ -107,6 +107,7 @@ public:
         virtual ~Listener() = default;
 
         virtual void sourcesPlacementChangedCallback(SourcePlacement value) = 0;
+        virtual void speakerSetupSelectedCallback(juce::File speakerSetupFile) = 0;
         virtual void sourceSelectionChangedCallback(SourceIndex sourceIndex) = 0;
         virtual void sourcePositionChangedCallback(SourceIndex sourceIndex,
                                                    std::optional<Radians> azimuth,

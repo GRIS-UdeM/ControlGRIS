@@ -196,8 +196,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
     };
 
     // Speaker Setup as Source Placement
-    mSpeakerSetupLabel.setText("Load Speaker Configuration as Source Placement:",
-                               juce::NotificationType::dontSendNotification);
+    mSpeakerSetupLabel.setText("Load Speaker Setup...", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mSpeakerSetupLabel);
 
     addAndMakeVisible(&mSpeakerSetupCombo);
@@ -205,9 +204,8 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
     mSpeakerSetupCombo.addItemList(SOURCE_PLACEMENT_SKETCH, 1);
     mSpeakerSetupCombo.onChange = [this] {
         mListeners.call([&](Listener & l) {
-            jassertfalse;
-            //l.sourcesPlacementChangedCallback(static_cast<SourcePlacement>(mSpeakerSetupCombo.getSelectedId()));
-            //mSpeakerSetupCombo.setSelectedId(0, juce::NotificationType::dontSendNotification);
+            l.speakerSetupSelectedCallback({ "C:/Users/barth/Documents/git/sat/GRIS/SpatGRIS/Resources/templates/"
+                                             "Speaker setups/DOME/Dome4(4)Subs1 Quad.xml" });
         });
     };
 

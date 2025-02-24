@@ -92,97 +92,96 @@ bool PresetsManager::forceLoad(int const presetNumber)
 }
 
 //==============================================================================
+
 bool PresetsManager::load(int const presetNumber)
 {
-    if (presetNumber != 0) {
-        auto const maybe_presetData{ getPresetData(presetNumber) };
-        if (!maybe_presetData.has_value()) {
-            return false;
-        }
+    if (presetNumber <= 0)
+        return false;
 
-        auto const * presetData{ *maybe_presetData };
+    auto const maybe_presetData{ getPresetData(presetNumber) };
+    if (!maybe_presetData.has_value()) {
+        return false;
+    }
 
-        if (presetData->hasAttribute ("numberOfSources"))
-            mSources.setSize(presetData->getIntAttribute("numberOfSources"));
+    load(**maybe_presetData);
+    return true;
+}
 
-        if (presetData->hasAttribute("firstSourceId"))
-            mFirstSourceId = SourceId{ presetData->getIntAttribute("firstSourceId") };
+void PresetsManager::load(juce::XmlElement & presetData)
+{
+    if (presetData.hasAttribute("numberOfSources"))
+        mSources.setSize(presetData.getIntAttribute("numberOfSources"));
 
-        // Store the preset's source positions in a new SourcesSnapshots
-        SourcesSnapshots snapshots{};
-        for (auto & source : mSources) {
-            SourceSnapshot snapshot{};
-            auto const index{ source.getIndex() };
-            auto const xPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 0) };
-            auto const yPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 1) };
-            if (presetData->hasAttribute(xPosId) && presetData->hasAttribute(yPosId)) {
-                juce::Point<float> const normalizedInversedPosition{
-                    static_cast<float>(presetData->getDoubleAttribute(xPosId)),
-                    static_cast<float>(presetData->getDoubleAttribute(yPosId))
-                };
-                auto const inversedPosition{ normalizedInversedPosition * 2.0f - juce::Point<float>{ 1.0f, 1.0f } };
-                juce::Point<float> const position{ inversedPosition.getX(), inversedPosition.getY() * -1.0f };
-                snapshot.position = position;
-                auto const zPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 2) };
-                if (presetData->hasAttribute(zPosId)) {
-                    auto const elevation {getFixedPosSourceName(FixedPositionType::initial, index, 2)};
-                    auto const inversedNormalizedElevation{ static_cast<float>(presetData->getDoubleAttribute(elevation)) };
-                    snapshot.z = MAX_ELEVATION * (1.0f - inversedNormalizedElevation);
-                }
-            }
-            if (source.isPrimarySource()) {
-                snapshots.primary = snapshot;
-            } else {
-                snapshots.secondaries.add(snapshot);
-            }
-        }
+    if (presetData.hasAttribute("firstSourceId"))
+        mFirstSourceId = SourceId{ presetData.getIntAttribute("firstSourceId") };
 
-        //load the snapshots into the enforcers, which are references to the ControlGrisAudioProcessor members
-        mPositionLinkEnforcer.loadSnapshots(snapshots);
-        if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
-            mElevationLinkEnforcer.loadSnapshots(snapshots);
-        }
-
-        auto const xTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
-        auto const yTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
-        auto const zTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
-
-        // position the first source
-        juce::Point<float> terminalPosition;
-        if (presetData->hasAttribute(xTerminalPositionId) && presetData->hasAttribute(yTerminalPositionId)) {
-            juce::Point<float> const inversedNormalizedTerminalPosition{
-                static_cast<float>(presetData->getDoubleAttribute(xTerminalPositionId)),
-                static_cast<float>(presetData->getDoubleAttribute(yTerminalPositionId))
+    // Store the preset's source positions in a new SourcesSnapshots
+    SourcesSnapshots snapshots{};
+    for (auto & source : mSources) {
+        SourceSnapshot snapshot{};
+        auto const index{ source.getIndex() };
+        auto const xPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 0) };
+        auto const yPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 1) };
+        if (presetData.hasAttribute(xPosId) && presetData.hasAttribute(yPosId)) {
+            juce::Point<float> const normalizedInversedPosition{
+                static_cast<float>(presetData.getDoubleAttribute(xPosId)),
+                static_cast<float>(presetData.getDoubleAttribute(yPosId))
             };
-            auto const inversedTerminalPosition{ inversedNormalizedTerminalPosition * 2.0f
-                                                 - juce::Point<float>{ 1.0f, 1.0f } };
-            terminalPosition
-                = juce::Point<float>{ inversedTerminalPosition.getX(), inversedTerminalPosition.getY() * -1.0f };
+            auto const inversedPosition{ normalizedInversedPosition * 2.0f - juce::Point<float>{ 1.0f, 1.0f } };
+            juce::Point<float> const position{ inversedPosition.getX(), inversedPosition.getY() * -1.0f };
+            snapshot.position = position;
+            auto const zPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 2) };
+            if (presetData.hasAttribute(zPosId)) {
+                auto const elevation{ getFixedPosSourceName(FixedPositionType::initial, index, 2) };
+                auto const inversedNormalizedElevation{ static_cast<float>(presetData.getDoubleAttribute(elevation)) };
+                snapshot.z = MAX_ELEVATION * (1.0f - inversedNormalizedElevation);
+            }
+        }
+        if (source.isPrimarySource()) {
+            snapshots.primary = snapshot;
         } else {
-            terminalPosition = snapshots.primary.position;
-        }
-        mSources.getPrimarySource().setPosition(terminalPosition, Source::OriginOfChange::presetRecall);
-
-        if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
-            Radians elevation;
-            if (presetData->hasAttribute(zTerminalPositionId)) {
-                auto const inversedNormalizedTerminalElevation{ static_cast<float>(
-                    presetData->getDoubleAttribute(zTerminalPositionId)) };
-                elevation = MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation);
-            } else {
-                elevation = snapshots.primary.z;
-            };
-
-            mSources.getPrimarySource().setElevation(elevation, Source::OriginOfChange::presetRecall);
+            snapshots.secondaries.add(snapshot);
         }
     }
-    mLastLoadedPreset = presetNumber;
 
-    // send a change message, which will end up calling SourceLinkEnforcer::enforceSourceLink()
-    // to position the secondary sources
-    sendChangeMessage();
+    // load the snapshots into the enforcers, which are references to the ControlGrisAudioProcessor members
+    mPositionLinkEnforcer.loadSnapshots(snapshots);
+    if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
+        mElevationLinkEnforcer.loadSnapshots(snapshots);
+    }
 
-    return true;
+    auto const xTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
+    auto const yTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
+    auto const zTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
+
+    // position the first source
+    juce::Point<float> terminalPosition;
+    if (presetData.hasAttribute(xTerminalPositionId) && presetData.hasAttribute(yTerminalPositionId)) {
+        juce::Point<float> const inversedNormalizedTerminalPosition{
+            static_cast<float>(presetData.getDoubleAttribute(xTerminalPositionId)),
+            static_cast<float>(presetData.getDoubleAttribute(yTerminalPositionId))
+        };
+        auto const inversedTerminalPosition{ inversedNormalizedTerminalPosition * 2.0f
+                                             - juce::Point<float>{ 1.0f, 1.0f } };
+        terminalPosition
+            = juce::Point<float>{ inversedTerminalPosition.getX(), inversedTerminalPosition.getY() * -1.0f };
+    } else {
+        terminalPosition = snapshots.primary.position;
+    }
+    mSources.getPrimarySource().setPosition(terminalPosition, Source::OriginOfChange::presetRecall);
+
+    if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
+        Radians elevation;
+        if (presetData.hasAttribute(zTerminalPositionId)) {
+            auto const inversedNormalizedTerminalElevation{ static_cast<float>(
+                presetData.getDoubleAttribute(zTerminalPositionId)) };
+            elevation = MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation);
+        } else {
+            elevation = snapshots.primary.z;
+        };
+
+        mSources.getPrimarySource().setElevation(elevation, Source::OriginOfChange::presetRecall);
+    }
 }
 
 //==============================================================================

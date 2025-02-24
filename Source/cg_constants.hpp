@@ -107,9 +107,6 @@ enum class ElevationTrajectoryType { undefined, realtime, drawing, downUp, upDow
 extern juce::StringArray const ELEVATION_TRAJECTORY_TYPE_TYPES;
 
 //==============================================================================
-// Fix position data headers.
-extern juce::StringArray const FIXED_POSITION_DATA_HEADERS;
-
 extern juce::String const FIXED_POSITION_DATA_TAG;
 
 namespace Automation
