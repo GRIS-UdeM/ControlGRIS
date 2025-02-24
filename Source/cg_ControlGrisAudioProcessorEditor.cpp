@@ -515,6 +515,9 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback (juce::File s
     auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
     auto const distance{ isCubeMode ? 0.7f : 1.0f };
 
+    //TODO VB: so actually what we need to do is call PresetsManager::load() with the position data in a format that it can understand
+    //so extract the mData logic out of PresetsManager::load and when we call load with an int it goes through that wrapper
+
     // position all sources
     for (int curSource{ 0 }; curSource < numOfSources; ++curSource) {
         auto const speakerPosition{ speakerSetup.getChild(curSource).getChildWithName("POSITION") };
