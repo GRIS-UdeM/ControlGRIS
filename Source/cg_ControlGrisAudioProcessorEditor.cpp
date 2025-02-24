@@ -506,8 +506,12 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(juce::File sp
         return;
     }
 
+    DBG(speakerSetup.toXmlString());
+
     auto const numOfSources{ speakerSetup.getNumChildren() };
-    juce::XmlElement speakerSetupXml{ "Fix_Position_Data" };
+    juce::XmlElement speakerSetupXml{ "ITEM" };
+    speakerSetupXml.setAttribute("ID", -1); // we're not using an ID here, that's the OG presets
+    speakerSetupXml.setAttribute("numberOfSources", numOfSources);
 
     //convert our xml to the xml that the preset manager is expecting
     for (int curSource{ 0 }; curSource < numOfSources; ++curSource) {
@@ -515,7 +519,18 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(juce::File sp
         float const x{ speakerPosition["X"] };
         double const y{ speakerPosition["Y"] };
         double const z{ speakerPosition["Z"] };
+
+        speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_X", x);
+        speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_Y", y);
+        speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_Z", z);
+        if (curSource == 0) {
+            speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_terminal_X", x);
+            speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_terminal_Y", y);
+            speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_terminal_Z", z);
+        }
     }
+
+    DBG(speakerSetupXml.toString());
 
     // get a reference to the presetManager, because who needs encapsulation, and load the speaker setup
     auto & presetmanRef = mProcessor.getPresetsManager();
