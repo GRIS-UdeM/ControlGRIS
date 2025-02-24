@@ -489,6 +489,53 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 
 //==============================================================================
 //TODO VB: file needs to be const
+#if 1
+//this is essentially a copy of positionPresetChangedCallback
+void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(juce::File speakerSetupFile)
+{
+    // first make sure our file exists
+    if (!speakerSetupFile.existsAsFile()) {
+        jassertfalse;
+        return;
+    }
+
+    // and is valid xml
+    auto const speakerSetup = juce::ValueTree::fromXml(speakerSetupFile.loadFileAsString());
+    if (!speakerSetup.isValid()) {
+        jassertfalse;
+        return;
+    }
+
+    auto const numOfSources{ speakerSetup.getNumChildren() };
+    juce::XmlElement speakerSetupXml{ "Fix_Position_Data" };
+
+    //convert our xml to the xml that the preset manager is expecting
+    for (int curSource{ 0 }; curSource < numOfSources; ++curSource) {
+        auto const speakerPosition{ speakerSetup.getChild(curSource).getChildWithName("POSITION") };
+        float const x{ speakerPosition["X"] };
+        double const y{ speakerPosition["Y"] };
+        double const z{ speakerPosition["Z"] };
+    }
+
+    // get a reference to the presetManager, because who needs encapsulation, and load the speaker setup
+    auto & presetmanRef = mProcessor.getPresetsManager();
+    presetmanRef.load(speakerSetupXml);
+
+    numberOfSourcesChangedCallback(mProcessor.getSources().size());
+
+    // TODO VB: hmmm presets can be automated? Is that problematic if we store the number of source and source id in
+    // there?
+    //auto * parameter{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::POSITION_PRESET) };
+    //auto const newValue{ static_cast<float>(presetNumber) / static_cast<float>(NUMBER_OF_POSITION_PRESETS) };
+    //auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(Automation::Ids::POSITION_PRESET) };
+    //parameter->setValueNotifyingHost(newValue);
+
+    mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
+    if (mProcessor.getSpatMode() == SpatMode::cube) {
+        mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
+    }
+}
+#else
 void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback (juce::File speakerSetupFile)
 {
     //first make sure our file exists
@@ -504,9 +551,12 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback (juce::File s
         return;
     }
 
+    //get a reference to the presetManager, because who needs encapsulation
+    auto& presetmanRef = mProcessor.getPresetsManager();
+
     // cache source link before we position all the sources
-    auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
-    mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
+    //auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
+    //mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
 
     //Update the number of sources based from the setup file
     auto const numOfSources{ speakerSetup.getNumChildren() };
@@ -551,7 +601,7 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback (juce::File s
 
     repaint();
 }
-
+#endif
 //==============================================================================
 void ControlGrisAudioProcessorEditor::sourcePositionChangedCallback(SourceIndex const sourceIndex,
                                                                     std::optional<Radians> const azimuth,

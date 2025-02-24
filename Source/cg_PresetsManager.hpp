@@ -70,6 +70,9 @@ public:
     void save(int presetNumber) const;
     [[nodiscard]] bool deletePreset(int presetNumber) const;
 
+    //TODO VB: not sure this should be public or what
+    void load(juce::XmlElement & presetData);
+
 private:
     //==============================================================================
     [[nodiscard]] bool contains(int presetNumber) const;
@@ -77,6 +80,7 @@ private:
     [[nodiscard]] std::optional<juce::XmlElement *> getPresetData(int presetNumber) const;
 
     [[nodiscard]] bool load(int presetNumber);
+
     //==============================================================================
     JUCE_LEAK_DETECTOR(PresetsManager)
 };
