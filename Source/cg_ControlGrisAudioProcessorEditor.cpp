@@ -508,6 +508,40 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(juce::File sp
 
     DBG(speakerSetup.toXmlString());
 
+
+
+    /*
+    * found these bits of information in spatgris and speakerview
+        //SG is XZ-Y, Godot is XYZ. Conversion happens in SpeakerView`
+	    Vector3(src_position[0], src_position[2], -src_position[1]) * speakerview_node.SG_SCALE`
+	    with SG_SCALE == 10`
+
+        so it's x, z, and - y, all times 10?
+        that doesn't make any sense lol, I need to ask gael this stuff
+
+        SPEAKER SETUP FILE POSITION ONLY
+  <POSITION X="-0.7071083784103394" Y="0.7071067690849304" Z="-9.478120688299896e-8"/>
+  <POSITION X="0.7071067094802856" Y="0.7071068286895752" Z="-9.478120688299896e-8"/>
+  <POSITION X="-0.7071083784103394" Y="-0.7071067690849304" Z="-9.478120688299896e-8"/>
+  <POSITION X="0.7071067094802856" Y="-0.7071068286895752" Z="-9.478120688299896e-8"/>
+  <POSITION X="-1.31745878206857e-7" Y="1.389999985694885" Z="-1.31745878206857e-7"/>
+
+========================================
+SAVED STATE INFORMATION, only preset 5, which should correspond to the above
+<ITEM ID="5" numberOfSources="5" firstSourceId="5"
+  S1_X="0.2061072885990143" S1_Y="0.9045084118843079" S1_Z="0.0"
+  S2_X="0.8535534143447876" S2_Y="0.8535534143447876" S2_Z="0.4963092803955078"
+  S3_X="0.1464466154575348" S3_Y="0.8535534143447876" S3_Z="0.5174825191497803"
+  S4_X="0.8597006797790527" S4_Y="0.1527027487754822" S4_Z="0.02087914943695068"
+  S5_X="0.1464466154575348" S5_Y="0.1464466154575348" S5_Z="0.0"
+  S1_terminal_X="0.5026595592498779" S1_terminal_Y="0.9999929666519165" S1_terminal_Z="0.0"/>
+    */
+
+
+
+
+
+
     auto const numOfSources{ speakerSetup.getNumChildren() };
     juce::XmlElement speakerSetupXml{ "ITEM" };
     speakerSetupXml.setAttribute("ID", -1); // we're not using an ID here, that's the OG presets
