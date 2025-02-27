@@ -82,7 +82,7 @@ private:
 }; // class Base
 
 //==============================================================================
-// only use full to recall saved positions
+// only useful to recall saved positions
 class PositionIndependent final : public Base
 {
     void computeParameters_implementation(Sources const &, SourcesSnapshots const &) override {}
@@ -240,7 +240,7 @@ class PositionDeltaLock final : public Base
 };
 
 //==============================================================================
-// only usefuLl to recall saved positions
+// only useful to recall saved positions
 class ElevationIndependent final : public Base
 {
     void computeParameters_implementation(Sources const &, SourcesSnapshots const &) override {}

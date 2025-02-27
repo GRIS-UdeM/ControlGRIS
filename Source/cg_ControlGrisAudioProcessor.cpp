@@ -359,8 +359,6 @@ void ControlGrisAudioProcessor::setNumberOfSources(int const numOfSources, bool 
     mPositionSourceLinkEnforcer.numberOfSourcesChanged();
     mElevationSourceLinkEnforcer.numberOfSourcesChanged();
 
-    mPresetManager.numberOfSourcesChanged();
-
     auto const positionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
     auto const isSymmetricLink{ positionSourceLink == PositionSourceLink::symmetricX
                                 || positionSourceLink == PositionSourceLink::symmetricY };

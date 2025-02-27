@@ -42,6 +42,7 @@ class PresetsManager final : public juce::ChangeBroadcaster
     Sources & mSources;
     SourceLinkEnforcer & mPositionLinkEnforcer;
     SourceLinkEnforcer & mElevationLinkEnforcer;
+    SourceId & mFirstSourceId;
 
 public:
     //==============================================================================
@@ -57,16 +58,17 @@ public:
     PresetsManager(juce::XmlElement & data,
                    Sources & sources,
                    SourceLinkEnforcer & positionLinkEnforcer,
-                   SourceLinkEnforcer & elevationLinkEnforcer);
+                   SourceLinkEnforcer & elevationLinkEnforcer,
+                   SourceId & firstSourceId);
     //==============================================================================
     [[nodiscard]] int getCurrentPreset() const;
     [[nodiscard]] std::array<bool, NUMBER_OF_POSITION_PRESETS> getSavedPresets() const;
 
+    std::optional<int> getPresetSourceId(int presetNumber);
     bool loadIfPresetChanged(int presetNumber);
     bool forceLoad(int presetNumber);
     void save(int presetNumber) const;
     [[nodiscard]] bool deletePreset(int presetNumber) const;
-    void numberOfSourcesChanged();
 
 private:
     //==============================================================================

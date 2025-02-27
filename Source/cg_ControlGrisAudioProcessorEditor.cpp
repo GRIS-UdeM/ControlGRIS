@@ -364,32 +364,28 @@ void ControlGrisAudioProcessorEditor::oscStateChangedCallback(bool const state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const numOfSources)
 {
-    if (mProcessor.getSources().size() != numOfSources || mIsInsideSetPluginState) {
-        auto const initSourcePlacement{ mProcessor.getSources().size() != numOfSources };
-        auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
-        auto const symmetricLinkAllowed{ numOfSources == 2 };
-        mSectionTrajectory.setSymmetricLinkComboState(symmetricLinkAllowed);
-        if (!symmetricLinkAllowed) {
-            auto const isCurrentPositionSourceLinkSymmetric{ currentPositionSourceLink == PositionSourceLink::symmetricX
-                                                             || currentPositionSourceLink
-                                                                    == PositionSourceLink::symmetricY };
-            if (isCurrentPositionSourceLinkSymmetric) {
-                mProcessor.setPositionSourceLink(PositionSourceLink::independent,
-                                                 SourceLinkEnforcer::OriginOfChange::user);
-            }
+    auto const initSourcePlacement{ mProcessor.getSources().size() != numOfSources };
+    auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
+    auto const symmetricLinkAllowed{ numOfSources == 2 };
+    mSectionTrajectory.setSymmetricLinkComboState(symmetricLinkAllowed);
+    if (!symmetricLinkAllowed) {
+        auto const isCurrentPositionSourceLinkSymmetric{ currentPositionSourceLink == PositionSourceLink::symmetricX
+                                                         || currentPositionSourceLink
+                                                                == PositionSourceLink::symmetricY };
+        if (isCurrentPositionSourceLinkSymmetric) {
+            mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::user);
         }
-
-        mSelectedSource = {};
-        mProcessor.setNumberOfSources(numOfSources);
-        mSectionGeneralSettings.setNumberOfSources(numOfSources);
-        mSectionTrajectory.setNumberOfSources(numOfSources);
-        mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
-        mPositionField.refreshSources();
-        mElevationField.refreshSources();
-        mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
-        if (initSourcePlacement) {
-            sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
-        }
+    }
+    mSelectedSource = {};
+    mProcessor.setNumberOfSources(numOfSources);
+    mSectionGeneralSettings.setNumberOfSources(numOfSources);
+    mSectionTrajectory.setNumberOfSources(numOfSources);
+    mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
+    mPositionField.refreshSources();
+    mElevationField.refreshSources();
+    mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
+    if (initSourcePlacement) {
+        sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
     }
 }
 
@@ -719,6 +715,10 @@ void ControlGrisAudioProcessorEditor::fieldSourcePositionChangedCallback(SourceI
 void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const presetNumber)
 {
     mProcessor.getPresetsManager().forceLoad(presetNumber);
+    numberOfSourcesChangedCallback(mProcessor.getSources().size());
+
+    if (auto const presetSourceId {mProcessor.getPresetsManager().getPresetSourceId(presetNumber)})
+        firstSourceIdChangedCallback(SourceId{*presetSourceId});
 
     auto * parameter{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::POSITION_PRESET) };
     auto const newValue{ static_cast<float>(presetNumber) / static_cast<float>(NUMBER_OF_POSITION_PRESETS) };

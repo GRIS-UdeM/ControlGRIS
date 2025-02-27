@@ -96,7 +96,8 @@ class ControlGrisAudioProcessor final
     PresetsManager mPresetManager{ mFixPositionData,
                                    mSources,
                                    mPositionSourceLinkEnforcer,
-                                   mElevationSourceLinkEnforcer };
+                                   mElevationSourceLinkEnforcer,
+                                   mFirstSourceId };
 
     PositionTrajectoryManager mPositionTrajectoryManager{ *this, mSources.getPrimarySource() };
     ElevationTrajectoryManager mElevationTrajectoryManager{ *this, mSources.getPrimarySource() };
