@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="m50y5Z" name="ControlGris" projectType="audioplug" pluginFormats="buildAAX,buildAU,buildStandalone,buildVST,buildVST3"
+<JUCERPROJECT id="m50y5Z" name="ControlGRIS" projectType="audioplug" pluginFormats="buildAAX,buildAU,buildStandalone,buildVST,buildVST3"
               version="1.4.5" bundleIdentifier="com.gris.umontreal.controlgris"
               companyName="UdeM" aaxIdentifier="com.udem.GRIS.ControlGris"
               pluginManufacturer="UdeM" pluginManufacturerCode="UdeM" pluginCode="Xzz1"
@@ -8,7 +8,7 @@
               cppLanguageStandard="17" projectLineFeed="&#10;" jucerFormatVersion="1"
               companyWebsite="ca.umontreal.musique.gris.controlgris" addUsingNamespaceToJuceHeader="0"
               displaySplashScreen="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1">
-  <MAINGROUP id="gDqxm3" name="ControlGris">
+  <MAINGROUP id="gDqxm3" name="ControlGRIS">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
       <GROUP id="{32F49E20-AD3C-BA30-3DC6-5BBC5846D431}" name="Misc">
         <FILE id="MrPims" name="cg_CartesianVector.cpp" compile="1" resource="0"
@@ -157,10 +157,10 @@
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" hardenedRuntime="1">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris" osxArchitecture="Native"
+        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS" osxArchitecture="Native"
                        auBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"
                        enablePluginBinaryCopyStep="1"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris" osxArchitecture="Native"
+        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGRIS" osxArchitecture="Native"
                        recommendedWarnings="LLVM" enablePluginBinaryCopyStep="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -181,8 +181,8 @@
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGRIS"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
