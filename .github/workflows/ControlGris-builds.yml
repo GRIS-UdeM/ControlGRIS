@@ -1,4 +1,4 @@
-name: ControlGris CI
+name: ControlGRIS CI
 
 on:
   push:
@@ -42,14 +42,14 @@ jobs:
             mesa-common-dev libjack-dev
 
       - name: set global JUCE search paths
-        run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /__w/ControlGris/ControlGris/JUCE/modules
+        run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /__w/ControlGRIS/ControlGRIS/JUCE/modules
 
       - name: Generate makefile (Standalone & VST3 only)
         run: |
           cd JUCE
-          ./Projucer --resave ../ControlGris.jucer --set-exporter LinuxMakefile --set-config Release --set-enabled-targets Standalone,VST3
+          ./Projucer --resave ../ControlGRIS.jucer --set-exporter LinuxMakefile --set-config Release --set-enabled-targets Standalone,VST3
 
-      - name: Compile ControlGris (Standalone & VST3 only)
+      - name: Compile ControlGRIS (Standalone & VST3 only)
         run: |
           cd Builds/LinuxMakefile
           make CXX=clang++-18 CONFIG=Release -j8 Standalone VST3
@@ -57,7 +57,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ControlGris-Build
+          name: ControlGRIS-Build
           path: Builds/LinuxMakefile/build/*
 
   Build-macOS:
@@ -73,18 +73,18 @@ jobs:
         run: unzip JUCE.zip
 
       - name: set global JUCE search paths
-        run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGris/ControlGris/JUCE/modules
+        run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
 
       - name: generate Xcode project
-        run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGris.jucer
+        run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
       - name: build
-        run: xcodebuild -project Builds/MacOSX/ControlGris.xcodeproj -scheme "ControlGris - Standalone Plugin" -configuration Release
+        run: xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj -scheme "ControlGRIS - Standalone Plugin" -configuration Release
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ControlGris-Build-macOS
+          name: ControlGRIS-Build-macOS
           path: Builds/MacOSX/build/*
 
   Build-Windows:
@@ -103,28 +103,28 @@ jobs:
         run: JUCE/Projucer --set-global-search-path windows defaultJuceModulePath ${{ github.workspace }}\JUCE\modules
 
       - name: generate Visual Studio project
-        run: JUCE/Projucer --resave ControlGris.jucer
+        run: JUCE/Projucer --resave ControlGRIS.jucer
 
       - name: Remove VST3 copy step from .vcxproj #this copy step is useless on the pipeline, and causes it to fail
-        run: sed -i '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/VisualStudio2022/ControlGris_VST3.vcxproj
+        run: sed -i '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/VisualStudio2022/ControlGRIS_VST3.vcxproj
         shell: bash
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
       - name: build shared code
-        run: msbuild Builds/VisualStudio2022/ControlGris_SharedCode.vcxproj -p:Configuration=Release -p:Platform=x64
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_SharedCode.vcxproj -p:Configuration=Release -p:Platform=x64
 
       - name: build standalone
-        run: msbuild Builds/VisualStudio2022/ControlGris_StandalonePlugin.vcxproj -p:Configuration=Release -p:Platform=x64
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_StandalonePlugin.vcxproj -p:Configuration=Release -p:Platform=x64
 
       - name: build VST3
-        run: msbuild Builds/VisualStudio2022/ControlGris_VST3.vcxproj -p:Configuration=Release -p:Platform=x64
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_VST3.vcxproj -p:Configuration=Release -p:Platform=x64
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ControlGris-Build-Windows
+          name: ControlGRIS-Build-Windows
           path: |
             Builds/VisualStudio2022/x64/Release/**/*.vst3
             Builds/VisualStudio2022/x64/Release/**/*.exe
