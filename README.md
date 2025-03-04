@@ -1,6 +1,12 @@
+
+<p align="left">
+  <img width="150" src="https://github.com/user-attachments/assets/8ce74895-e944-4414-8dd6-b536112f78ee">
+  <img width="450" src="https://github.com/user-attachments/assets/4cd12fd2-1bab-4139-95a2-73bbfadde332">
+</p>
+
 # ControlGRIS
 
-Spatialization plugin for [SpatGris](https://github.com/GRIS-UdeM/SpatGRIS)
+Spatialization plugin for [SpatGRIS](https://github.com/GRIS-UdeM/SpatGRIS). ControlGRIS is currently developed at the [Groupe de Recherche en Immersion Spatiale (GRIS)](https://gris.musique.umontreal.ca/) and the [Société des Arts Technologiques (SAT)](https://sat.qc.ca/en/).
 
 ## Building the ControlGRIS VST plugin on Debian (Ubuntu)
 
@@ -21,7 +27,7 @@ The VST3 headers are included in JUCE, but the VST2 are not. The VST2 SDK is dep
 ### Clone ControlGRIS sources
 
 ```
-git clone git@github.com:GRIS-UdeM/ControlGris.git
+git clone git@github.com:GRIS-UdeM/ControlGRIS.git
 ```
 
 ### Build the plugin
@@ -29,7 +35,7 @@ git clone git@github.com:GRIS-UdeM/ControlGris.git
 1. This step must be done each time the structure of the project changes (new files, new JUCE version, etc.).
 
 ```bash
-<path/to/Projucer> --resave <path/to/ControlGris.jucer>
+<path/to/Projucer> --resave <path/to/ControlGRIS.jucer>
 ```
 
 2. Make sure the directory `~/.vst` exists.
@@ -37,7 +43,7 @@ git clone git@github.com:GRIS-UdeM/ControlGris.git
 3. Go to the ControlGRIS Builds folder, compile the plugin and move a copy to the VST directory.
 
 ```
-cd ControlGris/Builds/LinuxMakeFile
+cd ControlGRIS/Builds/LinuxMakeFile
 make CXX=clang++-15 CONFIG=Release && cp build/*.so ~/.vst/
 ```
 
