@@ -1,6 +1,12 @@
+
+<p align="left">
+  <img width="150" src="https://github.com/user-attachments/assets/fbec48ec-1f0c-41f1-9a10-4ce993747f57">
+  <img width="450" src="https://github.com/user-attachments/assets/4cd12fd2-1bab-4139-95a2-73bbfadde332">
+</p>
+
 # ControlGRIS
 
-Spatialization plugin for [SpatGris](https://github.com/GRIS-UdeM/SpatGRIS)
+Spatialization plugin for [SpatGRIS](https://github.com/GRIS-UdeM/SpatGRIS). ControlGRIS is currently developed at the [Groupe de Recherche en Immersion Spatiale (GRIS)](https://gris.musique.umontreal.ca/) and the [Société des Arts Technologiques (SAT)](https://sat.qc.ca/en/).
 
 ## Building the ControlGRIS VST plugin on Debian (Ubuntu)
 
