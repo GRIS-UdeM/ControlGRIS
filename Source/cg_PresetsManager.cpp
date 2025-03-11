@@ -109,9 +109,9 @@ bool PresetsManager::load(int const presetNumber)
             mFirstSourceId = SourceId{ presetData->getIntAttribute("firstSourceId") };
 
         // Store the preset's source positions in a new SourcesSnapshots
-        SourcesSnapshots snapshots{};
+        SourcesSnapshots snapshots;
         for (auto & source : mSources) {
-            SourceSnapshot snapshot{};
+            SourceSnapshot snapshot;
             auto const index{ source.getIndex() };
             auto const xPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 0) };
             auto const yPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 1) };
@@ -139,9 +139,8 @@ bool PresetsManager::load(int const presetNumber)
 
         //load the snapshots into the enforcers, which are references to the ControlGrisAudioProcessor members
         mPositionLinkEnforcer.loadSnapshots(snapshots);
-        if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
+        if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube)
             mElevationLinkEnforcer.loadSnapshots(snapshots);
-        }
 
         auto const xTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
         auto const yTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
@@ -154,10 +153,8 @@ bool PresetsManager::load(int const presetNumber)
                 static_cast<float>(presetData->getDoubleAttribute(xTerminalPositionId)),
                 static_cast<float>(presetData->getDoubleAttribute(yTerminalPositionId))
             };
-            auto const inversedTerminalPosition{ inversedNormalizedTerminalPosition * 2.0f
-                                                 - juce::Point<float>{ 1.0f, 1.0f } };
-            terminalPosition
-                = juce::Point<float>{ inversedTerminalPosition.getX(), inversedTerminalPosition.getY() * -1.0f };
+            auto const inversedTerminalPosition{ inversedNormalizedTerminalPosition * 2.0f - juce::Point<float>{ 1.0f, 1.0f } };
+            terminalPosition = juce::Point<float>{ inversedTerminalPosition.getX(), inversedTerminalPosition.getY() * -1.0f };
         } else {
             terminalPosition = snapshots.primary.position;
         }
@@ -166,8 +163,7 @@ bool PresetsManager::load(int const presetNumber)
         if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
             Radians elevation;
             if (presetData->hasAttribute(zTerminalPositionId)) {
-                auto const inversedNormalizedTerminalElevation{ static_cast<float>(
-                    presetData->getDoubleAttribute(zTerminalPositionId)) };
+                auto const inversedNormalizedTerminalElevation{ static_cast<float>(presetData->getDoubleAttribute(zTerminalPositionId)) };
                 elevation = MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation);
             } else {
                 elevation = snapshots.primary.z;
