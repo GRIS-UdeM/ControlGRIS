@@ -5,27 +5,20 @@
               companyName="UdeM" aaxIdentifier="com.udem.GRIS.ControlGris"
               pluginManufacturer="UdeM" pluginManufacturerCode="UdeM" pluginCode="Xzz1"
               pluginChannelConfigs="{1,1}, {1,2}, {1,4}, {1,6}, {1,8}, {1,12}, {1,16}, {2,2}, {2,4}, {2,6}, {2,8}, {2,12}, {2,16}, {4,4}, {4,6}, {4,8}, {4,12}, {4,16}, {6,6}, {6,8}, {6,12}, {6,16}, {8,8}, {8,12}, {8,16}"
-              cppLanguageStandard="17" projectLineFeed="&#10;" jucerFormatVersion="1"
+              cppLanguageStandard="latest" projectLineFeed="&#10;" jucerFormatVersion="1"
               companyWebsite="ca.umontreal.musique.gris.controlgris" addUsingNamespaceToJuceHeader="0"
               displaySplashScreen="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1">
   <MAINGROUP id="gDqxm3" name="ControlGRIS">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
+      <GROUP id="{297FAADC-2622-6494-11F9-A1E13369AF95}" name="StructGRIS">
+        <FILE id="ObSzJm" name="cg_StrongTypes.hpp" compile="0" resource="0"
+              file="Source/StructGRIS/cg_StrongTypes.hpp"/>
+      </GROUP>
       <GROUP id="{32F49E20-AD3C-BA30-3DC6-5BBC5846D431}" name="Misc">
-        <FILE id="MrPims" name="cg_CartesianVector.cpp" compile="1" resource="0"
-              file="Source/cg_CartesianVector.cpp"/>
-        <FILE id="zlCcu2" name="cg_CartesianVector.hpp" compile="0" resource="0"
-              file="Source/cg_CartesianVector.hpp"/>
         <FILE id="oW9vrz" name="cg_constants.cpp" compile="1" resource="0"
               file="Source/cg_constants.cpp"/>
         <FILE id="IohZol" name="cg_constants.hpp" compile="0" resource="0"
               file="Source/cg_constants.hpp"/>
-        <FILE id="yku20p" name="cg_Narrow.hpp" compile="0" resource="0" file="Source/cg_Narrow.hpp"/>
-        <FILE id="BwPpP6" name="cg_PolarVector.cpp" compile="1" resource="0"
-              file="Source/cg_PolarVector.cpp"/>
-        <FILE id="knzUOe" name="cg_PolarVector.hpp" compile="0" resource="0"
-              file="Source/cg_PolarVector.hpp"/>
-        <FILE id="CISzbz" name="cg_StrongTypes.hpp" compile="0" resource="0"
-              file="Source/cg_StrongTypes.hpp"/>
         <FILE id="pvfyvE" name="cg_utilities.hpp" compile="0" resource="0"
               file="Source/cg_utilities.hpp"/>
         <FILE id="W2OezW" name="cg_Warnings.hpp" compile="0" resource="0" file="Source/cg_Warnings.hpp"/>
@@ -71,20 +64,6 @@
               resource="0" file="Source/cg_ControlGrisLookAndFeel.cpp"/>
         <FILE id="TZznEU" name="cg_ControlGrisLookAndFeel.hpp" compile="0"
               resource="0" file="Source/cg_ControlGrisLookAndFeel.hpp"/>
-        <FILE id="pMKjMl" name="cg_LayoutComponent.cpp" compile="1" resource="0"
-              file="Source/cg_LayoutComponent.cpp"/>
-        <FILE id="jroCHS" name="cg_LayoutComponent.hpp" compile="0" resource="0"
-              file="Source/cg_LayoutComponent.hpp"/>
-        <FILE id="CFujJ5" name="cg_MinSizedComponent.hpp" compile="0" resource="0"
-              file="Source/cg_MinSizedComponent.hpp"/>
-        <FILE id="PwwAKY" name="cg_MinSizedSlider.cpp" compile="1" resource="0"
-              file="Source/cg_MinSizedSlider.cpp"/>
-        <FILE id="xIqcQI" name="cg_MinSizedSlider.hpp" compile="0" resource="0"
-              file="Source/cg_MinSizedSlider.hpp"/>
-        <FILE id="T0BqJP" name="cg_MinSizedTextEditor.cpp" compile="1" resource="0"
-              file="Source/cg_MinSizedTextEditor.cpp"/>
-        <FILE id="OzeJGV" name="cg_MinSizedTextEditor.hpp" compile="0" resource="0"
-              file="Source/cg_MinSizedTextEditor.hpp"/>
         <FILE id="HI1dem" name="cg_SectionGeneralSettings.cpp" compile="1"
               resource="0" file="Source/cg_SectionGeneralSettings.cpp"/>
         <FILE id="qBqct9" name="cg_SectionGeneralSettings.hpp" compile="0"
@@ -109,10 +88,6 @@
               file="Source/cg_SectionTrajectory.cpp"/>
         <FILE id="PxuaoO" name="cg_SectionTrajectory.hpp" compile="0" resource="0"
               file="Source/cg_SectionTrajectory.hpp"/>
-        <FILE id="acz4Ei" name="cg_TitledComponent.cpp" compile="1" resource="0"
-              file="Source/cg_TitledComponent.cpp"/>
-        <FILE id="ZPfmQN" name="cg_TitledComponent.hpp" compile="0" resource="0"
-              file="Source/cg_TitledComponent.hpp"/>
       </GROUP>
       <FILE id="xmyiNi" name="cg_ChangeGesturesManager.cpp" compile="1" resource="0"
             file="Source/cg_ChangeGesturesManager.cpp"/>

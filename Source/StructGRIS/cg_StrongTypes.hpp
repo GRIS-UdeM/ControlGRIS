@@ -19,7 +19,8 @@
 
 #pragma once
 
-#include "cg_Narrow.hpp"
+#include <JuceHeader.h>
+#include <type_traits>
 namespace gris
 {
 //==============================================================================
