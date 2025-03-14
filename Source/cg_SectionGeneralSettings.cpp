@@ -147,8 +147,10 @@ public:
     }
 };
 
+#if JUCE_DEBUG
 // This will automatically create an instance of the test class and add it to the list of tests to be run.
 static NumberRangeInputFilterTest numberRangeInputFilterTest;
+#endif
 
 //==============================================================================
 SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
