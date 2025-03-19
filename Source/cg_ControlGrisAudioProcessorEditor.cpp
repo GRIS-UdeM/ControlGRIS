@@ -488,12 +488,9 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 }
 
 //==============================================================================
-//TODO VB: file needs to be const
-#if 1
-//this is essentially a copy of positionPresetChangedCallback
-void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(juce::File speakerSetupFile)
+void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::File& speakerSetupFile)
 {
-    // first make sure our file exists
+    // make sure our file exists
     if (!speakerSetupFile.existsAsFile()) {
         jassertfalse;
         return;
@@ -506,53 +503,18 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(juce::File sp
         return;
     }
 
-    DBG(speakerSetup.toXmlString());
-
-
-
-    /*
-    * found these bits of information in spatgris and speakerview
-        //SG is XZ-Y, Godot is XYZ. Conversion happens in SpeakerView`
-	    Vector3(src_position[0], src_position[2], -src_position[1]) * speakerview_node.SG_SCALE`
-	    with SG_SCALE == 10`
-
-        so it's x, z, and - y, all times 10?
-        that doesn't make any sense lol, I need to ask gael this stuff
-
-        SPEAKER SETUP FILE POSITION ONLY
-  <POSITION X="-0.7071083784103394" Y="0.7071067690849304" Z="-9.478120688299896e-8"/>
-  <POSITION X="0.7071067094802856" Y="0.7071068286895752" Z="-9.478120688299896e-8"/>
-  <POSITION X="-0.7071083784103394" Y="-0.7071067690849304" Z="-9.478120688299896e-8"/>
-  <POSITION X="0.7071067094802856" Y="-0.7071068286895752" Z="-9.478120688299896e-8"/>
-  <POSITION X="-1.31745878206857e-7" Y="1.389999985694885" Z="-1.31745878206857e-7"/>
-
-========================================
-SAVED STATE INFORMATION, only preset 5, which should correspond to the above
-<ITEM ID="5" numberOfSources="5" firstSourceId="5"
-  S1_X="0.2061072885990143" S1_Y="0.9045084118843079" S1_Z="0.0"
-  S2_X="0.8535534143447876" S2_Y="0.8535534143447876" S2_Z="0.4963092803955078"
-  S3_X="0.1464466154575348" S3_Y="0.8535534143447876" S3_Z="0.5174825191497803"
-  S4_X="0.8597006797790527" S4_Y="0.1527027487754822" S4_Z="0.02087914943695068"
-  S5_X="0.1464466154575348" S5_Y="0.1464466154575348" S5_Z="0.0"
-  S1_terminal_X="0.5026595592498779" S1_terminal_Y="0.9999929666519165" S1_terminal_Z="0.0"/>
-    */
-
-
-
-
-
-
+    // now convert the speakerSetupFile to the xml that the preset manager is expecting
     auto const numOfSources{ speakerSetup.getNumChildren() };
     juce::XmlElement speakerSetupXml{ "ITEM" };
     speakerSetupXml.setAttribute("ID", -1); // we're not using an ID here, that's the OG presets
     speakerSetupXml.setAttribute("numberOfSources", numOfSources);
 
-    //convert our xml to the xml that the preset manager is expecting
     for (int curSource{ 0 }; curSource < numOfSources; ++curSource) {
+        // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
         auto const speakerPosition{ speakerSetup.getChild(curSource).getChildWithName("POSITION") };
-        float const x{ speakerPosition["X"] };
-        double const y{ speakerPosition["Y"] };
-        double const z{ speakerPosition["Z"] };
+        auto const x{ (static_cast<double>(speakerPosition["X"]) + 1) / 2 };
+        double const y{ (static_cast<double>(speakerPosition["Y"]) + 1) / 2 };
+        double const z{ (static_cast<double>(speakerPosition["Z"]) + 1) / 2 };
 
         speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_X", x);
         speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_Y", y);
@@ -564,93 +526,15 @@ SAVED STATE INFORMATION, only preset 5, which should correspond to the above
         }
     }
 
-    DBG(speakerSetupXml.toString());
-
-    // get a reference to the presetManager, because who needs encapsulation, and load the speaker setup
-    auto & presetmanRef = mProcessor.getPresetsManager();
-    presetmanRef.load(speakerSetupXml);
-
+    // and finally, load the speaker setup as a preset
+    mProcessor.getPresetsManager().load(speakerSetupXml);
     numberOfSourcesChangedCallback(mProcessor.getSources().size());
-
-    // TODO VB: hmmm presets can be automated? Is that problematic if we store the number of source and source id in
-    // there?
-    //auto * parameter{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::POSITION_PRESET) };
-    //auto const newValue{ static_cast<float>(presetNumber) / static_cast<float>(NUMBER_OF_POSITION_PRESETS) };
-    //auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(Automation::Ids::POSITION_PRESET) };
-    //parameter->setValueNotifyingHost(newValue);
-
     mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
     if (mProcessor.getSpatMode() == SpatMode::cube) {
         mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
     }
 }
-#else
-void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback (juce::File speakerSetupFile)
-{
-    //first make sure our file exists
-    if (!speakerSetupFile.existsAsFile()) {
-        jassertfalse;
-        return;
-    }
 
-    //and is valid xml
-    auto const speakerSetup = juce::ValueTree::fromXml(speakerSetupFile.loadFileAsString());
-    if (!speakerSetup.isValid()) {
-        jassertfalse;
-        return;
-    }
-
-    //get a reference to the presetManager, because who needs encapsulation
-    auto& presetmanRef = mProcessor.getPresetsManager();
-
-    // cache source link before we position all the sources
-    //auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
-    //mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
-
-    //Update the number of sources based from the setup file
-    auto const numOfSources{ speakerSetup.getNumChildren() };
-    numberOfSourcesChangedCallback(numOfSources);
-
-    auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-    auto const distance{ isCubeMode ? 0.7f : 1.0f };
-
-    //TODO VB: so actually what we need to do is call PresetsManager::load() with the position data in a format that it can understand
-    //so extract the mData logic out of PresetsManager::load and when we call load with an int it goes through that wrapper
-
-    // position all sources
-    for (int curSource{ 0 }; curSource < numOfSources; ++curSource) {
-        auto const speakerPosition{ speakerSetup.getChild(curSource).getChildWithName("POSITION") };
-        float const x{ speakerPosition["X"] };
-        double const y{ speakerPosition["Y"] };
-        //double const z{ speakerPosition["Z"] };
-
-        auto source{ mProcessor.getSources()[curSource++] };
-        source.setX(x, Source::OriginOfChange::automation);
-        source.setY(y, Source::OriginOfChange::automation);
-    }
-
-    // TODO: why are we storing the _normalized_ positions in the processor?
-    // then as a second pass, give the processor the normalized positions
-    for (SourceIndex i{}; i < SourceIndex{ numOfSources }; ++i) {
-        auto const & source{ mProcessor.getSources()[i] };
-        mProcessor.setSourceParameterValue(i, SourceParameter::azimuth, source.getNormalizedAzimuth().get());
-        mProcessor.setSourceParameterValue(i, SourceParameter::elevation, source.getNormalizedElevation().get());
-        mProcessor.setSourceParameterValue(i, SourceParameter::distance, source.getDistance());
-    }
-
-    // update selected source
-    mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource],
-                                                SourceIndex{},
-                                                mProcessor.getSpatMode());
-    mPositionTrajectoryManager.setTrajectoryType(mPositionTrajectoryManager.getTrajectoryType(),
-                                                 mProcessor.getSources().getPrimarySource().getPos());
-
-    // set source link back to its cached value
-    mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
-
-    repaint();
-}
-#endif
 //==============================================================================
 void ControlGrisAudioProcessorEditor::sourcePositionChangedCallback(SourceIndex const sourceIndex,
                                                                     std::optional<Radians> const azimuth,

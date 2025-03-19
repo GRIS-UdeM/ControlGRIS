@@ -207,7 +207,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
 #if JUCE_MAC
             l.speakerSetupSelectedCallback({ "/Users/rymer/Documents/git/sat/GRIS/SpatGRIS/Resources/templates/Speaker setups/DOME/Dome4(4)Subs1 Quad.xml" });
 #else
-            l.speakerSetupSelectedCallback({ "C:/Users/barth/Documents/git/sat/GRIS/SpatGRIS/Resources/templates/Speaker setups/DOME/Dome4(4)Subs1 Quad.xml" });
+            l.speakerSetupSelectedCallback({ "C:/Users/barth/Documents/GRIS/vb 4 speakers xy min max.xml" });
 #endif
         });
     };
