@@ -196,19 +196,11 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
     };
 
     // Speaker Setup as Source Placement
-    mSpeakerSetupLabel.setText("Load Speaker Setup...", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mSpeakerSetupLabel);
-
-    addAndMakeVisible(&mSpeakerSetupCombo);
-    mSpeakerSetupCombo.setTextWhenNothingSelected("Choose a file...");
-    mSpeakerSetupCombo.addItemList(SOURCE_PLACEMENT_SKETCH, 1);
-    mSpeakerSetupCombo.onChange = [this] {
+    addAndMakeVisible(&mLoadSpeakerSetupButton);
+    mLoadSpeakerSetupButton.setButtonText("Load Speaker Setup as source placement...");
+    mLoadSpeakerSetupButton.onClick = [this] {
         mListeners.call([&](Listener & l) {
-#if JUCE_MAC
-            l.speakerSetupSelectedCallback({ "/Users/rymer/Documents/git/sat/GRIS/SpatGRIS/Resources/templates/Speaker setups/DOME/Dome4(4)Subs1 Quad.xml" });
-#else
             l.speakerSetupSelectedCallback({ "C:/Users/barth/Documents/GRIS/vb 4 speakers xy min max.xml" });
-#endif
         });
     };
 
@@ -254,7 +246,7 @@ void SectionSourcePosition::resized()
     auto leftHalf = bounds.removeFromLeft(bounds.getWidth() / 2);
     positionLabelAndCombo(leftHalf.removeFromTop(20), mSourcePlacementLabel, mSourcePlacementCombo);
     leftHalf.removeFromTop(5);
-    positionLabelAndCombo(leftHalf.removeFromTop(20), mSpeakerSetupLabel, mSpeakerSetupCombo);
+    mLoadSpeakerSetupButton.setBounds(leftHalf.removeFromTop(20));
 
     //right half
     positionLabelAndCombo(bounds.removeFromTop(20), mSourceNumberLabel, mSourceNumberCombo);
