@@ -58,6 +58,12 @@ void Source::setAzimuth(Radians const azimuth, OriginOfChange const origin)
 //==============================================================================
 void Source::setAzimuth(Normalized const normalizedAzimuth, OriginOfChange const origin)
 {
+    //TODO: actually the doxygen comment says the unnormalized value should be 0 to 2 pi
+    // so here in theory we get a value between 0 and 1, and set it to a value between -PI and PI
+    DBG("normalizedAzimuth: " + juce::String (normalizedAzimuth.get()));
+    const auto fuckyou = TWO_PI * normalizedAzimuth.get() - PI;
+    DBG("un-normalizedAzimuth: " + juce::String(fuckyou.getAsRadians()));
+
     setAzimuth(TWO_PI * normalizedAzimuth.get() - PI, origin);
 }
 
@@ -142,6 +148,7 @@ void Source::setElevationSpan(Normalized const elevationSpan)
 void Source::setX(float const x, OriginOfChange const origin)
 {
     auto const clippedX{ clipCoordinate(x) };
+    DBG("clippedX: " + juce::String (clippedX));
     if (clippedX != mPosition.getX() || shouldForceNotifications(origin)) {
         mPosition.setX(clippedX);
         computeAzimuthElevation();
@@ -165,6 +172,8 @@ void Source::setY(Normalized const y, OriginOfChange const origin)
 void Source::setY(float const y, OriginOfChange const origin)
 {
     auto const clippedY{ clipCoordinate(y) };
+    DBG("y: " + juce::String(y));
+    DBG("clippedY: " + juce::String(clippedY));
     if (y != mPosition.getY() || shouldForceNotifications(origin)) {
         mPosition.setY(clippedY);
         computeAzimuthElevation();
@@ -206,26 +215,44 @@ void Source::computeXY()
 void Source::computeAzimuthElevation()
 {
     jassert(!std::isnan(mPosition.getX()) && !std::isnan(mPosition.getY()));
-    if (mPosition.getX() != 0.0f || mPosition.getY() != 0.0f) {
+
+    // update the azimuth only if we're not exactly at origin.
+    if (! mPosition.isOrigin()) {
         // TODO : when the position converges to the origin via an automation, one of the dimension is going to get to
         // zero before the other. This is going to drastically change the angle. We need to insulate the real automation
         // from a listener callback initiated by some other source.
+
+        DBG("angle: " + getAngleFromPosition(mPosition).toString());
+        DBG("centered angle: " + getAngleFromPosition(mPosition).centered().toString());
+
         mAzimuth = getAngleFromPosition(mPosition).centered();
     }
 
+    // update both the elevation and distance in dome mode, otherwise only set the distance to the origin
     auto const radius{ mPosition.getDistanceFromOrigin() };
+    DBG("OG Radius: " + juce::String (radius));
+
     if (mSpatMode == SpatMode::dome) {
         auto const clippedRadius{ std::min(radius, 1.0f) };
+        DBG("clippedRadius: " + juce::String(clippedRadius));
+
         if (clippedRadius < radius) {
+            //when does this actually happen? and shouldn't we also update mAzimuth with the clipped radius here??
+            jassertfalse;
+
             jassert(!std::isnan(mAzimuth.getAsRadians()));
             mPosition = getPositionFromAngle(mAzimuth, clippedRadius);
+            DBG("mPosition: " + mPosition.toString());
         }
-        auto const elevation{ HALF_PI * clippedRadius };
-        mElevation = elevation;
+
+        mElevation = HALF_PI * clippedRadius;
+        DBG("mElevation : " + juce::String (mElevation.get()));
+
         mDistance = clippedRadius;
     } else {
         mDistance = radius;
     }
+    DBG("mDistance: " + juce::String(mDistance));
 }
 
 //==============================================================================

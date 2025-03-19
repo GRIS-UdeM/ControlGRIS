@@ -490,41 +490,56 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 //==============================================================================
 void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::File& speakerSetupFile)
 {
+    auto const showError = [](juce::String error) {
+        juce::AlertWindow::showMessageBox(juce::AlertWindow::WarningIcon,
+                                          "Error Loading Speaker Setup File",
+                                          error,
+                                          "OK");
+    };
+
     // make sure our file exists
     if (!speakerSetupFile.existsAsFile()) {
-        jassertfalse;
+        showError("This file does not exist: " + speakerSetupFile.getFullPathName());
         return;
     }
 
-    // and is valid xml
+    // and is a valid speaker setup file
     auto const speakerSetup = juce::ValueTree::fromXml(speakerSetupFile.loadFileAsString());
-    if (!speakerSetup.isValid()) {
-        jassertfalse;
+    if (!speakerSetup.isValid() || speakerSetup.getType().toString() != "SPEAKER_SETUP" || speakerSetup.getNumChildren() < 1) {
+        showError("This file is not a valid Speaker Setup file: " + speakerSetupFile.getFullPathName());
         return;
     }
 
     // now convert the speakerSetupFile to the xml that the preset manager is expecting
-    auto const numOfSources{ speakerSetup.getNumChildren() };
     juce::XmlElement speakerSetupXml{ "ITEM" };
     speakerSetupXml.setAttribute("ID", -1); // we're not using an ID here, that's the OG presets
-    speakerSetupXml.setAttribute("numberOfSources", numOfSources);
 
-    for (int curSource{ 0 }; curSource < numOfSources; ++curSource) {
+    int curSourceNumber = -1;
+
+    for (auto curSpeaker : speakerSetup) {
+        // skip this speaker if it's direct out only
+        if (static_cast<int> (curSpeaker["DIRECT_OUT_ONLY"]) == 1)
+            continue;
+
+        ++curSourceNumber;
+
         // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
-        auto const speakerPosition{ speakerSetup.getChild(curSource).getChildWithName("POSITION") };
+        auto const speakerPosition{ curSpeaker.getChildWithName("POSITION") };
         auto const x{ (static_cast<double>(speakerPosition["X"]) + 1) / 2 };
         double const y{ (static_cast<double>(speakerPosition["Y"]) + 1) / 2 };
         double const z{ (static_cast<double>(speakerPosition["Z"]) + 1) / 2 };
 
-        speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_X", x);
-        speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_Y", y);
-        speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_Z", z);
-        if (curSource == 0) {
-            speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_terminal_X", x);
-            speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_terminal_Y", y);
-            speakerSetupXml.setAttribute("S" + juce::String(curSource + 1) + "_terminal_Z", z);
+        speakerSetupXml.setAttribute("S" + juce::String(curSourceNumber + 1) + "_X", x);
+        speakerSetupXml.setAttribute("S" + juce::String(curSourceNumber + 1) + "_Y", y);
+        speakerSetupXml.setAttribute("S" + juce::String(curSourceNumber + 1) + "_Z", z);
+        if (curSourceNumber == 0) {
+            speakerSetupXml.setAttribute("S" + juce::String(curSourceNumber + 1) + "_terminal_X", x);
+            speakerSetupXml.setAttribute("S" + juce::String(curSourceNumber + 1) + "_terminal_Y", y);
+            speakerSetupXml.setAttribute("S" + juce::String(curSourceNumber + 1) + "_terminal_Z", z);
         }
     }
+
+    speakerSetupXml.setAttribute("numberOfSources", curSourceNumber);
 
     // and finally, load the speaker setup as a preset
     mProcessor.getPresetsManager().load(speakerSetupXml);
@@ -762,10 +777,6 @@ void ControlGrisAudioProcessorEditor::fieldSourcePositionChangedCallback(SourceI
 // PositionPresetComponent::Listener callback.
 void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const presetNumber)
 {
-    // cache source link before we position all the sources
-    //auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
-    //mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
-
     mProcessor.getPresetsManager().forceLoad(presetNumber);
     numberOfSourcesChangedCallback(mProcessor.getSources().size());
 
@@ -782,9 +793,6 @@ void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const pr
     if (mProcessor.getSpatMode() == SpatMode::cube) {
         mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
     }
-
-    // set source link back to its cached value
-    //mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
 }
 
 //==============================================================================

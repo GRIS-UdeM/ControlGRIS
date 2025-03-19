@@ -152,14 +152,62 @@ private:
 
     juce::ListenerList<Listener> mGuiListeners;
 
+    //TODO VB: make sure these comments are accurante
+    /**
+     * @brief The index of the source.
+     *
+     * This is used to identify the position of the source within a collection of sources.
+     * It is typically used for internal management and iteration over sources.
+     */
     SourceIndex mIndex{};
+
+    /**
+     * @brief The unique identifier of the source.
+     *
+     * This is used to uniquely identify a source, independent of its position in a collection.
+     * It is typically used for external references and ensuring the uniqueness of each source.
+     */
     SourceId mId{ 1 };
+
+
     SpatMode mSpatMode{ SpatMode::dome };
 
+    /**
+     * @brief The azimuth angle of the source in radians.
+     *
+     * This member is kept in sync with mDistance and mPosition in the following functions:
+     * - setAzimuth(Radians azimuth, OriginOfChange origin)
+     * - setAzimuth(Normalized azimuth, OriginOfChange origin)
+     * - setCoordinates(Radians azimuth, Radians elevation, float distance, OriginOfChange origin)
+     * - computeXY()
+     */
     Radians mAzimuth{};
+
+    /**
+     * @brief The elevation angle of the source in radians.
+     *
+     * This member is kept in sync with mDistance and mPosition in the following functions:
+     * - setElevation(Radians elevation, OriginOfChange origin)
+     * - setElevation(Normalized elevation, OriginOfChange origin)
+     * - setCoordinates(Radians azimuth, Radians elevation, float distance, OriginOfChange origin)
+     * - computeXY()
+     */
     Radians mElevation{};
+
+     /**
+     * @brief The distance of the source from the origin.
+     *
+     * This represents the radial distance of the source in the spatialization field.
+     * The default value is 1.0f.
+     */
     float mDistance{ 1.0f };
 
+    /**
+     * @brief The position of the source in Cartesian coordinates.
+     *
+     * This represents the (x, y) position of the source in the spatialization field.
+     * The default value is (0.0f, 0.0f).
+     */
     juce::Point<float> mPosition{};
 
     Normalized mAzimuthSpan{};
@@ -180,8 +228,28 @@ public:
     void setSpatMode(SpatMode const spatMode) { mSpatMode = spatMode; }
     [[nodiscard]] SpatMode getSpatMode() const { return mSpatMode; }
 
+    /**
+     * @brief Sets the azimuth angle of the source in radians.
+     *
+     * This function sets the azimuth angle of the source using a Radians type.
+     * The azimuth angle represents the horizontal angle of the source in the spatialization field.
+     *
+     * @param azimuth The azimuth angle in radians.
+     * @param origin The origin of the change.
+     */
     void setAzimuth(Radians azimuth, OriginOfChange origin);
+
+    /**
+     * @brief Sets the azimuth angle of the source in normalized units.
+     *
+     * This function sets the azimuth angle of the source using a Normalized type.
+     * The azimuth angle is normalized between 0 and 1, where 0 represents 0 radians and 1 represents 2? radians.
+     *
+     * @param azimuth The azimuth angle in normalized units.
+     * @param origin The origin of the change.
+     */
     void setAzimuth(Normalized azimuth, OriginOfChange origin);
+
     [[nodiscard]] Radians getAzimuth() const { return mAzimuth; }
     [[nodiscard]] Normalized getNormalizedAzimuth() const;
 
@@ -220,6 +288,16 @@ public:
 
     void setProcessor(ControlGrisAudioProcessor * processor) { mProcessor = processor; }
 
+    /**
+     * @brief Computes the position from a given angle and radius.
+     *
+     * This function calculates the Cartesian coordinates (x, y) from a given angle and radius.
+     * The angle is rotated by -?/2 radians before computing the coordinates.
+     *
+     * @param angle The angle in radians.
+     * @param radius The radius or distance from the origin.
+     * @return A juce::Point<float> representing the computed position.
+     */
     static juce::Point<float> getPositionFromAngle(Radians angle, float radius);
     static Radians getAngleFromPosition(juce::Point<float> const & position);
 

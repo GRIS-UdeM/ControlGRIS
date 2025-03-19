@@ -211,10 +211,13 @@ void ControlGrisAudioProcessor::parameterChanged(juce::String const & parameterI
     }
 
     Normalized const normalized{ newValue };
+    DBG("newValue: " + juce::String (newValue));
+    DBG("normalized: " + juce::String (normalized.get()));
     if (parameterId.compare(Automation::Ids::X) == 0) {
         mSources.getPrimarySource().setX(normalized, Source::OriginOfChange::automation);
     } else if (parameterId.compare(Automation::Ids::Y) == 0) {
         Normalized const invNormalized{ 1.0f - newValue };
+        DBG("invNormalized: " + juce::String(invNormalized.get()));
         mSources.getPrimarySource().setY(invNormalized, Source::OriginOfChange::automation);
     } else if (parameterId.compare(Automation::Ids::Z) == 0 && mSpatMode == SpatMode::cube) {
         auto const newElevation{ MAX_ELEVATION - (MAX_ELEVATION * normalized.get()) };
@@ -473,6 +476,22 @@ void ControlGrisAudioProcessor::sendOscMessage()
         }
     } else {
         for (auto const & source : mSources) {
+            {
+                auto const azim{ source.getAzimuth().getAsRadians() };
+                auto const normAzim{ source.getNormalizedAzimuth().get() };
+
+                auto const elev{ source.getElevation().getAsRadians() };
+                auto const normElev{ source.getNormalizedElevation().get() };
+
+                DBG("azim: " + juce::String(azim));
+                DBG("normAzim: " + juce::String(normAzim));
+                DBG("elev: " + juce::String(elev));
+                DBG("normElev: " + juce::String(normElev));
+            }
+            auto const mLastAzimuthSpan{ source.getAzimuthSpan() };
+            
+            
+            
             auto const azimuth{ source.getAzimuth().getAsRadians() };
             auto const elevation{ source.getElevation().getAsRadians() };
             auto const azimuthSpan{ source.getAzimuthSpan() * 2.0f };
@@ -1189,7 +1208,6 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
     // other hosts.
 
     auto const xmlState{ getXmlFromBinary(data, sizeInBytes) };
-    DBG (xmlState->toString());
     if (xmlState != nullptr) {
         // Set global settings values.
         //----------------------------

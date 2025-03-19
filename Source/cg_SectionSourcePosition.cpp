@@ -199,9 +199,9 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
     addAndMakeVisible(&mLoadSpeakerSetupButton);
     mLoadSpeakerSetupButton.setButtonText("Load Speaker Setup as source placement...");
     mLoadSpeakerSetupButton.onClick = [this] {
-        mListeners.call([&](Listener & l) {
-            l.speakerSetupSelectedCallback({ "C:/Users/barth/Documents/GRIS/vb 4 speakers xy min max.xml" });
-        });
+        juce::FileChooser chooser("Select a Speaker Setup file...", {}, "*.xml");
+        if (chooser.browseForFileToOpen())
+            mListeners.call([&](Listener & l) { l.speakerSetupSelectedCallback(chooser.getResult()); });
     };
 
     // Source Number
