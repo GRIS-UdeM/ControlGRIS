@@ -476,7 +476,7 @@ void ControlGrisAudioProcessor::sendOscMessage()
         }
     } else {
         for (auto const & source : mSources) {
-            {
+#if DEBUG_COORDINATES
                 auto const azim{ source.getAzimuth().getAsRadians() };
                 auto const normAzim{ source.getNormalizedAzimuth().get() };
 
@@ -487,11 +487,9 @@ void ControlGrisAudioProcessor::sendOscMessage()
                 DBG("normAzim: " + juce::String(normAzim));
                 DBG("elev: " + juce::String(elev));
                 DBG("normElev: " + juce::String(normElev));
-            }
-            auto const mLastAzimuthSpan{ source.getAzimuthSpan() };
-            
-            
-            
+#endif
+            //auto const mLastAzimuthSpan{ source.getAzimuthSpan() };
+
             auto const azimuth{ source.getAzimuth().getAsRadians() };
             auto const elevation{ source.getElevation().getAsRadians() };
             auto const azimuthSpan{ source.getAzimuthSpan() * 2.0f };
