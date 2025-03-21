@@ -488,6 +488,70 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 }
 
 //==============================================================================
+std::pair<float, float> getAzimuthAndElevationFromPosition(float x, float y, float z)
+{
+    //this first part is the constructor from PolarVector
+    auto const length = std::sqrt(x * x + y * y + z * z);
+    if ((x == 0.0f && y == 0.0f) || length == 0.0f)
+        return {};
+
+    auto elevation = HALF_PI - Radians{ std::acos(std::clamp(z / length, -1.0f, 1.0f)) };
+    auto azimuth = Radians{std::acos(std::clamp(x / std::sqrt(x * x + y * y), -1.0f, 1.0f))* (y < 0.0f ? -1.0f : 1.0f)};
+
+    //then translate by pi/2
+    azimuth = HALF_PI - azimuth;
+    elevation = HALF_PI - elevation;
+
+    //and at this point we have the azimuth and elevation sent to SpatGRIS
+    return { azimuth.get(), elevation.get() };
+}
+
+juce::Point<float> getXyFromAzimuthAndElevation(float azimuth, float elevation, SpatMode spatMode)
+{
+    // first part taken from void Source::computeXY()
+    float const radius{ [&] {
+        if (spatMode == SpatMode::dome) { // azimuth - elevation
+            auto const result{ elevation / MAX_ELEVATION.get() };
+            jassert(result >= 0.0f && result <= 1.0f);
+            return result;
+        }
+        //woof, not too sure here, probably need some other logic for non-dome
+        jassertfalse;
+        return 0.f;
+        //jassert(!std::isnan(mDistance));
+        //return mDistance;
+    }() };
+
+    auto const position = Source::getPositionFromAngle(Radians{ azimuth }, radius);
+
+    // these other manipulations are from ControlGrisAudioProcessor::parameterChanged() and
+    // Source::computeAzimuthElevation()
+    return { (position.x + 1) / 2, 1 - ((position.y + 1) / 2) };
+}
+
+class GetAzimuthAndElevationFromPositionTest : public juce::UnitTest
+{
+public:
+    GetAzimuthAndElevationFromPositionTest() : juce::UnitTest("GetAzimuthAndElevationFromPosition Test") {}
+
+    void runTest() override
+    {
+        beginTest("Test with (0, 0.640747, 0.767752)");
+        {
+            auto const [azim, elev] = getAzimuthAndElevationFromPosition(0.f, 0.640747f, 0.767752f);
+            expectWithinAbsoluteError(azim, 0.f, 0.001f);
+            expectWithinAbsoluteError(elev, 0.69547f, 0.001f);
+
+            auto const cartesianPosition = getXyFromAzimuthAndElevation(azim, elev, SpatMode::dome);
+            expectWithinAbsoluteError(cartesianPosition.x, .5f, 0.001f);
+            expectWithinAbsoluteError(cartesianPosition.y, 0.721375f, 0.001f);
+        }
+    }
+};
+
+static GetAzimuthAndElevationFromPositionTest getAzimuthAndElevationFromPositionTest;
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::File& speakerSetupFile)
 {
     auto const showError = [](juce::String error) {
