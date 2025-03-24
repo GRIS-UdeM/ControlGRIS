@@ -579,7 +579,7 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
     presetXml.setAttribute("ID", -1); // we're not using an ID here, that's the OG presets
     presetXml.setAttribute("firstSourceId", 1);
 
-    int curSourceNumber = 1;
+    int sourceCount = 0;
 
     for (auto curSpeaker : speakerSetup) {
         // skip this speaker if it's direct out only
@@ -587,31 +587,25 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
         //    continue;
 
         // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
+        auto const speakerNumber = curSpeaker.getType().toString().removeCharacters("SPEAKER_").getIntValue();
         auto const speakerPosition{ curSpeaker.getChildWithName("POSITION") };
-        auto const speakerX = static_cast<double>(speakerPosition["X"]);
-        auto const speakerY = static_cast<double>(speakerPosition["Y"]);
-        auto const speakerZ = static_cast<double>(speakerPosition["Z"]);
+        auto const speakerX = static_cast<float>(speakerPosition["X"]);
+        auto const speakerY = static_cast<float>(speakerPosition["Y"]);
+        auto const speakerZ = static_cast<float>(speakerPosition["Z"]);
 
         auto const [azim, elev] = getAzimuthAndElevationFromPosition(speakerX, speakerY, speakerZ);
         auto const cartesianPosition = getXyFromAzimuthAndElevation(azim, elev, SpatMode::dome);
         auto const z = 1.0f - elev / MAX_ELEVATION.get(); // this is taken from CubeControls::updateSliderValues
 
-        presetXml.setAttribute("S" + juce::String(curSourceNumber) + "_X", cartesianPosition.x);
-        presetXml.setAttribute("S" + juce::String(curSourceNumber) + "_Y", cartesianPosition.y);
-        presetXml.setAttribute("S" + juce::String(curSourceNumber) + "_Z", z);
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", cartesianPosition.x);
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", cartesianPosition.y);
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
 
-        if (curSourceNumber == 0) {
-            presetXml.setAttribute("S" + juce::String(curSourceNumber) + "_terminal_X", cartesianPosition.x);
-            presetXml.setAttribute("S" + juce::String(curSourceNumber) + "_terminal_Y", cartesianPosition.y);
-            presetXml.setAttribute("S" + juce::String(curSourceNumber) + "_terminal_Z", z);
-        }
-
-        ++curSourceNumber;
+        ++sourceCount;
     }
 
-    presetXml.setAttribute("numberOfSources", curSourceNumber - 1);
-
-    DBG(presetXml.toString());
+    presetXml.setAttribute("numberOfSources", sourceCount);
+    //DBG(presetXml.toString());
 
     // and finally, load the speaker setup as a preset
     mProcessor.getPresetsManager().load(presetXml);

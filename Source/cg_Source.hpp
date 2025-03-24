@@ -367,7 +367,7 @@ class Sources
 public:
     const int MAX_NUMBER_OF_SOURCES;
     //==============================================================================
-    Sources() : MAX_NUMBER_OF_SOURCES(juce::JUCEApplicationBase::isStandaloneApp() ? 256 : 8)
+    Sources() : MAX_NUMBER_OF_SOURCES(juce::JUCEApplicationBase::isStandaloneApp() ? 256 : 128)
     {
         mSecondarySources.resize(MAX_NUMBER_OF_SOURCES - 1);
     }
