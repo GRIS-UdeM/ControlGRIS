@@ -150,21 +150,19 @@ void PresetsManager::load(juce::XmlElement & presetData)
         mElevationLinkEnforcer.loadSnapshots(snapshots);
     }
 
-    auto const xTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
-    auto const yTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
-    auto const zTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
+    auto const xTPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
+    auto const yTPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
+    auto const zTPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
 
     // position the first source
     juce::Point<float> terminalPosition;
-    if (presetData.hasAttribute(xTerminalPositionId) && presetData.hasAttribute(yTerminalPositionId)) {
+    if (presetData.hasAttribute(xTPositionId) && presetData.hasAttribute(yTPositionId)) {
         juce::Point<float> const inversedNormalizedTerminalPosition{
-            static_cast<float>(presetData.getDoubleAttribute(xTerminalPositionId)),
-            static_cast<float>(presetData.getDoubleAttribute(yTerminalPositionId))
+            static_cast<float>(presetData.getDoubleAttribute(xTPositionId)),
+            static_cast<float>(presetData.getDoubleAttribute(yTPositionId))
         };
-        auto const inversedTerminalPosition{ inversedNormalizedTerminalPosition * 2.0f
-                                             - juce::Point<float>{ 1.0f, 1.0f } };
-        terminalPosition
-            = juce::Point<float>{ inversedTerminalPosition.getX(), inversedTerminalPosition.getY() * -1.0f };
+        auto const inversedTPosition{ inversedNormalizedTerminalPosition * 2.0f - juce::Point<float>{ 1.0f, 1.0f } };
+        terminalPosition = juce::Point<float>{ inversedTPosition.getX(), inversedTPosition.getY() * -1.0f };
     } else {
         terminalPosition = snapshots.primary.position;
     }
@@ -172,9 +170,9 @@ void PresetsManager::load(juce::XmlElement & presetData)
 
     if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
         Radians elevation;
-        if (presetData.hasAttribute(zTerminalPositionId)) {
+        if (presetData.hasAttribute(zTPositionId)) {
             auto const inversedNormalizedTerminalElevation{ static_cast<float>(
-                presetData.getDoubleAttribute(zTerminalPositionId)) };
+                presetData.getDoubleAttribute(zTPositionId)) };
             elevation = MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation);
         } else {
             elevation = snapshots.primary.z;

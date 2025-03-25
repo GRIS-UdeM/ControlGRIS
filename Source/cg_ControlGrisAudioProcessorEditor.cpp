@@ -488,7 +488,7 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 }
 
 //==============================================================================
-std::pair<float, float> getAzimuthAndElevationFromPosition(float x, float y, float z)
+std::pair<float, float> getAzimuthAndElevationFromDomeXyz(float x, float y, float z)
 {
     //this first part is the constructor from PolarVector
     auto const length = std::sqrt(x * x + y * y + z * z);
@@ -506,22 +506,10 @@ std::pair<float, float> getAzimuthAndElevationFromPosition(float x, float y, flo
     return { azimuth.get(), elevation.get() };
 }
 
-juce::Point<float> getXyFromAzimuthAndElevation(float azimuth, float elevation, SpatMode spatMode)
+juce::Point<float> getXyFromDomeAzimuthAndElevation(float azimuth, float elevation)
 {
-    // first part taken from void Source::computeXY()
-    float const radius{ [&] {
-        if (spatMode == SpatMode::dome) { // azimuth - elevation
-            auto const result{ elevation / MAX_ELEVATION.get() };
-            jassert(result >= 0.0f && result <= 1.0f);
-            return result;
-        }
-        //woof, not too sure here, probably need some other logic for non-dome
-        jassertfalse;
-        return 0.f;
-        //jassert(!std::isnan(mDistance));
-        //return mDistance;
-    }() };
-
+    // some of this logic is from Source::computeXY()
+    auto const radius{ elevation / MAX_ELEVATION.get()};
     auto const position = Source::getPositionFromAngle(Radians{ azimuth }, radius);
 
     // these other manipulations are from ControlGrisAudioProcessor::parameterChanged() and
@@ -529,27 +517,27 @@ juce::Point<float> getXyFromAzimuthAndElevation(float azimuth, float elevation, 
     return { (position.x + 1) / 2, 1 - ((position.y + 1) / 2) };
 }
 
-class GetAzimuthAndElevationFromPositionTest : public juce::UnitTest
+class GetDomeAzimuthAndElevationFromPositionTest : public juce::UnitTest
 {
 public:
-    GetAzimuthAndElevationFromPositionTest() : juce::UnitTest("GetAzimuthAndElevationFromPosition Test") {}
+    GetDomeAzimuthAndElevationFromPositionTest() : juce::UnitTest("GetAzimuthAndElevationFromPosition Test") {}
 
     void runTest() override
     {
         beginTest("Test with (0, 0.640747, 0.767752)");
         {
-            auto const [azim, elev] = getAzimuthAndElevationFromPosition(0.f, 0.640747f, 0.767752f);
+            auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(0.f, 0.640747f, 0.767752f);
             expectWithinAbsoluteError(azim, 0.f, 0.001f);
             expectWithinAbsoluteError(elev, 0.69547f, 0.001f);
 
-            auto const cartesianPosition = getXyFromAzimuthAndElevation(azim, elev, SpatMode::dome);
+            auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
             expectWithinAbsoluteError(cartesianPosition.x, .5f, 0.001f);
             expectWithinAbsoluteError(cartesianPosition.y, 0.721375f, 0.001f);
         }
     }
 };
 
-static GetAzimuthAndElevationFromPositionTest getAzimuthAndElevationFromPositionTest;
+static GetDomeAzimuthAndElevationFromPositionTest getAzimuthAndElevationFromPositionTest;
 
 //==============================================================================
 void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::File& speakerSetupFile)
@@ -579,10 +567,24 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
     presetXml.setAttribute("ID", -1); // we're not using an ID here, that's the OG presets
     presetXml.setAttribute("firstSourceId", 1);
 
+    auto const savedSpatMode = [savedSpatMode = speakerSetup["SPAT_MODE"].toString()]() {
+        // taken from sg_SpatMode.cpp in SpatGRIS
+        juce::StringArray const SPAT_MODE_STRINGS{ "Dome", "Cube" };
+
+        if (savedSpatMode == SPAT_MODE_STRINGS[0])
+            return SpatMode::dome;
+        else if (savedSpatMode == SPAT_MODE_STRINGS[1])
+            return SpatMode::cube;
+
+        //unknown/unsuported mode
+        jassertfalse;
+        return SpatMode::dome;
+    }();
+
     int sourceCount = 0;
 
     for (auto curSpeaker : speakerSetup) {
-        // skip this speaker if it's direct out only
+        // skip this speaker if it's direct out only -- might be used later
         //if (static_cast<int> (curSpeaker["DIRECT_OUT_ONLY"]) == 1)
         //    continue;
 
@@ -593,19 +595,33 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
         auto const speakerY = static_cast<float>(speakerPosition["Y"]);
         auto const speakerZ = static_cast<float>(speakerPosition["Z"]);
 
-        auto const [azim, elev] = getAzimuthAndElevationFromPosition(speakerX, speakerY, speakerZ);
-        auto const cartesianPosition = getXyFromAzimuthAndElevation(azim, elev, SpatMode::dome);
-        auto const z = 1.0f - elev / MAX_ELEVATION.get(); // this is taken from CubeControls::updateSliderValues
+        if (savedSpatMode == SpatMode::dome) {
+            auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(speakerX, speakerY, speakerZ);
+            auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
+            auto const z = 1.0f - elev / MAX_ELEVATION.get(); // this is taken from CubeControls::updateSliderValues
 
-        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", cartesianPosition.x);
-        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", cartesianPosition.y);
-        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", cartesianPosition.x);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", cartesianPosition.y);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
+        } else {
+            auto const x = juce::jmap(speakerX, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+            auto const y = juce::jmap(speakerY, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+
+            // TODO: the speakerZ cube value can be interpreted differently based on the current gris::ElevationMode.
+            //  There's curently no way in the speaker setup to differentiate whether individual speakers use an
+            //  extended elevation mode but when we'll want to revisit that, there's some potentially useful conversion
+            //  logic in ControlGrisAudioProcessor::sendOscMessage()
+            auto const z = speakerZ;
+
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", x);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", y);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
+        }
 
         ++sourceCount;
     }
 
     presetXml.setAttribute("numberOfSources", sourceCount);
-    //DBG(presetXml.toString());
 
     // and finally, load the speaker setup as a preset
     mProcessor.getPresetsManager().load(presetXml);

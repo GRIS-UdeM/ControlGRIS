@@ -211,13 +211,17 @@ void ControlGrisAudioProcessor::parameterChanged(juce::String const & parameterI
     }
 
     Normalized const normalized{ newValue };
+#if DEBUG_COORDINATES
     DBG("newValue: " + juce::String (newValue));
     DBG("normalized: " + juce::String (normalized.get()));
+#endif
     if (parameterId.compare(Automation::Ids::X) == 0) {
         mSources.getPrimarySource().setX(normalized, Source::OriginOfChange::automation);
     } else if (parameterId.compare(Automation::Ids::Y) == 0) {
         Normalized const invNormalized{ 1.0f - newValue };
+#if DEBUG_COORDINATES
         DBG("invNormalized: " + juce::String(invNormalized.get()));
+#endif
         mSources.getPrimarySource().setY(invNormalized, Source::OriginOfChange::automation);
     } else if (parameterId.compare(Automation::Ids::Z) == 0 && mSpatMode == SpatMode::cube) {
         auto const newElevation{ MAX_ELEVATION - (MAX_ELEVATION * normalized.get()) };
@@ -488,8 +492,6 @@ void ControlGrisAudioProcessor::sendOscMessage()
                 DBG("elev: " + juce::String(elev));
                 DBG("normElev: " + juce::String(normElev));
 #endif
-            //auto const mLastAzimuthSpan{ source.getAzimuthSpan() };
-
             auto const azimuth{ source.getAzimuth().getAsRadians() };
             auto const elevation{ source.getElevation().getAsRadians() };
             auto const azimuthSpan{ source.getAzimuthSpan() * 2.0f };
