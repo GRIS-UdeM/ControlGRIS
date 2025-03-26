@@ -567,6 +567,7 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
     presetXml.setAttribute("ID", -1); // we're not using an ID here, that's the OG presets
     presetXml.setAttribute("firstSourceId", 1);
 
+    // get and use the saved SpatMode
     auto const savedSpatMode = [savedSpatMode = speakerSetup["SPAT_MODE"].toString()]() {
         // taken from sg_SpatMode.cpp in SpatGRIS
         juce::StringArray const SPAT_MODE_STRINGS{ "Dome", "Cube" };
@@ -580,6 +581,7 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
         jassertfalse;
         return SpatMode::dome;
     }();
+    oscFormatChangedCallback(savedSpatMode);
 
     int sourceCount = 0;
 
