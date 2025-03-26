@@ -195,9 +195,9 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
         });
     };
 
-    // Speaker Setup as Source Placement
+    // Speaker Setup as Source position
     addAndMakeVisible(&mLoadSpeakerSetupButton);
-    mLoadSpeakerSetupButton.setButtonText("Load Speaker Setup as source placement...");
+    mLoadSpeakerSetupButton.setButtonText("Load Speaker Setup as source position...");
     mLoadSpeakerSetupButton.onClick = [this] {
         juce::FileChooser chooser("Select a Speaker Setup file...", {}, "*.xml");
         if (chooser.browseForFileToOpen())
