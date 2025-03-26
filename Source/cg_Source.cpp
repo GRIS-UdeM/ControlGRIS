@@ -206,26 +206,52 @@ void Source::computeXY()
 void Source::computeAzimuthElevation()
 {
     jassert(!std::isnan(mPosition.getX()) && !std::isnan(mPosition.getY()));
-    if (mPosition.getX() != 0.0f || mPosition.getY() != 0.0f) {
+
+    // update the azimuth only if we're not exactly at origin.
+    if (! mPosition.isOrigin()) {
         // TODO : when the position converges to the origin via an automation, one of the dimension is going to get to
         // zero before the other. This is going to drastically change the angle. We need to insulate the real automation
         // from a listener callback initiated by some other source.
+
+#if DEBUG_COORDINATES
+        DBG("angle: " + getAngleFromPosition(mPosition).toString());
+        DBG("centered angle: " + getAngleFromPosition(mPosition).centered().toString());
+#endif
         mAzimuth = getAngleFromPosition(mPosition).centered();
     }
 
+    // update both the elevation and distance in dome mode, otherwise only set the distance to the origin
     auto const radius{ mPosition.getDistanceFromOrigin() };
+#if DEBUG_COORDINATES
+    DBG("OG Radius: " + juce::String (radius));
+#endif
+
     if (mSpatMode == SpatMode::dome) {
         auto const clippedRadius{ std::min(radius, 1.0f) };
+#if DEBUG_COORDINATES
+        DBG("clippedRadius: " + juce::String(clippedRadius));
+#endif
+
         if (clippedRadius < radius) {
             jassert(!std::isnan(mAzimuth.getAsRadians()));
             mPosition = getPositionFromAngle(mAzimuth, clippedRadius);
+#if DEBUG_COORDINATES
+            DBG("mPosition: " + mPosition.toString());
+#endif
         }
-        auto const elevation{ HALF_PI * clippedRadius };
-        mElevation = elevation;
+
+        mElevation = HALF_PI * clippedRadius;
+#if DEBUG_COORDINATES
+        DBG("mElevation : " + juce::String (mElevation.get()));
+#endif
+
         mDistance = clippedRadius;
     } else {
         mDistance = radius;
     }
+#if DEBUG_COORDINATES
+    DBG("mDistance: " + juce::String(mDistance));
+#endif
 }
 
 //==============================================================================

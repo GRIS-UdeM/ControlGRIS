@@ -126,7 +126,7 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     mAudioProcessorValueTreeState.state.setProperty("oscOutputPortNumber", 8000, nullptr);
     mAudioProcessorValueTreeState.state.setProperty("oscOutputConnected", false, nullptr);
     mAudioProcessorValueTreeState.state.setProperty("numberOfSources", 2, nullptr);
-    mAudioProcessorValueTreeState.state.setProperty("firstSourceId", 1, nullptr);
+    mAudioProcessorValueTreeState.state.setProperty(PRESET_FIRST_SOURCE_ID_XML_TAG, 1, nullptr);
     mAudioProcessorValueTreeState.state.setProperty("oscOutputPluginId", 1, nullptr);
 
     // Trajectory box persitent settings.
@@ -211,10 +211,17 @@ void ControlGrisAudioProcessor::parameterChanged(juce::String const & parameterI
     }
 
     Normalized const normalized{ newValue };
+#if DEBUG_COORDINATES
+    DBG("newValue: " + juce::String (newValue));
+    DBG("normalized: " + juce::String (normalized.get()));
+#endif
     if (parameterId.compare(Automation::Ids::X) == 0) {
         mSources.getPrimarySource().setX(normalized, Source::OriginOfChange::automation);
     } else if (parameterId.compare(Automation::Ids::Y) == 0) {
         Normalized const invNormalized{ 1.0f - newValue };
+#if DEBUG_COORDINATES
+        DBG("invNormalized: " + juce::String(invNormalized.get()));
+#endif
         mSources.getPrimarySource().setY(invNormalized, Source::OriginOfChange::automation);
     } else if (parameterId.compare(Automation::Ids::Z) == 0 && mSpatMode == SpatMode::cube) {
         auto const newElevation{ MAX_ELEVATION - (MAX_ELEVATION * normalized.get()) };
@@ -336,7 +343,7 @@ void ControlGrisAudioProcessor::setOscAddress(juce::String const & address)
 void ControlGrisAudioProcessor::setFirstSourceId(SourceId const firstSourceId, bool const propagate)
 {
     mFirstSourceId = firstSourceId;
-    mAudioProcessorValueTreeState.state.setProperty("firstSourceId", mFirstSourceId.get(), nullptr);
+    mAudioProcessorValueTreeState.state.setProperty(PRESET_FIRST_SOURCE_ID_XML_TAG, mFirstSourceId.get(), nullptr);
     for (int i{}; i < mSources.MAX_NUMBER_OF_SOURCES; ++i) {
         mSources.get(i).setId(SourceId{ i + mFirstSourceId.get() });
     }
@@ -473,6 +480,18 @@ void ControlGrisAudioProcessor::sendOscMessage()
         }
     } else {
         for (auto const & source : mSources) {
+#if DEBUG_COORDINATES
+                auto const azim{ source.getAzimuth().getAsRadians() };
+                auto const normAzim{ source.getNormalizedAzimuth().get() };
+
+                auto const elev{ source.getElevation().getAsRadians() };
+                auto const normElev{ source.getNormalizedElevation().get() };
+
+                DBG("azim: " + juce::String(azim));
+                DBG("normAzim: " + juce::String(normAzim));
+                DBG("elev: " + juce::String(elev));
+                DBG("normElev: " + juce::String(normElev));
+#endif
             auto const azimuth{ source.getAzimuth().getAsRadians() };
             auto const elevation{ source.getElevation().getAsRadians() };
             auto const azimuthSpan{ source.getAzimuthSpan() * 2.0f };
@@ -903,10 +922,8 @@ void ControlGrisAudioProcessor::timerCallback()
 }
 
 //==============================================================================
-void ControlGrisAudioProcessor::setPluginState()
+void ControlGrisAudioProcessor::setSourcePositionsFromState()
 {
-    // If no preset is loaded, try to restore the last saved positions.
-    //    if (mPresetManager.getCurrentPreset() == 0) {
     auto & state{ mAudioProcessorValueTreeState.state };
     for (auto & source : mSources) {
         auto const index{ source.getIndex().toString() };
@@ -931,7 +948,6 @@ void ControlGrisAudioProcessor::setPluginState()
         source.setElevation(elevation, Source::OriginOfChange::userAnchorMove);
         source.setDistance(distance, Source::OriginOfChange::userAnchorMove);
     }
-    //    }
 
     auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
     if (editor != nullptr) {
@@ -1176,8 +1192,8 @@ void ControlGrisAudioProcessor::getStateInformation(juce::MemoryBlock & destData
         if (childExist) {
             xmlState->removeChildElement(childExist, true);
         }
-        if (mFixPositionData.getNumChildElements() > 0) { // TODO : It looks like we never reach this code...
-            auto * positionData{ new juce::XmlElement{ mFixPositionData } };
+        if (mPresetData.getNumChildElements() > 0) {
+            auto * positionData{ new juce::XmlElement{ mPresetData } };
             xmlState->addChildElement(positionData);
         }
         copyXmlToBinary(*xmlState, destData);
@@ -1192,7 +1208,6 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
     // other hosts.
 
     auto const xmlState{ getXmlFromBinary(data, sizeInBytes) };
-
     if (xmlState != nullptr) {
         // Set global settings values.
         //----------------------------
@@ -1217,40 +1232,20 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
                 valueTree.getProperty("oscOutputPortNumber", 8000)) };
         }
 
-        // Load stored sources positions
-        for (int sourceIndex{}; sourceIndex < mSources.MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
-            juce::String const id{ sourceIndex };
-            juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };
-            juce::Identifier const elevationId{ juce::String{ "p_elevation_" } + id };
-            juce::Identifier const distanceId{ juce::String{ "p_distance_" } + id };
-            auto & source{ mSources[sourceIndex] };
-
-            const Radians azimuth{ valueTree.getProperty(azimuthId) };
-            const Radians elevation{ valueTree.getProperty(elevationId) };
-            const float distance{ valueTree.getProperty(distanceId) };
-
-            source.setAzimuth(azimuth, Source::OriginOfChange::userAnchorMove);
-            source.setElevation(elevation, Source::OriginOfChange::userAnchorMove);
-            source.setDistance(distance, Source::OriginOfChange::userAnchorMove);
-        }
-
-        // Load saved fixed positions.
+        // Load saved presets.
         //----------------------------
-        auto * positionData{ xmlState->getChildByName(FIXED_POSITION_DATA_TAG) };
-        if (positionData) { // TODO : It looks like we never reach this code...
-            mFixPositionData.deleteAllChildElements();
-            mFixPositionData = *positionData;
-            mPositionSourceLinkEnforcer.enforceSourceLink();
-            if (mSpatMode == SpatMode::cube) {
-                mElevationSourceLinkEnforcer.enforceSourceLink();
-            }
+        auto * presetData{ xmlState->getChildByName(FIXED_POSITION_DATA_TAG) };
+        if (presetData) {
+            mPresetData.deleteAllChildElements();
+            mPresetData = *presetData;
         }
+
         // Replace the state and call automated parameter current values.
         //---------------------------------------------------------------
         mAudioProcessorValueTreeState.replaceState(juce::ValueTree::fromXml(*xmlState));
     }
 
-    setPluginState();
+    setSourcePositionsFromState();
 }
 
 //==============================================================================

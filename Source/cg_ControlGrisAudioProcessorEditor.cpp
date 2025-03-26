@@ -364,7 +364,7 @@ void ControlGrisAudioProcessorEditor::oscStateChangedCallback(bool const state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const numOfSources)
 {
-    auto const initSourcePlacement{ mProcessor.getSources().size() != numOfSources };
+    auto const isNewSourceCount{ mProcessor.getSources().size() != numOfSources };
     auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
     auto const symmetricLinkAllowed{ numOfSources == 2 };
     mSectionTrajectory.setSymmetricLinkComboState(symmetricLinkAllowed);
@@ -384,7 +384,7 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
     mPositionField.refreshSources();
     mElevationField.refreshSources();
     mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
-    if (initSourcePlacement) {
+    if (isNewSourceCount) {
         sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
     }
 }
@@ -485,6 +485,151 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
 
     repaint();
+}
+
+//==============================================================================
+std::pair<float, float> getAzimuthAndElevationFromDomeXyz(float x, float y, float z)
+{
+    //this first part is the constructor from PolarVector
+    auto const length = std::hypot (x, y, z);
+    if ((x == 0.0f && y == 0.0f) || length == 0.0f)
+        return {};
+
+    auto elevation = HALF_PI - Radians{ std::acos(std::clamp(z / length, -1.0f, 1.0f)) };
+    auto azimuth = std::copysign(std::acos(std::clamp(x / std::hypot(x, y), -1.0f, 1.0f)), y);
+
+    //then inverse and translate by pi/2
+    azimuth = HALF_PI.get() - azimuth;
+    elevation = HALF_PI - elevation;
+
+    //and at this point we have the azimuth and elevation sent to SpatGRIS
+    return { azimuth, elevation.get() };
+}
+
+juce::Point<float> getXyFromDomeAzimuthAndElevation(float azimuth, float elevation)
+{
+    // some of this logic is from Source::computeXY()
+    auto const radius{ elevation / MAX_ELEVATION.get()};
+    auto const position = Source::getPositionFromAngle(Radians{ azimuth }, radius);
+
+    // these other manipulations are from ControlGrisAudioProcessor::parameterChanged() and
+    // Source::computeAzimuthElevation()
+    return { (position.x + 1) / 2, 1 - ((position.y + 1) / 2) };
+}
+
+class GetDomeAzimuthAndElevationFromPositionTest : public juce::UnitTest
+{
+public:
+    GetDomeAzimuthAndElevationFromPositionTest() : juce::UnitTest("GetAzimuthAndElevationFromPosition Test") {}
+
+    void runTest() override
+    {
+        beginTest("Test with (0, 0.640747, 0.767752)");
+        {
+            auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(0.f, 0.640747f, 0.767752f);
+            expectWithinAbsoluteError(azim, 0.f, 0.001f);
+            expectWithinAbsoluteError(elev, 0.69547f, 0.001f);
+
+            auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
+            expectWithinAbsoluteError(cartesianPosition.x, .5f, 0.001f);
+            expectWithinAbsoluteError(cartesianPosition.y, 0.721375f, 0.001f);
+        }
+    }
+};
+
+static GetDomeAzimuthAndElevationFromPositionTest getAzimuthAndElevationFromPositionTest;
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::File& speakerSetupFile)
+{
+    auto const showError = [](juce::String error) {
+        juce::AlertWindow::showMessageBox(juce::AlertWindow::WarningIcon,
+                                          "Error Loading Speaker Setup File",
+                                          error,
+                                          "OK");
+    };
+
+    // make sure our file exists
+    if (!speakerSetupFile.existsAsFile()) {
+        showError("This file does not exist: " + speakerSetupFile.getFullPathName());
+        return;
+    }
+
+    // and is a valid speaker setup file
+    auto const speakerSetup = juce::ValueTree::fromXml(speakerSetupFile.loadFileAsString());
+    if (!speakerSetup.isValid() || speakerSetup.getType().toString() != SPEAKER_SETUP_XML_TAG || speakerSetup.getNumChildren() < 1) {
+        showError("This file is not a valid Speaker Setup file: " + speakerSetupFile.getFullPathName());
+        return;
+    }
+
+    // now convert the speakerSetupFile to the xml that the preset manager is expecting
+    juce::XmlElement presetXml{ PRESET_XML_TAG };
+    presetXml.setAttribute(PRESET_ID_XML_TAG, -1); // IDs are only used for OG presets
+    presetXml.setAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG, 1);
+
+    // get and use the saved SpatMode
+    auto const savedSpatMode = [savedSpatMode = speakerSetup[PRESET_SPAT_MODE_XML_TAG].toString()]() {
+        if (savedSpatMode == SPAT_MODE_STRINGS[0])
+            return SpatMode::dome;
+        else if (savedSpatMode == SPAT_MODE_STRINGS[1])
+            return SpatMode::cube;
+
+        //unknown/unsuported mode
+        jassertfalse;
+        return SpatMode::dome;
+    }();
+    oscFormatChangedCallback(savedSpatMode);
+
+    int sourceCount = 0;
+
+    for (auto curSpeaker : speakerSetup) {
+        // skip this speaker if it's direct out only -- might be used later
+        //if (static_cast<int> (curSpeaker["DIRECT_OUT_ONLY"]) == 1)
+        //    continue;
+
+        // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
+        auto const speakerString = curSpeaker.getType().toString();
+        auto const speakerNumber = speakerString.removeCharacters(SPEAKER_SETUP_POS_PREFIX).getIntValue();
+        auto const speakerPosition{ curSpeaker.getChildWithName(SPEAKER_SETUP_POSITION_XML_TAG) };
+        auto const speakerX = static_cast<float>(speakerPosition["X"]);
+        auto const speakerY = static_cast<float>(speakerPosition["Y"]);
+        auto const speakerZ = static_cast<float>(speakerPosition["Z"]);
+
+        if (savedSpatMode == SpatMode::dome) {
+            auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(speakerX, speakerY, speakerZ);
+            auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
+            auto const z = 1.0f - elev / MAX_ELEVATION.get(); // this is taken from CubeControls::updateSliderValues
+
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", cartesianPosition.x);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", cartesianPosition.y);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
+        } else {
+            auto const x = juce::jmap(speakerX, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+            auto const y = juce::jmap(speakerY, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+
+            // TODO: the speakerZ cube value can be interpreted differently based on the current gris::ElevationMode.
+            //  There's curently no way in the speaker setup to differentiate whether individual speakers use an
+            //  extended elevation mode but when we'll want to revisit that, there's some potentially useful conversion
+            //  logic in ControlGrisAudioProcessor::sendOscMessage()
+            auto const z = speakerZ;
+
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", x);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", y);
+            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
+        }
+
+        ++sourceCount;
+    }
+
+    presetXml.setAttribute("numberOfSources", sourceCount);
+
+    // and finally, load the speaker setup as a preset
+    mProcessor.getPresetsManager().load(presetXml);
+    firstSourceIdChangedCallback(SourceId{ 1 });
+    numberOfSourcesChangedCallback(mProcessor.getSources().size());
+    mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
+    if (mProcessor.getSpatMode() == SpatMode::cube)
+        mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
 }
 
 //==============================================================================

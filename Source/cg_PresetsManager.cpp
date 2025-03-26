@@ -69,10 +69,10 @@ int PresetsManager::getCurrentPreset() const
 std::optional<int> PresetsManager::getPresetSourceId(int presetNumber)
 {
     auto const presetData { getPresetData(presetNumber) };
-    if (!presetData || ! (*presetData)->hasAttribute("firstSourceId"))
+    if (!presetData || !(*presetData)->hasAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG))
         return {};
 
-    return (*presetData)->getIntAttribute("firstSourceId");
+    return (*presetData)->getIntAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG);
 }
 
 //==============================================================================
@@ -92,97 +92,116 @@ bool PresetsManager::forceLoad(int const presetNumber)
 }
 
 //==============================================================================
+
 bool PresetsManager::load(int const presetNumber)
 {
-    if (presetNumber != 0) {
-        auto const maybe_presetData{ getPresetData(presetNumber) };
-        if (!maybe_presetData.has_value()) {
-            return false;
-        }
+    if (presetNumber <= 0)
+        return false;
 
-        auto const * presetData{ *maybe_presetData };
+    auto const maybe_presetDataPtr{ getPresetData(presetNumber) };
+    if (!maybe_presetDataPtr.has_value()) {
+        return false;
+    }
 
-        if (presetData->hasAttribute ("numberOfSources"))
-            mSources.setSize(presetData->getIntAttribute("numberOfSources"));
+    auto const presetDataPtr{ *maybe_presetDataPtr };
+    if (presetDataPtr == nullptr) {
+        return false;
+    }
 
-        if (presetData->hasAttribute("firstSourceId"))
-            mFirstSourceId = SourceId{ presetData->getIntAttribute("firstSourceId") };
+    load(*presetDataPtr);
+    return true;
+}
 
-        // Store the preset's source positions in a new SourcesSnapshots
-        SourcesSnapshots snapshots{};
-        for (auto & source : mSources) {
-            SourceSnapshot snapshot{};
-            auto const index{ source.getIndex() };
-            auto const xPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 0) };
-            auto const yPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 1) };
-            if (presetData->hasAttribute(xPosId) && presetData->hasAttribute(yPosId)) {
-                juce::Point<float> const normalizedInversedPosition{
-                    static_cast<float>(presetData->getDoubleAttribute(xPosId)),
-                    static_cast<float>(presetData->getDoubleAttribute(yPosId))
-                };
-                auto const inversedPosition{ normalizedInversedPosition * 2.0f - juce::Point<float>{ 1.0f, 1.0f } };
-                juce::Point<float> const position{ inversedPosition.getX(), inversedPosition.getY() * -1.0f };
-                snapshot.position = position;
-                auto const zPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 2) };
-                if (presetData->hasAttribute(zPosId)) {
-                    auto const elevation {getFixedPosSourceName(FixedPositionType::initial, index, 2)};
-                    auto const inversedNormalizedElevation{ static_cast<float>(presetData->getDoubleAttribute(elevation)) };
-                    snapshot.z = MAX_ELEVATION * (1.0f - inversedNormalizedElevation);
-                }
-            }
-            if (source.isPrimarySource()) {
-                snapshots.primary = snapshot;
-            } else {
-                snapshots.secondaries.add(snapshot);
-            }
-        }
+void PresetsManager::load(juce::XmlElement & presetData)
+{
+    if (presetData.hasAttribute("numberOfSources"))
+        mSources.setSize(presetData.getIntAttribute("numberOfSources"));
 
-        //load the snapshots into the enforcers, which are references to the ControlGrisAudioProcessor members
-        mPositionLinkEnforcer.loadSnapshots(snapshots);
-        if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
-            mElevationLinkEnforcer.loadSnapshots(snapshots);
-        }
+    if (presetData.hasAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG))
+        mFirstSourceId = SourceId{ presetData.getIntAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG) };
 
-        auto const xTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
-        auto const yTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
-        auto const zTerminalPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
-
-        // position the first source
-        juce::Point<float> terminalPosition;
-        if (presetData->hasAttribute(xTerminalPositionId) && presetData->hasAttribute(yTerminalPositionId)) {
-            juce::Point<float> const inversedNormalizedTerminalPosition{
-                static_cast<float>(presetData->getDoubleAttribute(xTerminalPositionId)),
-                static_cast<float>(presetData->getDoubleAttribute(yTerminalPositionId))
+    // Store the preset's source positions in a new SourcesSnapshots
+    SourcesSnapshots snapshots{};
+    for (auto & source : mSources) {
+        SourceSnapshot snapshot{};
+        auto const index{ source.getIndex() };
+        auto const xPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 0) };
+        auto const yPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 1) };
+        if (presetData.hasAttribute(xPosId) && presetData.hasAttribute(yPosId)) {
+            juce::Point<float> const normalizedInversedPosition{
+                static_cast<float>(presetData.getDoubleAttribute(xPosId)),
+                static_cast<float>(presetData.getDoubleAttribute(yPosId))
             };
-            auto const inversedTerminalPosition{ inversedNormalizedTerminalPosition * 2.0f
-                                                 - juce::Point<float>{ 1.0f, 1.0f } };
-            terminalPosition
-                = juce::Point<float>{ inversedTerminalPosition.getX(), inversedTerminalPosition.getY() * -1.0f };
+            auto const inversedPosition{ normalizedInversedPosition * 2.0f - juce::Point<float>{ 1.0f, 1.0f } };
+            juce::Point<float> const position{ inversedPosition.getX(), inversedPosition.getY() * -1.0f };
+            snapshot.position = position;
+            auto const zPosId{ getFixedPosSourceName(FixedPositionType::initial, index, 2) };
+            if (presetData.hasAttribute(zPosId)) {
+                auto const elevation{ getFixedPosSourceName(FixedPositionType::initial, index, 2) };
+                auto const inversedNormalizedElevation{ static_cast<float>(presetData.getDoubleAttribute(elevation)) };
+                snapshot.z = MAX_ELEVATION * (1.0f - inversedNormalizedElevation);
+            }
+        }
+        if (source.isPrimarySource()) {
+            snapshots.primary = snapshot;
         } else {
-            terminalPosition = snapshots.primary.position;
-        }
-        mSources.getPrimarySource().setPosition(terminalPosition, Source::OriginOfChange::presetRecall);
-
-        if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
-            Radians elevation;
-            if (presetData->hasAttribute(zTerminalPositionId)) {
-                auto const inversedNormalizedTerminalElevation{ static_cast<float>(
-                    presetData->getDoubleAttribute(zTerminalPositionId)) };
-                elevation = MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation);
-            } else {
-                elevation = snapshots.primary.z;
-            };
-
-            mSources.getPrimarySource().setElevation(elevation, Source::OriginOfChange::presetRecall);
+            snapshots.secondaries.add(snapshot);
         }
     }
-    mLastLoadedPreset = presetNumber;
 
-    // send a change message, which will end up calling SourceLinkEnforcer::enforceSourceLink()
-    // to position the secondary sources
-    sendChangeMessage();
+    // load the snapshots into the enforcers, which are references to the ControlGrisAudioProcessor members
+    mPositionLinkEnforcer.loadSnapshots(snapshots);
 
-    return true;
+    auto const spatMode { mSources.getPrimarySource().getSpatMode() };
+    switch (spatMode) {
+    case SpatMode::cube:
+        mElevationLinkEnforcer.loadSnapshots(snapshots);
+        break;
+    case SpatMode::dome:
+        break;
+    default:
+        jassertfalse;
+    }
+
+    auto const xTPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
+    auto const yTPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 1) };
+    auto const zTPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 2) };
+
+    // position the first source
+    juce::Point<float> terminalPosition;
+    if (presetData.hasAttribute(xTPositionId) && presetData.hasAttribute(yTPositionId)) {
+        juce::Point<float> const inversedNormalizedTerminalPosition{
+            static_cast<float>(presetData.getDoubleAttribute(xTPositionId)),
+            static_cast<float>(presetData.getDoubleAttribute(yTPositionId))
+        };
+        auto const inversedTPosition{ inversedNormalizedTerminalPosition * 2.0f - juce::Point<float>{ 1.0f, 1.0f } };
+        terminalPosition = juce::Point<float>{ inversedTPosition.getX(), inversedTPosition.getY() * -1.0f };
+    } else {
+        terminalPosition = snapshots.primary.position;
+    }
+    mSources.getPrimarySource().setPosition(terminalPosition, Source::OriginOfChange::presetRecall);
+
+    switch (spatMode) {
+    case SpatMode::cube: {
+        Radians elevation;
+        if (presetData.hasAttribute(zTPositionId)) {
+            auto const inversedNormalizedTerminalElevation{ static_cast<float>(
+                presetData.getDoubleAttribute(zTPositionId)) };
+            elevation = MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation);
+        } else {
+            elevation = snapshots.primary.z;
+        };
+
+        mSources.getPrimarySource().setElevation(elevation, Source::OriginOfChange::presetRecall);
+    } break;
+    case SpatMode::dome:
+        break;
+    default:
+        jassertfalse;
+    }
+
+    if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
+    }
 }
 
 //==============================================================================
@@ -196,7 +215,7 @@ bool PresetsManager::contains(int const presetNumber) const
 std::optional<juce::XmlElement *> PresetsManager::getPresetData(int const presetNumber) const
 {
     for (auto * element : mData.getChildIterator()) {
-        if (element->getIntAttribute("ID") == presetNumber) {
+        if (element->getIntAttribute(PRESET_ID_XML_TAG) == presetNumber) {
             return element;
         }
     }
@@ -208,8 +227,8 @@ std::optional<juce::XmlElement *> PresetsManager::getPresetData(int const preset
 std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const presetNumber) const
 {
     // Build a new fixed position element.
-    auto preset{ std::make_unique<juce::XmlElement>("ITEM") };
-    preset->setAttribute("ID", presetNumber);
+    auto preset{ std::make_unique<juce::XmlElement>(PRESET_XML_TAG) };
+    preset->setAttribute(PRESET_ID_XML_TAG, presetNumber);
 
     auto const & positionSnapshots{ mPositionLinkEnforcer.getSnapshots() };
     auto const & elevationsSnapshots{ mElevationLinkEnforcer.getSnapshots() };
@@ -217,7 +236,7 @@ std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const pre
     //save the number and initial position of all sources
     SourceIndex const numberOfSources{ mSources.size() };
     preset->setAttribute("numberOfSources", numberOfSources.get());
-    preset->setAttribute("firstSourceId", mFirstSourceId.get());
+    preset->setAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG, mFirstSourceId.get());
 
     for (SourceIndex sourceIndex{}; sourceIndex < numberOfSources; ++sourceIndex) {
         auto const curSourceX{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 0) };
@@ -269,7 +288,7 @@ void PresetsManager::save(int const presetNumber) const
         mData.addChildElement(newData.release());
     }
 
-    XmlElementDataSorter sorter("ID", true);
+    XmlElementDataSorter sorter(PRESET_ID_XML_TAG, true);
     mData.sortChildElements(sorter);
 }
 
@@ -283,7 +302,7 @@ bool PresetsManager::deletePreset(int const presetNumber) const
     }
 
     mData.removeChildElement(*maybe_data, true);
-    XmlElementDataSorter sorter("ID", true);
+    XmlElementDataSorter sorter(PRESET_ID_XML_TAG, true);
     mData.sortChildElements(sorter);
 
     return true;
@@ -297,7 +316,7 @@ std::array<bool, NUMBER_OF_POSITION_PRESETS> PresetsManager::getSavedPresets() c
     std::fill(std::begin(result), std::end(result), false);
 
     for (auto * presetData : mData.getChildIterator()) {
-        auto const presetNumber{ presetData->getIntAttribute("ID") };
+        auto const presetNumber{ presetData->getIntAttribute(PRESET_ID_XML_TAG) };
         result[static_cast<size_t>(presetNumber) - 1u] = true;
     }
 

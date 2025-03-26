@@ -107,10 +107,19 @@ enum class ElevationTrajectoryType { undefined, realtime, drawing, downUp, upDow
 extern juce::StringArray const ELEVATION_TRAJECTORY_TYPE_TYPES;
 
 //==============================================================================
-// Fix position data headers.
-extern juce::StringArray const FIXED_POSITION_DATA_HEADERS;
-
 extern juce::String const FIXED_POSITION_DATA_TAG;
+
+constexpr auto SPEAKER_SETUP_XML_TAG = "SPEAKER_SETUP";
+constexpr auto SPEAKER_SETUP_POS_PREFIX = "SPEAKER_";
+constexpr auto SPEAKER_SETUP_POSITION_XML_TAG = "POSITION";
+
+constexpr auto PRESET_XML_TAG = "ITEM";
+constexpr auto PRESET_ID_XML_TAG = "ID";
+constexpr auto PRESET_FIRST_SOURCE_ID_XML_TAG = "firstSourceId";
+constexpr auto PRESET_SPAT_MODE_XML_TAG = "SPAT_MODE";
+
+// taken from sg_SpatMode.cpp in SpatGRIS
+constexpr auto SPAT_MODE_STRINGS = std::array<const char *, 2>{ "Dome", "Cube" };
 
 namespace Automation
 {

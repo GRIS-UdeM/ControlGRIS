@@ -70,6 +70,8 @@ public:
     void save(int presetNumber) const;
     [[nodiscard]] bool deletePreset(int presetNumber) const;
 
+    void load(juce::XmlElement & presetData);
+
 private:
     //==============================================================================
     [[nodiscard]] bool contains(int presetNumber) const;

@@ -112,17 +112,6 @@ juce::StringArray const ELEVATION_MODE_TYPES{ juce::String("Normal"),
                                               juce::String("Extended Top"),
                                               juce::String("Extended Top and Bottom") };
 
-juce::StringArray const FIXED_POSITION_DATA_HEADERS{
-    // TODO: is this useful?
-    juce::String("ID"),   juce::String("S1_X"), juce::String("S1_Y"), juce::String("S1_Z"), juce::String("S2_X"),
-    juce::String("S2_Y"), juce::String("S2_Z"), juce::String("S3_X"), juce::String("S3_Y"), juce::String("S3_Z"),
-    juce::String("S4_X"), juce::String("S4_Y"), juce::String("S4_Z"), juce::String("S5_X"), juce::String("S5_Y"),
-    juce::String("S5_Z"), juce::String("S6_X"), juce::String("S6_Y"), juce::String("S6_Z"), juce::String("S7_X"),
-    juce::String("S7_Y"), juce::String("S7_Z"), juce::String("S8_X"), juce::String("S8_Y"), juce::String("S8_Z"),
-    juce::String("T1_X"), juce::String("T1_Y"), juce::String("T1_Z"), juce::String("T2_X"), juce::String("T2_Y"),
-    juce::String("T2_Z")
-};
-
 juce::String const FIXED_POSITION_DATA_TAG("Fix_Position_Data");
 
 } // namespace gris
