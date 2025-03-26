@@ -69,10 +69,10 @@ int PresetsManager::getCurrentPreset() const
 std::optional<int> PresetsManager::getPresetSourceId(int presetNumber)
 {
     auto const presetData { getPresetData(presetNumber) };
-    if (!presetData || ! (*presetData)->hasAttribute("firstSourceId"))
+    if (!presetData || !(*presetData)->hasAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG))
         return {};
 
-    return (*presetData)->getIntAttribute("firstSourceId");
+    return (*presetData)->getIntAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG);
 }
 
 //==============================================================================
@@ -98,12 +98,17 @@ bool PresetsManager::load(int const presetNumber)
     if (presetNumber <= 0)
         return false;
 
-    auto const maybe_presetData{ getPresetData(presetNumber) };
-    if (!maybe_presetData.has_value()) {
+    auto const maybe_presetDataPtr{ getPresetData(presetNumber) };
+    if (!maybe_presetDataPtr.has_value()) {
         return false;
     }
 
-    load(**maybe_presetData);
+    auto const presetDataPtr{ *maybe_presetDataPtr };
+    if (presetDataPtr == nullptr) {
+        return false;
+    }
+
+    load(*presetDataPtr);
     return true;
 }
 
@@ -112,8 +117,8 @@ void PresetsManager::load(juce::XmlElement & presetData)
     if (presetData.hasAttribute("numberOfSources"))
         mSources.setSize(presetData.getIntAttribute("numberOfSources"));
 
-    if (presetData.hasAttribute("firstSourceId"))
-        mFirstSourceId = SourceId{ presetData.getIntAttribute("firstSourceId") };
+    if (presetData.hasAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG))
+        mFirstSourceId = SourceId{ presetData.getIntAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG) };
 
     // Store the preset's source positions in a new SourcesSnapshots
     SourcesSnapshots snapshots{};
@@ -146,8 +151,16 @@ void PresetsManager::load(juce::XmlElement & presetData)
 
     // load the snapshots into the enforcers, which are references to the ControlGrisAudioProcessor members
     mPositionLinkEnforcer.loadSnapshots(snapshots);
-    if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
+
+    auto const spatMode { mSources.getPrimarySource().getSpatMode() };
+    switch (spatMode) {
+    case SpatMode::cube:
         mElevationLinkEnforcer.loadSnapshots(snapshots);
+        break;
+    case SpatMode::dome:
+        break;
+    default:
+        jassertfalse;
     }
 
     auto const xTPositionId{ getFixedPosSourceName(FixedPositionType::terminal, SourceIndex{ 0 }, 0) };
@@ -168,7 +181,8 @@ void PresetsManager::load(juce::XmlElement & presetData)
     }
     mSources.getPrimarySource().setPosition(terminalPosition, Source::OriginOfChange::presetRecall);
 
-    if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
+    switch (spatMode) {
+    case SpatMode::cube: {
         Radians elevation;
         if (presetData.hasAttribute(zTPositionId)) {
             auto const inversedNormalizedTerminalElevation{ static_cast<float>(
@@ -179,6 +193,14 @@ void PresetsManager::load(juce::XmlElement & presetData)
         };
 
         mSources.getPrimarySource().setElevation(elevation, Source::OriginOfChange::presetRecall);
+    } break;
+    case SpatMode::dome:
+        break;
+    default:
+        jassertfalse;
+    }
+
+    if (mSources.getPrimarySource().getSpatMode() == SpatMode::cube) {
     }
 }
 
@@ -193,7 +215,7 @@ bool PresetsManager::contains(int const presetNumber) const
 std::optional<juce::XmlElement *> PresetsManager::getPresetData(int const presetNumber) const
 {
     for (auto * element : mData.getChildIterator()) {
-        if (element->getIntAttribute("ID") == presetNumber) {
+        if (element->getIntAttribute(PRESET_ID_XML_TAG) == presetNumber) {
             return element;
         }
     }
@@ -205,8 +227,8 @@ std::optional<juce::XmlElement *> PresetsManager::getPresetData(int const preset
 std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const presetNumber) const
 {
     // Build a new fixed position element.
-    auto preset{ std::make_unique<juce::XmlElement>("ITEM") };
-    preset->setAttribute("ID", presetNumber);
+    auto preset{ std::make_unique<juce::XmlElement>(PRESET_XML_TAG) };
+    preset->setAttribute(PRESET_ID_XML_TAG, presetNumber);
 
     auto const & positionSnapshots{ mPositionLinkEnforcer.getSnapshots() };
     auto const & elevationsSnapshots{ mElevationLinkEnforcer.getSnapshots() };
@@ -214,7 +236,7 @@ std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const pre
     //save the number and initial position of all sources
     SourceIndex const numberOfSources{ mSources.size() };
     preset->setAttribute("numberOfSources", numberOfSources.get());
-    preset->setAttribute("firstSourceId", mFirstSourceId.get());
+    preset->setAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG, mFirstSourceId.get());
 
     for (SourceIndex sourceIndex{}; sourceIndex < numberOfSources; ++sourceIndex) {
         auto const curSourceX{ getFixedPosSourceName(FixedPositionType::initial, sourceIndex, 0) };
@@ -266,7 +288,7 @@ void PresetsManager::save(int const presetNumber) const
         mData.addChildElement(newData.release());
     }
 
-    XmlElementDataSorter sorter("ID", true);
+    XmlElementDataSorter sorter(PRESET_ID_XML_TAG, true);
     mData.sortChildElements(sorter);
 }
 
@@ -280,7 +302,7 @@ bool PresetsManager::deletePreset(int const presetNumber) const
     }
 
     mData.removeChildElement(*maybe_data, true);
-    XmlElementDataSorter sorter("ID", true);
+    XmlElementDataSorter sorter(PRESET_ID_XML_TAG, true);
     mData.sortChildElements(sorter);
 
     return true;
@@ -294,7 +316,7 @@ std::array<bool, NUMBER_OF_POSITION_PRESETS> PresetsManager::getSavedPresets() c
     std::fill(std::begin(result), std::end(result), false);
 
     for (auto * presetData : mData.getChildIterator()) {
-        auto const presetNumber{ presetData->getIntAttribute("ID") };
+        auto const presetNumber{ presetData->getIntAttribute(PRESET_ID_XML_TAG) };
         result[static_cast<size_t>(presetNumber) - 1u] = true;
     }
 

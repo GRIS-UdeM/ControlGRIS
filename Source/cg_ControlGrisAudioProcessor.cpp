@@ -126,7 +126,7 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     mAudioProcessorValueTreeState.state.setProperty("oscOutputPortNumber", 8000, nullptr);
     mAudioProcessorValueTreeState.state.setProperty("oscOutputConnected", false, nullptr);
     mAudioProcessorValueTreeState.state.setProperty("numberOfSources", 2, nullptr);
-    mAudioProcessorValueTreeState.state.setProperty("firstSourceId", 1, nullptr);
+    mAudioProcessorValueTreeState.state.setProperty(PRESET_FIRST_SOURCE_ID_XML_TAG, 1, nullptr);
     mAudioProcessorValueTreeState.state.setProperty("oscOutputPluginId", 1, nullptr);
 
     // Trajectory box persitent settings.
@@ -343,7 +343,7 @@ void ControlGrisAudioProcessor::setOscAddress(juce::String const & address)
 void ControlGrisAudioProcessor::setFirstSourceId(SourceId const firstSourceId, bool const propagate)
 {
     mFirstSourceId = firstSourceId;
-    mAudioProcessorValueTreeState.state.setProperty("firstSourceId", mFirstSourceId.get(), nullptr);
+    mAudioProcessorValueTreeState.state.setProperty(PRESET_FIRST_SOURCE_ID_XML_TAG, mFirstSourceId.get(), nullptr);
     for (int i{}; i < mSources.MAX_NUMBER_OF_SOURCES; ++i) {
         mSources.get(i).setId(SourceId{ i + mFirstSourceId.get() });
     }

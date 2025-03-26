@@ -491,19 +491,19 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 std::pair<float, float> getAzimuthAndElevationFromDomeXyz(float x, float y, float z)
 {
     //this first part is the constructor from PolarVector
-    auto const length = std::sqrt(x * x + y * y + z * z);
+    auto const length = std::hypot (x, y, z);
     if ((x == 0.0f && y == 0.0f) || length == 0.0f)
         return {};
 
     auto elevation = HALF_PI - Radians{ std::acos(std::clamp(z / length, -1.0f, 1.0f)) };
-    auto azimuth = Radians{std::acos(std::clamp(x / std::sqrt(x * x + y * y), -1.0f, 1.0f))* (y < 0.0f ? -1.0f : 1.0f)};
+    auto azimuth = std::copysign(std::acos(std::clamp(x / std::hypot(x, y), -1.0f, 1.0f)), y);
 
-    //then translate by pi/2
-    azimuth = HALF_PI - azimuth;
+    //then inverse and translate by pi/2
+    azimuth = HALF_PI.get() - azimuth;
     elevation = HALF_PI - elevation;
 
     //and at this point we have the azimuth and elevation sent to SpatGRIS
-    return { azimuth.get(), elevation.get() };
+    return { azimuth, elevation.get() };
 }
 
 juce::Point<float> getXyFromDomeAzimuthAndElevation(float azimuth, float elevation)
@@ -557,21 +557,18 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
 
     // and is a valid speaker setup file
     auto const speakerSetup = juce::ValueTree::fromXml(speakerSetupFile.loadFileAsString());
-    if (!speakerSetup.isValid() || speakerSetup.getType().toString() != "SPEAKER_SETUP" || speakerSetup.getNumChildren() < 1) {
+    if (!speakerSetup.isValid() || speakerSetup.getType().toString() != SPEAKER_SETUP_XML_TAG || speakerSetup.getNumChildren() < 1) {
         showError("This file is not a valid Speaker Setup file: " + speakerSetupFile.getFullPathName());
         return;
     }
 
     // now convert the speakerSetupFile to the xml that the preset manager is expecting
-    juce::XmlElement presetXml{ "ITEM" };
-    presetXml.setAttribute("ID", -1); // we're not using an ID here, that's the OG presets
-    presetXml.setAttribute("firstSourceId", 1);
+    juce::XmlElement presetXml{ PRESET_XML_TAG };
+    presetXml.setAttribute(PRESET_ID_XML_TAG, -1); // IDs are only used for OG presets
+    presetXml.setAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG, 1);
 
     // get and use the saved SpatMode
-    auto const savedSpatMode = [savedSpatMode = speakerSetup["SPAT_MODE"].toString()]() {
-        // taken from sg_SpatMode.cpp in SpatGRIS
-        juce::StringArray const SPAT_MODE_STRINGS{ "Dome", "Cube" };
-
+    auto const savedSpatMode = [savedSpatMode = speakerSetup[PRESET_SPAT_MODE_XML_TAG].toString()]() {
         if (savedSpatMode == SPAT_MODE_STRINGS[0])
             return SpatMode::dome;
         else if (savedSpatMode == SPAT_MODE_STRINGS[1])
@@ -591,8 +588,9 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
         //    continue;
 
         // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
-        auto const speakerNumber = curSpeaker.getType().toString().removeCharacters("SPEAKER_").getIntValue();
-        auto const speakerPosition{ curSpeaker.getChildWithName("POSITION") };
+        auto const speakerString = curSpeaker.getType().toString();
+        auto const speakerNumber = speakerString.removeCharacters(SPEAKER_SETUP_POS_PREFIX).getIntValue();
+        auto const speakerPosition{ curSpeaker.getChildWithName(SPEAKER_SETUP_POSITION_XML_TAG) };
         auto const speakerX = static_cast<float>(speakerPosition["X"]);
         auto const speakerY = static_cast<float>(speakerPosition["Y"]);
         auto const speakerZ = static_cast<float>(speakerPosition["Z"]);

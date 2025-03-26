@@ -233,9 +233,6 @@ void Source::computeAzimuthElevation()
 #endif
 
         if (clippedRadius < radius) {
-            //when does this actually happen? and shouldn't we also update mAzimuth with the clipped radius here??
-            jassertfalse;
-
             jassert(!std::isnan(mAzimuth.getAsRadians()));
             mPosition = getPositionFromAngle(mAzimuth, clippedRadius);
 #if DEBUG_COORDINATES
