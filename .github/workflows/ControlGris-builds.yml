@@ -78,12 +78,12 @@ jobs:
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
-      - name: build universal binary (arm64 + x86_64)
+      - name: build x86_64 artifact
         run: |
           xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
                     -scheme "ControlGRIS - Standalone Plugin" \
                     -configuration Release \
-                    -arch x86_64 -arch arm64
+                    -arch x86_64
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
