@@ -83,40 +83,25 @@ jobs:
           xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
                      -scheme "ControlGRIS - Standalone Plugin" \
                      -configuration Release \
-                     -arch arm64 \
-                     -derivedDataPath build-arm64
+                     -arch arm64
 
-      - name: List current folder recursively
-        run: ls -R
-
-      - name: Upload arm64 artifact
+      - name: Upload arm64 build
         uses: actions/upload-artifact@v4
         with:
           name: ControlGRIS-macOS-arm64
-          path: build-arm64/Build/Products/Release/ControlGRIS.app
+          path: Builds/MacOSX/build/*
 
       - name: build x86_64
         run: |
           xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
                      -scheme "ControlGRIS - Standalone Plugin" \
                      -configuration Release \
-                     -arch x86_64 \
-                     -derivedDataPath build-x86_64
+                     -arch x86_64
 
-      - name: List current folder recursively
-        run: ls -R
-
-      - name: Upload x86_64 artifact
+      - name: Upload x86_64 build
         uses: actions/upload-artifact@v4
         with:
           name: ControlGRIS-macOS-x86_64
-          path: build-x86_64/Build/Products/Release/ControlGRIS.app
-
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ControlGRIS-Build-macOS
           path: Builds/MacOSX/build/*
 
   Build-Windows:
