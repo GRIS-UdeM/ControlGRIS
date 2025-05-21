@@ -85,9 +85,6 @@ jobs:
                     -configuration Release \
                     -arch x86_64 -arch arm64
 
-      - name: List files in build directory
-        run: find build -type f
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
