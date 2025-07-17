@@ -582,43 +582,32 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
 
     int sourceCount = 0;
 
-    for (auto curSpeaker : speakerSetup) {
-        // skip this speaker if it's direct out only -- might be used later
-        //if (static_cast<int> (curSpeaker["DIRECT_OUT_ONLY"]) == 1)
-        //    continue;
+    if (speakerSetup["SPEAKER_SETUP_VERSION"].toString() == "4.0.0") {
+        auto mainSpeakerGroup = speakerSetup.getChildWithProperty("SPEAKER_GROUP_NAME", "MAIN_SPEAKER_GROUP_NAME");
+        jassert(mainSpeakerGroup.isValid());
 
-        // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
-        auto const speakerString = curSpeaker.getType().toString();
-        auto const speakerNumber = speakerString.removeCharacters(SPEAKER_SETUP_POS_PREFIX).getIntValue();
-        auto const speakerPosition{ curSpeaker.getChildWithName(SPEAKER_SETUP_POSITION_XML_TAG) };
-        auto const speakerX = static_cast<float>(speakerPosition["X"]);
-        auto const speakerY = static_cast<float>(speakerPosition["Y"]);
-        auto const speakerZ = static_cast<float>(speakerPosition["Z"]);
-
-        if (savedSpatMode == SpatMode::dome) {
-            auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(speakerX, speakerY, speakerZ);
-            auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
-            auto const z = 1.0f - elev / MAX_ELEVATION.get(); // this is taken from CubeControls::updateSliderValues
-
-            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", cartesianPosition.x);
-            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", cartesianPosition.y);
-            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
-        } else {
-            auto const x = juce::jmap(speakerX, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
-            auto const y = juce::jmap(speakerY, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
-
-            // TODO: the speakerZ cube value can be interpreted differently based on the current gris::ElevationMode.
-            //  There's curently no way in the speaker setup to differentiate whether individual speakers use an
-            //  extended elevation mode but when we'll want to revisit that, there's some potentially useful conversion
-            //  logic in ControlGrisAudioProcessor::sendOscMessage()
-            auto const z = speakerZ;
-
-            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", x);
-            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", y);
-            presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
+        for (auto curSpeakerOrGroup : mainSpeakerGroup) {
+            if (curSpeakerOrGroup.getType().toString() == "SPEAKER_GROUP") {
+                for (auto curSpeakerInGroup : curSpeakerOrGroup) {
+                    convertCartesianSpeakerPositionToSourcePosition(curSpeakerInGroup, savedSpatMode, presetXml);
+                    ++sourceCount;
+                }
+            } else {
+                convertCartesianSpeakerPositionToSourcePosition(curSpeakerOrGroup, savedSpatMode, presetXml);
+                ++sourceCount;
+            }
         }
+    } else {
+        for (auto curSpeaker : speakerSetup) {
+            // skip this speaker if it's direct out only -- might be used later
+            // if (static_cast<int> (curSpeaker["DIRECT_OUT_ONLY"]) == 1)
+            //    continue;
 
-        ++sourceCount;
+            // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
+            convertSpeakerPositionToSourcePosition(curSpeaker, savedSpatMode, presetXml);
+
+            ++sourceCount;
+        }
     }
 
     presetXml.setAttribute("numberOfSources", sourceCount);
@@ -630,6 +619,86 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
     mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
     if (mProcessor.getSpatMode() == SpatMode::cube)
         mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
+}
+
+void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePosition(
+    const juce::ValueTree & curSpeaker,
+    const gris::SpatMode savedSpatMode,
+    juce::XmlElement & presetXml)
+{
+    auto const speakerNumber = curSpeaker["SPEAKER_PATCH_ID"].toString();
+    auto const speakerPosition = curSpeaker["CARTESIAN_POSITION"].toString();
+
+
+    // Parse speakerPosition string of the form "(-1, 8.74228e-08, -4.37114e-08)"
+    auto const extractPositionFromString = [](juce::String const & positionStr, float & x, float & y, float & z) {
+        auto pos = positionStr.trim().removeCharacters("()"); // Remove '(' and ')'
+
+        juce::StringArray coords;
+        coords.addTokens(pos, ",", "");
+
+        if (coords.size() == 3) {
+            x += coords[0].trim().getFloatValue();  // using += here as a dirty trick to DRY both
+            y += coords[1].trim().getFloatValue();  // group and speaker position extraction
+            z += coords[2].trim().getFloatValue();
+        }
+    };
+
+    float groupX = 0.0f, groupY = 0.0f, groupZ = 0.0f;
+    auto const parent { curSpeaker.getParent () };
+    if (parent["SPEAKER_GROUP_NAME"] != "MAIN_SPEAKER_GROUP_NAME")
+        extractPositionFromString (parent["CARTESIAN_POSITION"], groupX, groupY, groupZ);
+
+    float speakerX = groupX, speakerY = groupY, speakerZ = groupZ;
+    extractPositionFromString (curSpeaker["CARTESIAN_POSITION"], speakerX, speakerY, speakerZ);
+
+    auto const x = juce::jmap(speakerX, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+    auto const y = juce::jmap(speakerY, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+
+    // TODO: the speakerZ cube value can be interpreted differently based on the current gris::ElevationMode.
+    //  There's curently no way in the speaker setup to differentiate whether individual speakers use an
+    //  extended elevation mode but when we'll want to revisit that, there's some potentially useful conversion
+    //  logic in ControlGrisAudioProcessor::sendOscMessage()
+    auto const z = speakerZ;
+
+    presetXml.setAttribute("S" + speakerNumber + "_X", x);
+    presetXml.setAttribute("S" + speakerNumber + "_Y", y);
+    presetXml.setAttribute("S" + speakerNumber + "_Z", z);
+}
+
+void ControlGrisAudioProcessorEditor::convertSpeakerPositionToSourcePosition(juce::ValueTree & curSpeaker,
+                                                                             const gris::SpatMode savedSpatMode,
+                                                                             juce::XmlElement & presetXml)
+{
+    auto const speakerString = curSpeaker.getType().toString();
+    auto const speakerNumber = speakerString.removeCharacters(SPEAKER_SETUP_POS_PREFIX).getIntValue();
+    auto const speakerPosition{ curSpeaker.getChildWithName(SPEAKER_SETUP_POSITION_XML_TAG) };
+    auto const speakerX = static_cast<float>(speakerPosition["X"]);
+    auto const speakerY = static_cast<float>(speakerPosition["Y"]);
+    auto const speakerZ = static_cast<float>(speakerPosition["Z"]);
+
+    if (savedSpatMode == SpatMode::dome) {
+        auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(speakerX, speakerY, speakerZ);
+        auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
+        auto const z = 1.0f - elev / MAX_ELEVATION.get(); // this is taken from CubeControls::updateSliderValues
+
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", cartesianPosition.x);
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", cartesianPosition.y);
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
+    } else {
+        auto const x = juce::jmap(speakerX, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+        auto const y = juce::jmap(speakerY, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+
+        // TODO: the speakerZ cube value can be interpreted differently based on the current gris::ElevationMode.
+        //  There's curently no way in the speaker setup to differentiate whether individual speakers use an
+        //  extended elevation mode but when we'll want to revisit that, there's some potentially useful conversion
+        //  logic in ControlGrisAudioProcessor::sendOscMessage()
+        auto const z = speakerZ;
+
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_X", x);
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Y", y);
+        presetXml.setAttribute("S" + juce::String(speakerNumber) + "_Z", z);
+    }
 }
 
 //==============================================================================

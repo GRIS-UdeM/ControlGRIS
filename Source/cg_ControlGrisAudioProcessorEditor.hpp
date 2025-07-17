@@ -124,6 +124,8 @@ public:
     void sourceSelectionChangedCallback(SourceIndex sourceIndex) override;
     void sourcesPlacementChangedCallback(SourcePlacement sourcePlacement) override;
     void speakerSetupSelectedCallback(const juce::File & speakerSetupFile) override;
+    void convertSpeakerPositionToSourcePosition (juce::ValueTree& curSpeaker, const gris::SpatMode savedSpatMode, juce::XmlElement& presetXml);
+    void convertCartesianSpeakerPositionToSourcePosition (const juce::ValueTree& curSpeaker, const gris::SpatMode savedSpatMode, juce::XmlElement& presetXml);
     void sourcePositionChangedCallback(SourceIndex sourceIndex,
                                        std::optional<Radians> azimuth,
                                        std::optional<Radians> elevation,
