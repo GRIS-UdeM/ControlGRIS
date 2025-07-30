@@ -212,8 +212,8 @@ void ControlGrisAudioProcessor::parameterChanged(juce::String const & parameterI
 
     Normalized const normalized{ newValue };
 #if DEBUG_COORDINATES
-    DBG("newValue: " + juce::String (newValue));
-    DBG("normalized: " + juce::String (normalized.get()));
+    DBG("newValue: " + juce::String(newValue));
+    DBG("normalized: " + juce::String(normalized.get()));
 #endif
     if (parameterId.compare(Automation::Ids::X) == 0) {
         mSources.getPrimarySource().setX(normalized, Source::OriginOfChange::automation);
@@ -481,16 +481,16 @@ void ControlGrisAudioProcessor::sendOscMessage()
     } else {
         for (auto const & source : mSources) {
 #if DEBUG_COORDINATES
-                auto const azim{ source.getAzimuth().getAsRadians() };
-                auto const normAzim{ source.getNormalizedAzimuth().get() };
+            auto const azim{ source.getAzimuth().getAsRadians() };
+            auto const normAzim{ source.getNormalizedAzimuth().get() };
 
-                auto const elev{ source.getElevation().getAsRadians() };
-                auto const normElev{ source.getNormalizedElevation().get() };
+            auto const elev{ source.getElevation().getAsRadians() };
+            auto const normElev{ source.getNormalizedElevation().get() };
 
-                DBG("azim: " + juce::String(azim));
-                DBG("normAzim: " + juce::String(normAzim));
-                DBG("elev: " + juce::String(elev));
-                DBG("normElev: " + juce::String(normElev));
+            DBG("azim: " + juce::String(azim));
+            DBG("normAzim: " + juce::String(normAzim));
+            DBG("elev: " + juce::String(elev));
+            DBG("normElev: " + juce::String(normElev));
 #endif
             auto const azimuth{ source.getAzimuth().getAsRadians() };
             auto const elevation{ source.getElevation().getAsRadians() };
@@ -1089,7 +1089,7 @@ bool ControlGrisAudioProcessor::isBusesLayoutSupported(const BusesLayout & layou
         && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
         return false;
 
-            // This checks if the input layout matches the output layout
+        // This checks if the input layout matches the output layout
         #if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;

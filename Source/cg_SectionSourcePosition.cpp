@@ -242,19 +242,19 @@ void SectionSourcePosition::resized()
 
     auto bounds = getLocalBounds().reduced(5, 10);
 
-    //left half
+    // left half
     auto leftHalf = bounds.removeFromLeft(bounds.getWidth() / 2);
     positionLabelAndCombo(leftHalf.removeFromTop(20), mSourcePlacementLabel, mSourcePlacementCombo);
     leftHalf.removeFromTop(5);
     mLoadSpeakerSetupButton.setBounds(leftHalf.removeFromTop(20));
 
-    //right half
+    // right half
     positionLabelAndCombo(bounds.removeFromTop(20), mSourceNumberLabel, mSourceNumberCombo);
 
     bounds.removeFromTop(5);
     auto const domeAndCubeBounds{ bounds.removeFromTop(500) };
     mDomeControls.setBounds(domeAndCubeBounds);
-    mCubeControls.setBounds(domeAndCubeBounds.withHeight (550));
+    mCubeControls.setBounds(domeAndCubeBounds.withHeight(550));
 }
 
 //==============================================================================

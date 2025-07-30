@@ -168,7 +168,6 @@ private:
      */
     SourceId mId{ 1 };
 
-
     SpatMode mSpatMode{ SpatMode::dome };
 
     /**
@@ -193,7 +192,7 @@ private:
      */
     Radians mElevation{};
 
-     /**
+    /**
      * @brief The distance of the source from the origin.
      *
      * This represents the radial distance of the source to the origin of the spatialization field.
@@ -205,7 +204,8 @@ private:
      * @brief The XY position of the source in Cartesian coordinates.
      *
      * This represents the (x, y) position of the source in the spatialization field.
-     * It is modified in setX(), setY(), setPosition(), setElevation(), setCoordinates() and computeXY(), computeAzimuthElevation.
+     * It is modified in setX(), setY(), setPosition(), setElevation(), setCoordinates() and computeXY(),
+     * computeAzimuthElevation.
      */
     juce::Point<float> mPosition{};
 

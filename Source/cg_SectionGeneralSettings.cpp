@@ -43,12 +43,12 @@ public:
     juce::String filterNewText(juce::TextEditor & editor, const juce::String & newInput) override
     {
         auto const currentText{ editor.getText() };
-        auto const isNewInputDigit { newInput.containsOnly("0123456789") };
-        auto const validNewInput {isNewInputDigit ? newInput : ""};
+        auto const isNewInputDigit{ newInput.containsOnly("0123456789") };
+        auto const validNewInput{ isNewInputDigit ? newInput : "" };
         auto newText{ currentText + validNewInput };
-        auto const selectedRange { editor.getHighlightedRegion() };
+        auto const selectedRange{ editor.getHighlightedRegion() };
 
-        if (! selectedRange.isEmpty() && ! validNewInput.isEmpty())
+        if (!selectedRange.isEmpty() && !validNewInput.isEmpty())
             newText = currentText.replaceSection(selectedRange.getStart(), selectedRange.getLength(), validNewInput);
 
         if (newText.isEmpty())
@@ -102,7 +102,7 @@ public:
             editor.insertTextAtCaret("&");
             expectEquals(editor.getText().getIntValue(), 0);
 
-            editor.insertTextAtCaret(juce::CharPointer_UTF8 ("é"));
+            editor.insertTextAtCaret(juce::CharPointer_UTF8("é"));
             expectEquals(editor.getText().getIntValue(), 0);
         }
 
@@ -117,7 +117,7 @@ public:
             editor.insertTextAtCaret("3");
             expectEquals(editor.getText().getIntValue(), 123);
 
-            //append 9 to 12 --> should stay at 12
+            // append 9 to 12 --> should stay at 12
             editor.clear();
             editor.insertTextAtCaret("12");
             editor.insertTextAtCaret("9");
@@ -126,7 +126,7 @@ public:
             // replace the middle 1 in 111 with 2 --> should be 121
             editor.clear();
             editor.insertTextAtCaret("111");
-            editor.setHighlightedRegion({1,2});
+            editor.setHighlightedRegion({ 1, 2 });
             editor.insertTextAtCaret("2");
             expectEquals(editor.getText().getIntValue(), 121);
 
@@ -211,7 +211,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
 
     mNumOfSourcesEditor.setExplicitFocusOrder(2);
     mNumOfSourcesEditor.setText("2");
-    auto const MAX_NUMBER_OF_SOURCES { juce::JUCEApplicationBase::isStandaloneApp() ? 256 : 8};
+    auto const MAX_NUMBER_OF_SOURCES{ juce::JUCEApplicationBase::isStandaloneApp() ? 256 : 8 };
     mNumOfSourcesEditor.setInputFilter(new NumberRangeInputFilter(1, MAX_NUMBER_OF_SOURCES), true);
     mNumOfSourcesEditor.onReturnKey = [this] { mOscFormatCombo.grabKeyboardFocus(); };
     mNumOfSourcesEditor.onFocusLost = [this] {
