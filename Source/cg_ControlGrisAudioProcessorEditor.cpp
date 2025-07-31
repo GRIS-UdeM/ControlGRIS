@@ -22,6 +22,7 @@
 
 #include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_constants.hpp"
+#include <Quaternion.hpp>
 
 namespace gris
 {
@@ -682,9 +683,22 @@ void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePos
 
     // Compute speaker position (relative to group)
     auto const [offsetX, offsetY, offsetZ] = extractPositionFromString(curSpeaker["CARTESIAN_POSITION"]);
-    auto const speakerX = groupX + offsetX;
-    auto const speakerY = groupY + offsetY;
-    auto const speakerZ = groupZ + offsetZ;
+    auto speakerX = groupX + offsetX;
+    auto speakerY = groupY + offsetY;
+    auto speakerZ = groupZ + offsetZ;
+
+    // compute the parent group's rotation quaternion
+    const float yaw { parent["YAW"] };
+    const float pitch { parent["PITCH"] };
+    const float roll { parent["ROLL"] };
+    if (yaw != 0.0 || pitch != 0.0 || roll != 0.0)
+    {
+        auto const parentQuat = getQuaternionFromEulerAngles (yaw, pitch, roll);
+        auto const rotatedVector = quatRotation ({ speakerX, speakerY, speakerZ }, parentQuat);
+        speakerX += rotatedVector[0];
+        speakerY += rotatedVector[1];
+        speakerZ += rotatedVector[2];
+    }
 
     storeXYZSpeakerPositionInPreset(savedSpatMode,
                                     speakerX,
