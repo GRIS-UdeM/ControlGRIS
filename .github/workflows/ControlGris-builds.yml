@@ -21,6 +21,8 @@ jobs:
 
       - name: Check out repository code
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: download JUCE
         run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-linux.zip --output JUCE.zip
@@ -65,6 +67,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: download JUCE
         run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-osx.zip --output JUCE.zip
@@ -109,6 +113,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: download JUCE
         run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-windows.zip --output JUCE.zip
