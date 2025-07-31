@@ -177,4 +177,6 @@ private:
     JUCE_LEAK_DETECTOR(ControlGrisAudioProcessorEditor)
 };
 
+void storeXYZSpeakerPositionInPreset (const gris::SpatMode savedSpatMode, const float speakerX, const float speakerY, const float speakerZ, juce::XmlElement& presetXml, const int speakerNumber);
+
 } // namespace gris
