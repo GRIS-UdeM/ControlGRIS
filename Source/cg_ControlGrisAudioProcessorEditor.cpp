@@ -586,7 +586,7 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
         auto mainSpeakerGroup = speakerSetup.getChildWithProperty("SPEAKER_GROUP_NAME", "MAIN_SPEAKER_GROUP_NAME");
         jassert(mainSpeakerGroup.isValid());
 
-        for (auto curSpeakerOrGroup : mainSpeakerGroup) {
+        for (const auto & curSpeakerOrGroup : mainSpeakerGroup) {
             if (curSpeakerOrGroup.getType().toString() == "SPEAKER_GROUP") {
                 for (auto curSpeakerInGroup : curSpeakerOrGroup) {
                     convertCartesianSpeakerPositionToSourcePosition(curSpeakerInGroup, savedSpatMode, presetXml);
