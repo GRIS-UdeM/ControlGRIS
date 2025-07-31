@@ -682,10 +682,7 @@ void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePos
                                               : std::tuple{ 0.f, 0.f, 0.f };
 
     // Compute speaker position (relative to group)
-    auto const [offsetX, offsetY, offsetZ] = extractPositionFromString(curSpeaker["CARTESIAN_POSITION"]);
-    auto speakerX = groupX + offsetX;
-    auto speakerY = groupY + offsetY;
-    auto speakerZ = groupZ + offsetZ;
+    auto [speakerX, speakerY, speakerZ] = extractPositionFromString(curSpeaker["CARTESIAN_POSITION"]);
 
     // compute the parent group's rotation quaternion
     const float yaw { parent["YAW"] };
@@ -695,9 +692,9 @@ void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePos
     {
         auto const parentQuat = getQuaternionFromEulerAngles (yaw, pitch, roll);
         auto const rotatedVector = quatRotation ({ speakerX, speakerY, speakerZ }, parentQuat);
-        speakerX += rotatedVector[0];
-        speakerY += rotatedVector[1];
-        speakerZ += rotatedVector[2];
+        speakerX = groupX + rotatedVector[0];
+        speakerY = groupY + rotatedVector[1];
+        speakerZ = groupZ + rotatedVector[2];
     }
 
     storeXYZSpeakerPositionInPreset(savedSpatMode,
