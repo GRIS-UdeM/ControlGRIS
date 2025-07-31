@@ -658,28 +658,33 @@ void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePos
     juce::XmlElement & presetXml)
 {
     // Parse speakerPosition string of the form "(-1, 8.74228e-08, -4.37114e-08)"
-    auto const extractPositionFromString = [](juce::String const & positionStr, float & x, float & y, float & z) {
+    auto const extractPositionFromString = [](juce::String const & positionStr) -> std::tuple<float, float, float> {
         auto pos = positionStr.trim().removeCharacters("()"); // Remove '(' and ')'
 
         juce::StringArray coords;
         coords.addTokens(pos, ",", "");
 
         if (coords.size() == 3) {
-            x += coords[0].trim().getFloatValue(); // using += here to DRY both
-            y += coords[1].trim().getFloatValue(); // group and speaker position extraction
-            z += coords[2].trim().getFloatValue();
+            float x = coords[0].trim().getFloatValue();
+            float y = coords[1].trim().getFloatValue();
+            float z = coords[2].trim().getFloatValue();
+            return { x, y, z };
         }
+
+        return { 0.f, 0.f, 0.f }; // fallback if format is unexpected
     };
 
-    // figure out the group position first, if the current speaker is not in the main group
-    float groupX = 0.f, groupY = 0.f, groupZ = 0.f;
+    // Compute group position
     auto const parent{ curSpeaker.getParent() };
-    if (parent["SPEAKER_GROUP_NAME"] != "MAIN_SPEAKER_GROUP_NAME")
-        extractPositionFromString(parent["CARTESIAN_POSITION"], groupX, groupY, groupZ);
+    auto [groupX, groupY, groupZ] = parent["SPEAKER_GROUP_NAME"] != "MAIN_SPEAKER_GROUP_NAME"
+                                        ? extractPositionFromString(parent["CARTESIAN_POSITION"])
+                                        : std::tuple{ 0.f, 0.f, 0.f };
 
-    // then figure out the speaker position, which is basically added to the group position
-    float speakerX = groupX, speakerY = groupY, speakerZ = groupZ;
-    extractPositionFromString(curSpeaker["CARTESIAN_POSITION"], speakerX, speakerY, speakerZ);
+    // Compute speaker position (relative to group)
+    auto [offsetX, offsetY, offsetZ] = extractPositionFromString(curSpeaker["CARTESIAN_POSITION"]);
+    float speakerX = groupX + offsetX;
+    float speakerY = groupY + offsetY;
+    float speakerZ = groupZ + offsetZ;
 
     storeXYZSpeakerPositionInPreset(savedSpatMode,
                                     speakerX,
