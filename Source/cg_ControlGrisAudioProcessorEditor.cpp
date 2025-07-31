@@ -676,15 +676,15 @@ void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePos
 
     // Compute group position
     auto const parent{ curSpeaker.getParent() };
-    auto [groupX, groupY, groupZ] = parent["SPEAKER_GROUP_NAME"] != "MAIN_SPEAKER_GROUP_NAME"
-                                        ? extractPositionFromString(parent["CARTESIAN_POSITION"])
-                                        : std::tuple{ 0.f, 0.f, 0.f };
+    auto const [groupX, groupY, groupZ] = parent["SPEAKER_GROUP_NAME"] != "MAIN_SPEAKER_GROUP_NAME"
+                                              ? extractPositionFromString(parent["CARTESIAN_POSITION"])
+                                              : std::tuple{ 0.f, 0.f, 0.f };
 
     // Compute speaker position (relative to group)
-    auto [offsetX, offsetY, offsetZ] = extractPositionFromString(curSpeaker["CARTESIAN_POSITION"]);
-    float speakerX = groupX + offsetX;
-    float speakerY = groupY + offsetY;
-    float speakerZ = groupZ + offsetZ;
+    auto const [offsetX, offsetY, offsetZ] = extractPositionFromString(curSpeaker["CARTESIAN_POSITION"]);
+    auto const speakerX = groupX + offsetX;
+    auto const speakerY = groupY + offsetY;
+    auto const speakerZ = groupZ + offsetZ;
 
     storeXYZSpeakerPositionInPreset(savedSpatMode,
                                     speakerX,
