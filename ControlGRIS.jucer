@@ -5,9 +5,10 @@
               companyName="UdeM" aaxIdentifier="com.udem.GRIS.ControlGris"
               pluginManufacturer="UdeM" pluginManufacturerCode="UdeM" pluginCode="Xzz1"
               pluginChannelConfigs="{1,1}, {1,2}, {1,4}, {1,6}, {1,8}, {1,12}, {1,16}, {2,2}, {2,4}, {2,6}, {2,8}, {2,12}, {2,16}, {4,4}, {4,6}, {4,8}, {4,12}, {4,16}, {6,6}, {6,8}, {6,12}, {6,16}, {8,8}, {8,12}, {8,16}"
-              cppLanguageStandard="17" projectLineFeed="&#10;" jucerFormatVersion="1"
+              cppLanguageStandard="latest" projectLineFeed="&#10;" jucerFormatVersion="1"
               companyWebsite="ca.umontreal.musique.gris.controlgris" addUsingNamespaceToJuceHeader="0"
-              displaySplashScreen="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1&#10;DEBUG_COORDINATES=0">
+              displaySplashScreen="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1&#10;DEBUG_COORDINATES=0"
+              headerPath="../../submodules/StructGRIS/Source">
   <MAINGROUP id="gDqxm3" name="ControlGRIS">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
       <GROUP id="{32F49E20-AD3C-BA30-3DC6-5BBC5846D431}" name="Misc">
@@ -113,6 +114,20 @@
               file="Source/cg_TitledComponent.cpp"/>
         <FILE id="ZPfmQN" name="cg_TitledComponent.hpp" compile="0" resource="0"
               file="Source/cg_TitledComponent.hpp"/>
+      </GROUP>
+      <GROUP id="{37583D08-C231-00D6-03B5-79565DF25BED}" name="submodules">
+        <GROUP id="{B23B8AA7-F05B-F12A-B0A5-5BD57FA47F9C}" name="StructGRIS">
+          <GROUP id="{BAB1DA5D-3614-7FE4-F736-72955828C38F}" name="Source">
+            <GROUP id="{0DFE46F2-B0F5-8E40-AAE9-0CF60CE955E4}" name="StrongTypes">
+              <FILE id="rKbTvb" name="sg_Degrees.hpp" compile="0" resource="0" file="submodules/StructGRIS/Source/StrongTypes/sg_Degrees.hpp"/>
+              <FILE id="nJuThd" name="sg_Radians.hpp" compile="0" resource="0" file="submodules/StructGRIS/Source/StrongTypes/sg_Radians.hpp"/>
+              <FILE id="TvsWus" name="sg_StrongFloat.hpp" compile="0" resource="0"
+                    file="submodules/StructGRIS/Source/StrongTypes/sg_StrongFloat.hpp"/>
+            </GROUP>
+            <FILE id="JTmTi6" name="Quaternion.cpp" compile="1" resource="0" file="submodules/StructGRIS/Source/Quaternion.cpp"/>
+            <FILE id="OKegiQ" name="Quaternion.hpp" compile="0" resource="0" file="submodules/StructGRIS/Source/Quaternion.hpp"/>
+          </GROUP>
+        </GROUP>
       </GROUP>
       <FILE id="xmyiNi" name="cg_ChangeGesturesManager.cpp" compile="1" resource="0"
             file="Source/cg_ChangeGesturesManager.cpp"/>

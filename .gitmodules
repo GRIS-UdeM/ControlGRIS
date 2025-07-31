@@ -1,0 +1,3 @@
+[submodule "submodules/StructGRIS"]
+	path = submodules/StructGRIS
+	url = git@github.com:GRIS-UdeM/StructGRIS.git
