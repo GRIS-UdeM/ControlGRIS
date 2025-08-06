@@ -66,8 +66,8 @@ GrisLookAndFeel::GrisLookAndFeel()
     setColour(juce::ToggleButton::textColourId, this->mLightColor);
     setColour(juce::Label::textColourId, this->mLightColor);
 
-#if WIN32
-    mFontSize = 13.0f;
+#if JUCE_WINDOWS
+    mFontSize = 11.0f;
 #else
     mFontSize = 10.0f;
 #endif
@@ -568,12 +568,6 @@ void GrisLookAndFeel::createTabTextLayout(const juce::TabBarButton & button,
                                           juce::TextLayout & textLayout) const
 {
     auto font{ this->mFont };
-#if WIN32
-    font.setHeight(depth * 0.60f);
-#else
-
-    font.setHeight(depth * 0.40f);
-#endif
     font.setUnderline(button.hasKeyboardFocus(false));
 
     juce::AttributedString s;
