@@ -77,36 +77,36 @@ jobs:
         run: unzip JUCE.zip
 
       - name: set global JUCE search paths
-        run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
+        run: JUCE/Projucer.app/Contents/MacOS/Projucer \
+                --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
 
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
-      - name: build arm64
+      - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
-          xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
-                     -scheme "ControlGRIS - Standalone Plugin" \
-                     -configuration Release \
-                     -arch arm64
+          formats=("Standalone Plugin" "VST3" "AU")
+          archs=("arm64" "x86_64")
 
-      - name: Upload arm64 build
+          for arch in "${archs[@]}"; do
+            for format in "${formats[@]}"; do
+              echo "Building $format for $arch..."
+              xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
+                         -scheme "ControlGRIS - $format" \
+                         -configuration Release \
+                         -arch $arch \
+                         build
+            done
+          done
+
+      - name: Upload macOS builds
         uses: actions/upload-artifact@v4
         with:
-          name: ControlGRIS-macOS-arm64
-          path: Builds/MacOSX/build/*
-
-      - name: build x86_64
-        run: |
-          xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
-                     -scheme "ControlGRIS - Standalone Plugin" \
-                     -configuration Release \
-                     -arch x86_64
-
-      - name: Upload x86_64 build
-        uses: actions/upload-artifact@v4
-        with:
-          name: ControlGRIS-macOS-x86_64
-          path: Builds/MacOSX/build/*
+          name: ControlGRIS-macOS
+          path: |
+            Builds/MacOSX/build/**/*.vst3
+            ~/Library/Audio/Plug-Ins/Components/*.component
+            Builds/MacOSX/build/**/*.app
 
   Build-Windows:
     runs-on: windows-latest
