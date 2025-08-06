@@ -22,8 +22,6 @@
 
 #pragma once
 
-#include "algorithms/public/Loudness.hpp"
-#include "algorithms/public/RunningStats.hpp"
 #include "cg_Descriptors.hpp"
 #include <vector>
 

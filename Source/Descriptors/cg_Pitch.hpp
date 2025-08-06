@@ -22,9 +22,6 @@
 
 #pragma once
 
-#include "algorithms/public/RunningStats.hpp"
-#include "algorithms/public/STFT.hpp"
-#include "algorithms/public/YINFFT.hpp"
 #include "cg_Descriptors.hpp"
 #include <vector>
 

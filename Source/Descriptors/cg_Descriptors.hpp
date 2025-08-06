@@ -26,7 +26,6 @@
     #include "../PCH.h"
 #endif
 
-#include "algorithms/public/MultiStats.hpp"
 #include <JuceHeader.h>
 
 namespace gris

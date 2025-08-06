@@ -21,7 +21,7 @@
 //==============================================================================
 
 #pragma once
-#include "algorithms/public/RunningStats.hpp"
+
 #include "cg_Descriptors.hpp"
 
 namespace gris

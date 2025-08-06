@@ -21,8 +21,7 @@
 //==============================================================================
 
 #pragma once
-#include "algorithms/public/STFT.hpp"
-#include "algorithms/public/SpectralShape.hpp"
+
 #include "cg_Descriptors.hpp"
 
 namespace gris

@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include "algorithms/public/MultiStats.hpp"
 #include "cg_Descriptors.hpp"
 
 namespace gris

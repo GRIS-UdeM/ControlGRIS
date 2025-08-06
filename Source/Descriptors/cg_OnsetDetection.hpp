@@ -24,9 +24,6 @@
 
 #include <JuceHeader.h>
 
-#include "algorithms/public/OnsetDetectionFunctions.hpp"
-#include "algorithms/public/RunningStats.hpp"
-
 #include "cg_Descriptors.hpp"
 
 namespace gris
