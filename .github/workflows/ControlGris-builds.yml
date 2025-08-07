@@ -126,6 +126,7 @@ jobs:
           find /tmp/fakeInstallRoot -name "*.vst3" -exec cp -R {} macOS/ \;
           find /tmp/fakeInstallRoot -name "*.component" -exec cp -R {} macOS/ \;
           find /tmp/fakeInstallRoot -name "*.app" -exec cp -R {} macOS/ \;
+          cp -R Builds/MacOSX/output/Standalone-Plugin-universal/ControlGRIS.app macOS/ || true
 
       - name: Upload macOS builds
         uses: actions/upload-artifact@v4
