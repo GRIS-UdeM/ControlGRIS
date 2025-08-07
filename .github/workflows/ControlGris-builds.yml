@@ -7,60 +7,60 @@ on:
     branches: ['*']
 
 jobs:
-  # Build-Ubuntu-20-04:
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: ubuntu:20.04
-  #   steps:
-  #     - name: Install required packages
-  #       run: |
-  #         export DEBIAN_FRONTEND=noninteractive
-  #         export TZ=Etc/UTC
-  #         apt-get update
-  #         apt-get install -y git curl unzip sudo wget lsb-release software-properties-common make build-essential tzdata
+  Build-Ubuntu-20-04:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:20.04
+    steps:
+      - name: Install required packages
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          export TZ=Etc/UTC
+          apt-get update
+          apt-get install -y git curl unzip sudo wget lsb-release software-properties-common make build-essential tzdata
 
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #       with:
-  #         submodules: recursive
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-  #     - name: download JUCE
-  #       run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-linux.zip --output JUCE.zip
+      - name: download JUCE
+        run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-linux.zip --output JUCE.zip
 
-  #     - name: unpack JUCE
-  #       run: unzip JUCE.zip
+      - name: unpack JUCE
+        run: unzip JUCE.zip
 
-  #     - name: Install latest Clang
-  #       run: |
-  #         wget https://apt.llvm.org/llvm.sh
-  #         chmod +x llvm.sh
-  #         ./llvm.sh 18
-  #         apt-get install -y clang-18
+      - name: Install latest Clang
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          ./llvm.sh 18
+          apt-get install -y clang-18
 
-  #     - name: Install dependencies
-  #       run: |
-  #         apt-get install -y ladspa-sdk freeglut3-dev libasound2-dev libcurl4-openssl-dev \
-  #           libfreetype6-dev libx11-dev libxcomposite-dev libxcursor-dev libxinerama-dev libxrandr-dev \
-  #           mesa-common-dev libjack-dev
+      - name: Install dependencies
+        run: |
+          apt-get install -y ladspa-sdk freeglut3-dev libasound2-dev libcurl4-openssl-dev \
+            libfreetype6-dev libx11-dev libxcomposite-dev libxcursor-dev libxinerama-dev libxrandr-dev \
+            mesa-common-dev libjack-dev
 
-  #     - name: set global JUCE search paths
-  #       run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /__w/ControlGRIS/ControlGRIS/JUCE/modules
+      - name: set global JUCE search paths
+        run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /__w/ControlGRIS/ControlGRIS/JUCE/modules
 
-  #     - name: Generate makefile (Standalone & VST3 only)
-  #       run: |
-  #         cd JUCE
-  #         ./Projucer --resave ../ControlGRIS.jucer --set-exporter LinuxMakefile --set-config Release --set-enabled-targets Standalone,VST3
+      - name: Generate makefile (Standalone & VST3 only)
+        run: |
+          cd JUCE
+          ./Projucer --resave ../ControlGRIS.jucer --set-exporter LinuxMakefile --set-config Release --set-enabled-targets Standalone,VST3
 
-  #     - name: Compile ControlGRIS (Standalone & VST3 only)
-  #       run: |
-  #         cd Builds/LinuxMakefile
-  #         make CXX=clang++-18 CONFIG=Release -j8 Standalone VST3
+      - name: Compile ControlGRIS (Standalone & VST3 only)
+        run: |
+          cd Builds/LinuxMakefile
+          make CXX=clang++-18 CONFIG=Release -j8 Standalone VST3
 
-  #     - name: Upload build artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ControlGRIS-Build
-  #         path: Builds/LinuxMakefile/build/*
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ControlGRIS-Build
+          path: Builds/LinuxMakefile/build/*
 
   Build-macOS:
     runs-on: macos-latest
@@ -79,26 +79,8 @@ jobs:
       - name: set global JUCE search paths
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
 
-      # this could maybe be be removed
-      # - name: Remove plugin install paths in .jucer file (AU & VST3)
-      #   run: |
-      #     sed -E -i.bak \
-      #       -e 's|<auBinaryLocation>.*</auBinaryLocation>|<auBinaryLocation></auBinaryLocation>|' \
-      #       -e 's|<vst3BinaryLocation>.*</vst3BinaryLocation>|<vst3BinaryLocation></vst3BinaryLocation>|' \
-      #       ControlGRIS.jucer
-
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
-
-        # this could maybe be be removed
-      # - name: Remove post-build copy step from Xcode project (VST3 and AU)
-      #   run: |
-      #     sed -i.bak '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
-      #     sed -i.bak '/\/Users\/runner\/Library\/Audio\/Plug-Ins\/VST3/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
-      #     sed -i.bak '/isa = PBXCopyFilesBuildPhase/,/};/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
-
-      # - name: show build settings
-      #   run: xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj -scheme "ControlGRIS - VST3" -showBuildSettings
 
       - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
@@ -115,8 +97,8 @@ jobs:
                       CONFIGURATION_BUILD_DIR=Builds/MacOSX/output/${safeFormat}-universal \
                       MACOSX_DEPLOYMENT_TARGET=10.13 \
                       ARCHS="arm64 x86_64" \
-                      INSTALL_PATH=/tmp/fakeInstall \
-                      DSTROOT=/tmp/fakeInstallRoot \
+                      INSTALL_PATH=/tmp/fakeInstall \     # these 2 options are used to avoid
+                      DSTROOT=/tmp/fakeInstallRoot \      # installing the AU/VST plugins to the system
                       build
           done
 
@@ -135,46 +117,46 @@ jobs:
           path: macOS/*
           if-no-files-found: error
 
-  # Build-Windows:
-  #   runs-on: windows-latest
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #       with:
-  #         submodules: recursive
+  Build-Windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-  #     - name: download JUCE
-  #       run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-windows.zip --output JUCE.zip
+      - name: download JUCE
+        run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-windows.zip --output JUCE.zip
 
-  #     - name: unpack JUCE
-  #       run: Expand-Archive -Path JUCE.zip -DestinationPath .
+      - name: unpack JUCE
+        run: Expand-Archive -Path JUCE.zip -DestinationPath .
 
-  #     - name: set global JUCE search paths
-  #       run: JUCE/Projucer --set-global-search-path windows defaultJuceModulePath ${{ github.workspace }}\JUCE\modules
+      - name: set global JUCE search paths
+        run: JUCE/Projucer --set-global-search-path windows defaultJuceModulePath ${{ github.workspace }}\JUCE\modules
 
-  #     - name: generate Visual Studio project
-  #       run: JUCE/Projucer --resave ControlGRIS.jucer
+      - name: generate Visual Studio project
+        run: JUCE/Projucer --resave ControlGRIS.jucer
 
-  #     - name: Remove VST3 copy step from .vcxproj #this copy step is useless on the pipeline, and causes it to fail
-  #       run: sed -i '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/VisualStudio2022/ControlGRIS_VST3.vcxproj
-  #       shell: bash
+      - name: Remove VST3 copy step from .vcxproj #this copy step is useless on the pipeline, and causes it to fail
+        run: sed -i '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/VisualStudio2022/ControlGRIS_VST3.vcxproj
+        shell: bash
 
-  #     - name: Add msbuild to PATH
-  #       uses: microsoft/setup-msbuild@v2
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
 
-  #     - name: build shared code
-  #       run: msbuild Builds/VisualStudio2022/ControlGRIS_SharedCode.vcxproj -p:Configuration=Release -p:Platform=x64
+      - name: build shared code
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_SharedCode.vcxproj -p:Configuration=Release -p:Platform=x64
 
-  #     - name: build standalone
-  #       run: msbuild Builds/VisualStudio2022/ControlGRIS_StandalonePlugin.vcxproj -p:Configuration=Release -p:Platform=x64
+      - name: build standalone
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_StandalonePlugin.vcxproj -p:Configuration=Release -p:Platform=x64
 
-  #     - name: build VST3
-  #       run: msbuild Builds/VisualStudio2022/ControlGRIS_VST3.vcxproj -p:Configuration=Release -p:Platform=x64
+      - name: build VST3
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_VST3.vcxproj -p:Configuration=Release -p:Platform=x64
 
-  #     - name: Upload build artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ControlGRIS-Build-Windows
-  #         path: |
-  #           Builds/VisualStudio2022/x64/Release/**/*.vst3
-  #           Builds/VisualStudio2022/x64/Release/**/*.exe
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ControlGRIS-Build-Windows
+          path: |
+            Builds/VisualStudio2022/x64/Release/**/*.vst3
+            Builds/VisualStudio2022/x64/Release/**/*.exe
