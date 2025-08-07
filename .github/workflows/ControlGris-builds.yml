@@ -84,7 +84,7 @@ jobs:
 
       - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
-          formats=("Standalone Plugin" "VST3" "AU")
+          formats=("Standalone Plugin" "AU")
 
           for format in "${formats[@]}"; do
             safeFormat=$(echo "$format" | tr ' ' '-')
