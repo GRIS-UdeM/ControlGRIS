@@ -119,6 +119,13 @@ jobs:
                       build
           done
 
+      - name: Prepare plugin artifacts for upload
+        run: |
+          mkdir -p macOS
+          find /tmp/fakeInstallRoot -name "*.vst3" -exec cp -R {} macOS/ \;
+          find /tmp/fakeInstallRoot -name "*.component" -exec cp -R {} macOS/ \;
+          find /tmp/fakeInstallRoot -name "*.app" -exec cp -R {} macOS/ \;
+
       - name: ls all the things
         run : ls -R
 
@@ -126,11 +133,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ControlGRIS-macOS
-          path: |
-            /tmp/fakeInstallRoot/**/*.vst3
-            /tmp/fakeInstallRoot/**/*.component
-            /tmp/fakeInstallRoot/**/*.app
-          if-no-files-found: warn
+          path: macOS/*
+          if-no-files-found: error
 
   # Build-Windows:
   #   runs-on: windows-latest
