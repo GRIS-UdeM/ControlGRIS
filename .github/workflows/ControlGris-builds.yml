@@ -81,11 +81,10 @@ jobs:
 
       - name: Remove plugin install paths in .jucer file (AU & VST3)
         run: |
-          sed -i '' \
+          sed -E -i.bak \
             -e 's|<auBinaryLocation>.*</auBinaryLocation>|<auBinaryLocation></auBinaryLocation>|' \
             -e 's|<vst3BinaryLocation>.*</vst3BinaryLocation>|<vst3BinaryLocation></vst3BinaryLocation>|' \
             ControlGRIS.jucer
-        shell: bash
 
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
@@ -100,9 +99,10 @@ jobs:
             xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
                       -scheme "ControlGRIS - $format" \
                       -configuration Release \
-                      -arch "arm64 x86_64" \
+                      -destination 'platform=macOS' \
                       CONFIGURATION_BUILD_DIR=Builds/MacOSX/output/${safeFormat}-universal \
                       MACOSX_DEPLOYMENT_TARGET=10.13 \
+                      ARCHS="arm64 x86_64" \
                       build
           done
 
