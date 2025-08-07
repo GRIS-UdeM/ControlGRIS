@@ -92,10 +92,16 @@ jobs:
       - name: Remove post-build copy step from Xcode project (VST3 and AU)
         run: |
           sed -i.bak '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
+          sed -i.bak '/\/Users\/runner\/Library\/Audio\/Plug-Ins\/VST3/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
+          sed -i.bak '/isa = PBXCopyFilesBuildPhase/,/};/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
+
+      - name: show build settings
+        run: xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj -scheme "ControlGRIS - VST3" -showBuildSettings
 
       - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
-          formats=("Standalone Plugin" "VST3" "AU")
+          # formats=("Standalone Plugin" "VST3" "AU")
+          formats=("VST3" "AU")
 
           for format in "${formats[@]}"; do
             safeFormat=$(echo "$format" | tr ' ' '-')
