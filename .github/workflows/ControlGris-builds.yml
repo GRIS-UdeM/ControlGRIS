@@ -89,6 +89,11 @@ jobs:
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
+      - name: Remove post-build copy step from Xcode project (VST3 and AU)
+        run: |
+          sed -i.bak '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/MacOSX/ControlGRIS_VST3.xcodeproj/project.pbxproj
+          sed -i.bak '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/MacOSX/ControlGRIS_AU.xcodeproj/project.pbxproj
+
       - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
           formats=("Standalone Plugin" "VST3" "AU")
