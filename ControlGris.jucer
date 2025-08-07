@@ -228,10 +228,12 @@
         <MODULEPATH id="juce_audio_devices" path="../../../../../dev/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris2"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris2"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGris2" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
+                       libraryPath="../../Source/libs/lib/flucoma/linux/Debug"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGris2" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
+                       libraryPath="../../Source/libs/lib/flucoma/linux/Release"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
