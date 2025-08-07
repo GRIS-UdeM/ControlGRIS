@@ -77,8 +77,7 @@ jobs:
         run: unzip JUCE.zip
 
       - name: set global JUCE search paths
-        run: JUCE/Projucer.app/Contents/MacOS/Projucer \
-                --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
+        run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
 
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
