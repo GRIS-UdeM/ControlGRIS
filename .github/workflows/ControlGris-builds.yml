@@ -79,12 +79,20 @@ jobs:
       - name: set global JUCE search paths
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
 
+      - name: Remove plugin install paths in .jucer file (AU & VST3)
+        run: |
+          sed -i '' \
+            -e 's|<auBinaryLocation>.*</auBinaryLocation>|<auBinaryLocation></auBinaryLocation>|' \
+            -e 's|<vst3BinaryLocation>.*</vst3BinaryLocation>|<vst3BinaryLocation></vst3BinaryLocation>|' \
+            ControlGRIS.jucer
+        shell: bash
+
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
       - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
-          formats=("Standalone Plugin" "AU")
+          formats=("Standalone Plugin" "VST3" "AU")
 
           for format in "${formats[@]}"; do
             safeFormat=$(echo "$format" | tr ' ' '-')
@@ -106,7 +114,6 @@ jobs:
             Builds/MacOSX/output/**/*.vst3
             Builds/MacOSX/output/**/*.component
             Builds/MacOSX/output/**/*.app
-
 
   Build-Windows:
     runs-on: windows-latest
