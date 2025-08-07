@@ -119,14 +119,18 @@ jobs:
                       build
           done
 
+      - name: ls all the things
+        run : ls -R
+
       - name: Upload macOS builds
         uses: actions/upload-artifact@v4
         with:
           name: ControlGRIS-macOS
           path: |
-            Builds/MacOSX/output/**/*.vst3
-            Builds/MacOSX/output/**/*.component
-            Builds/MacOSX/output/**/*.app
+            /tmp/fakeInstallRoot/**/*.vst3
+            /tmp/fakeInstallRoot/**/*.component
+            /tmp/fakeInstallRoot/**/*.app
+          if-no-files-found: warn
 
   # Build-Windows:
   #   runs-on: windows-latest
