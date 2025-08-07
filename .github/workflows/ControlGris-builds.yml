@@ -80,22 +80,22 @@ jobs:
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
 
       # this could maybe be be removed
-      - name: Remove plugin install paths in .jucer file (AU & VST3)
-        run: |
-          sed -E -i.bak \
-            -e 's|<auBinaryLocation>.*</auBinaryLocation>|<auBinaryLocation></auBinaryLocation>|' \
-            -e 's|<vst3BinaryLocation>.*</vst3BinaryLocation>|<vst3BinaryLocation></vst3BinaryLocation>|' \
-            ControlGRIS.jucer
+      # - name: Remove plugin install paths in .jucer file (AU & VST3)
+      #   run: |
+      #     sed -E -i.bak \
+      #       -e 's|<auBinaryLocation>.*</auBinaryLocation>|<auBinaryLocation></auBinaryLocation>|' \
+      #       -e 's|<vst3BinaryLocation>.*</vst3BinaryLocation>|<vst3BinaryLocation></vst3BinaryLocation>|' \
+      #       ControlGRIS.jucer
 
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
         # this could maybe be be removed
-      - name: Remove post-build copy step from Xcode project (VST3 and AU)
-        run: |
-          sed -i.bak '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
-          sed -i.bak '/\/Users\/runner\/Library\/Audio\/Plug-Ins\/VST3/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
-          sed -i.bak '/isa = PBXCopyFilesBuildPhase/,/};/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
+      # - name: Remove post-build copy step from Xcode project (VST3 and AU)
+      #   run: |
+      #     sed -i.bak '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
+      #     sed -i.bak '/\/Users\/runner\/Library\/Audio\/Plug-Ins\/VST3/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
+      #     sed -i.bak '/isa = PBXCopyFilesBuildPhase/,/};/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
 
       # - name: show build settings
       #   run: xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj -scheme "ControlGRIS - VST3" -showBuildSettings
