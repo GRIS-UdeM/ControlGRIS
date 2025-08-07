@@ -20,7 +20,7 @@ jobs:
           apt-get install -y git curl unzip sudo wget lsb-release software-properties-common make build-essential tzdata
 
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -66,7 +66,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -82,37 +82,47 @@ jobs:
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
-      - name: build arm64
+      - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
-          xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
-                     -scheme "ControlGRIS - Standalone Plugin" \
-                     -configuration Release \
-                     -arch arm64
+          formats=("Standalone Plugin" "VST3" "AU")
 
-      - name: Upload arm64 build
+          for format in "${formats[@]}"; do
+            safeFormat=$(echo "$format" | tr ' ' '-')
+            echo "Building universal binary for $format..."
+
+            # the INSTALL_PATH and DSTROOT options are used to avoid installing the AU/VST plugins to the system
+            xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
+                      -scheme "ControlGRIS - $format" \
+                      -configuration Release \
+                      -destination 'platform=macOS' \
+                      CONFIGURATION_BUILD_DIR=Builds/MacOSX/output/${safeFormat}-universal \
+                      MACOSX_DEPLOYMENT_TARGET=10.13 \
+                      ARCHS="arm64 x86_64" \
+                      INSTALL_PATH=/tmp/fakeInstall \
+                      DSTROOT=/tmp/fakeInstallRoot \
+                      build
+          done
+
+      - name: Prepare plugin artifacts for upload
+        run: |
+          mkdir -p macOS
+          find /tmp/fakeInstallRoot -name "*.vst3" -exec cp -R {} macOS/ \;
+          find /tmp/fakeInstallRoot -name "*.component" -exec cp -R {} macOS/ \;
+          find /tmp/fakeInstallRoot -name "*.app" -exec cp -R {} macOS/ \;
+          cp -R Builds/MacOSX/Builds/MacOSX/output/Standalone-Plugin-universal/ControlGRIS.app macOS/ || true
+
+      - name: Upload macOS builds
         uses: actions/upload-artifact@v4
         with:
-          name: ControlGRIS-macOS-arm64
-          path: Builds/MacOSX/build/*
-
-      - name: build x86_64
-        run: |
-          xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
-                     -scheme "ControlGRIS - Standalone Plugin" \
-                     -configuration Release \
-                     -arch x86_64
-
-      - name: Upload x86_64 build
-        uses: actions/upload-artifact@v4
-        with:
-          name: ControlGRIS-macOS-x86_64
-          path: Builds/MacOSX/build/*
+          name: ControlGRIS-macOS
+          path: macOS/*
+          if-no-files-found: error
 
   Build-Windows:
     runs-on: windows-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
