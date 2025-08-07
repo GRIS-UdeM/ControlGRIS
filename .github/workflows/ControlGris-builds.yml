@@ -89,11 +89,15 @@ jobs:
 
           for arch in "${archs[@]}"; do
             for format in "${formats[@]}"; do
+              safeFormat=$(echo "$format" | tr ' ' '-')
               echo "Building $format for $arch..."
               xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
                          -scheme "ControlGRIS - $format" \
                          -configuration Release \
-                         -arch $arch \
+                         -arch "$arch" \
+                         -destination 'platform=macOS' \
+                         CONFIGURATION_BUILD_DIR=Builds/MacOSX/output/${safeFormat}-${arch} \
+                         MACOSX_DEPLOYMENT_TARGET=10.13 \
                          build
             done
           done
@@ -103,9 +107,10 @@ jobs:
         with:
           name: ControlGRIS-macOS
           path: |
-            Builds/MacOSX/build/**/*.vst3
-            ~/Library/Audio/Plug-Ins/Components/*.component
-            Builds/MacOSX/build/**/*.app
+            Builds/MacOSX/output/**/*.vst3
+            Builds/MacOSX/output/**/*.component
+            Builds/MacOSX/output/**/*.app
+
 
   Build-Windows:
     runs-on: windows-latest
