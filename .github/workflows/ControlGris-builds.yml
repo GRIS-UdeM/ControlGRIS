@@ -90,6 +90,7 @@ jobs:
             safeFormat=$(echo "$format" | tr ' ' '-')
             echo "Building universal binary for $format..."
 
+            # the INSTALL_PATH and DSTROOT options are used to avoid installing the AU/VST plugins to the system
             xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
                       -scheme "ControlGRIS - $format" \
                       -configuration Release \
@@ -97,8 +98,8 @@ jobs:
                       CONFIGURATION_BUILD_DIR=Builds/MacOSX/output/${safeFormat}-universal \
                       MACOSX_DEPLOYMENT_TARGET=10.13 \
                       ARCHS="arm64 x86_64" \
-                      INSTALL_PATH=/tmp/fakeInstall \     # these 2 options are used to avoid
-                      DSTROOT=/tmp/fakeInstallRoot \      # installing the AU/VST plugins to the system
+                      INSTALL_PATH=/tmp/fakeInstall \
+                      DSTROOT=/tmp/fakeInstallRoot \
                       build
           done
 
