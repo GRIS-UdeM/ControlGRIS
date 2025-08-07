@@ -20,7 +20,7 @@ jobs:
           apt-get install -y git curl unzip sudo wget lsb-release software-properties-common make build-essential tzdata
 
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -66,7 +66,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -85,21 +85,17 @@ jobs:
       - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
           formats=("Standalone Plugin" "VST3" "AU")
-          archs=("arm64" "x86_64")
 
-          for arch in "${archs[@]}"; do
-            for format in "${formats[@]}"; do
-              safeFormat=$(echo "$format" | tr ' ' '-')
-              echo "Building $format for $arch..."
-              xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
-                         -scheme "ControlGRIS - $format" \
-                         -configuration Release \
-                         -arch "$arch" \
-                         -destination 'platform=macOS' \
-                         CONFIGURATION_BUILD_DIR=Builds/MacOSX/output/${safeFormat}-${arch} \
-                         MACOSX_DEPLOYMENT_TARGET=10.13 \
-                         build
-            done
+          for format in "${formats[@]}"; do
+            safeFormat=$(echo "$format" | tr ' ' '-')
+            echo "Building universal binary for $format..."
+            xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
+                      -scheme "ControlGRIS - $format" \
+                      -configuration Release \
+                      -arch "arm64 x86_64" \
+                      CONFIGURATION_BUILD_DIR=Builds/MacOSX/output/${safeFormat}-universal \
+                      MACOSX_DEPLOYMENT_TARGET=10.13 \
+                      build
           done
 
       - name: Upload macOS builds
@@ -116,7 +112,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
