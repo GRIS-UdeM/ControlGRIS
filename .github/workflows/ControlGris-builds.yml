@@ -79,6 +79,7 @@ jobs:
       - name: set global JUCE search paths
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
 
+      # this could maybe be be removed
       - name: Remove plugin install paths in .jucer file (AU & VST3)
         run: |
           sed -E -i.bak \
@@ -89,19 +90,19 @@ jobs:
       - name: generate Xcode project
         run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
+        # this could maybe be be removed
       - name: Remove post-build copy step from Xcode project (VST3 and AU)
         run: |
           sed -i.bak '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
           sed -i.bak '/\/Users\/runner\/Library\/Audio\/Plug-Ins\/VST3/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
           sed -i.bak '/isa = PBXCopyFilesBuildPhase/,/};/d' Builds/MacOSX/ControlGRIS.xcodeproj/project.pbxproj
 
-      - name: show build settings
-        run: xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj -scheme "ControlGRIS - VST3" -showBuildSettings
+      # - name: show build settings
+      #   run: xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj -scheme "ControlGRIS - VST3" -showBuildSettings
 
       - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
-          # formats=("Standalone Plugin" "VST3" "AU")
-          formats=("VST3" "AU")
+          formats=("Standalone Plugin" "VST3" "AU")
 
           for format in "${formats[@]}"; do
             safeFormat=$(echo "$format" | tr ' ' '-')
@@ -125,9 +126,6 @@ jobs:
           find /tmp/fakeInstallRoot -name "*.vst3" -exec cp -R {} macOS/ \;
           find /tmp/fakeInstallRoot -name "*.component" -exec cp -R {} macOS/ \;
           find /tmp/fakeInstallRoot -name "*.app" -exec cp -R {} macOS/ \;
-
-      - name: ls all the things
-        run : ls -R
 
       - name: Upload macOS builds
         uses: actions/upload-artifact@v4
