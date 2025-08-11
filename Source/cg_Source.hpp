@@ -364,9 +364,10 @@ class Sources
     std::vector<Source> mSecondarySources{};
 
 public:
-    const int MAX_NUMBER_OF_SOURCES;
+    static const int MAX_NUMBER_OF_SOURCES {256};
+
     //==============================================================================
-    Sources() : MAX_NUMBER_OF_SOURCES(juce::JUCEApplicationBase::isStandaloneApp() ? 256 : 128)
+    Sources()
     {
         mSecondarySources.resize(MAX_NUMBER_OF_SOURCES - 1);
     }
