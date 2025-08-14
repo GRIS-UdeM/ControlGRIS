@@ -40,9 +40,6 @@ jobs:
       - name: Build Projucer
         run: make -C submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/LinuxMakefile CXX=clang++-18 -j$(nproc)
 
-      # - name: set global JUCE search paths
-      #   run: JUCE/Projucer --set-global-search-path linux defaultJuceModulePath /__w/ControlGRIS/ControlGRIS/JUCE/modules
-
       - name: Generate makefile (Standalone & VST3 only)
         run: |
           cd JUCE
@@ -67,15 +64,6 @@ jobs:
         with:
           submodules: recursive
 
-      # - name: download JUCE
-      #   run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-osx.zip --output JUCE.zip
-
-      # - name: unpack JUCE
-      #   run: unzip JUCE.zip
-
-      # - name: set global JUCE search paths
-      #   run: JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath /Users/runner/work/ControlGRIS/ControlGRIS/JUCE/modules
-
       - name: Build Projucer
         run: |
           cd submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/MacOSX
@@ -84,9 +72,6 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
-
-      # - name: generate Xcode project
-      #   run: JUCE/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
 
       - name: Generate Xcode project
         run: |
@@ -137,17 +122,6 @@ jobs:
         with:
           submodules: recursive
 
-      # - name: download JUCE
-      #   run: curl -L https://github.com/juce-framework/JUCE/releases/download/7.0.1/juce-7.0.1-windows.zip --output JUCE.zip
-
-      # - name: unpack JUCE
-      #   run: Expand-Archive -Path JUCE.zip -DestinationPath .
-
-      # - name: set global JUCE search paths
-      #   run: JUCE/Projucer --set-global-search-path windows defaultJuceModulePath ${{ github.workspace }}\JUCE\modules
-
-      # - name: generate Visual Studio project
-      #   run: JUCE/Projucer --resave ControlGRIS.jucer
       - name: Build Projucer
         run: |
           cd submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/VisualStudio2022
