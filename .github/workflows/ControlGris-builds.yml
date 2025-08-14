@@ -43,7 +43,6 @@ jobs:
 
       - name: Generate makefile (Standalone & VST3 only)
         run: |
-          cd JUCE
           submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/LinuxMakefile/build/Projucer --resave ../ControlGRIS.jucer --set-exporter LinuxMakefile --set-config Release --set-enabled-targets Standalone,VST3
 
       - name: Compile ControlGRIS (Standalone & VST3 only)
@@ -103,20 +102,27 @@ jobs:
       - name: good ol ls -R
         run: ls -R
 
-      - name: Prepare plugin artifacts for upload
-        run: |
-          mkdir -p macOS
-          find /tmp/fakeInstallRoot -name "*.vst3" -exec cp -R {} macOS/ \;
-          find /tmp/fakeInstallRoot -name "*.component" -exec cp -R {} macOS/ \;
-          find /tmp/fakeInstallRoot -name "*.app" -exec cp -R {} macOS/ \;
-          cp -R Builds/MacOSX/Builds/MacOSX/output/Standalone-Plugin-universal/ControlGRIS.app macOS/ || true
+      # - name: Prepare plugin artifacts for upload
+      #   run: |
+      #     mkdir -p macOS
+      #     find /tmp/fakeInstallRoot -name "*.vst3" -exec cp -R {} macOS/ \;
+      #     find /tmp/fakeInstallRoot -name "*.component" -exec cp -R {} macOS/ \;
+      #     find /tmp/fakeInstallRoot -name "*.app" -exec cp -R {} macOS/ \;
+      #     cp -R Builds/MacOSX/Builds/MacOSX/output/Standalone-Plugin-universal/ControlGRIS.app macOS/ || true
 
+      # - name: Upload macOS builds
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ControlGRIS-macOS
+      #     path: macOS/*
+      #     if-no-files-found: error
       - name: Upload macOS builds
         uses: actions/upload-artifact@v4
         with:
           name: ControlGRIS-macOS
-          path: macOS/*
+          path: Builds/MacOSX/Builds/MacOSX/output/**
           if-no-files-found: error
+
 
   Build-Windows:
     runs-on: windows-latest
