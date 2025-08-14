@@ -19,6 +19,7 @@
  *************************************************************************/
 
 #include "cg_SectionGeneralSettings.hpp"
+#include "cg_Source.hpp"
 
 namespace gris
 {
@@ -211,8 +212,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
 
     mNumOfSourcesEditor.setExplicitFocusOrder(2);
     mNumOfSourcesEditor.setText("2");
-    auto const MAX_NUMBER_OF_SOURCES { juce::JUCEApplicationBase::isStandaloneApp() ? 256 : 8};
-    mNumOfSourcesEditor.setInputFilter(new NumberRangeInputFilter(1, MAX_NUMBER_OF_SOURCES), true);
+    mNumOfSourcesEditor.setInputFilter(new NumberRangeInputFilter(1, Sources::MAX_NUMBER_OF_SOURCES), true);
     mNumOfSourcesEditor.onReturnKey = [this] { mOscFormatCombo.grabKeyboardFocus(); };
     mNumOfSourcesEditor.onFocusLost = [this] {
         if (!mNumOfSourcesEditor.isEmpty()) {
