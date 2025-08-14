@@ -43,7 +43,7 @@ jobs:
 
       - name: Generate makefile (Standalone & VST3 only)
         run: |
-          submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/LinuxMakefile/build/Projucer --resave ../ControlGRIS.jucer --set-exporter LinuxMakefile --set-config Release --set-enabled-targets Standalone,VST3
+          submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/LinuxMakefile/build/Projucer --resave ControlGRIS.jucer --set-exporter LinuxMakefile --set-config Release --set-enabled-targets Standalone,VST3
 
       - name: Compile ControlGRIS (Standalone & VST3 only)
         run: |
