@@ -22,7 +22,7 @@
 
 #include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_constants.hpp"
-#include <Quaternion.hpp>
+#include <Data/Quaternion.hpp>
 
 namespace gris
 {

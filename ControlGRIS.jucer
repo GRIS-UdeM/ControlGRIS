@@ -8,7 +8,7 @@
               cppLanguageStandard="latest" projectLineFeed="&#10;" jucerFormatVersion="1"
               companyWebsite="ca.umontreal.musique.gris.controlgris" addUsingNamespaceToJuceHeader="0"
               displaySplashScreen="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1&#10;DEBUG_COORDINATES=0"
-              headerPath="../../submodules/StructGRIS/Source">
+              headerPath="../../submodules/StructGRIS">
   <MAINGROUP id="gDqxm3" name="ControlGRIS">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
       <GROUP id="{32F49E20-AD3C-BA30-3DC6-5BBC5846D431}" name="Misc">
@@ -117,15 +117,91 @@
       </GROUP>
       <GROUP id="{37583D08-C231-00D6-03B5-79565DF25BED}" name="submodules">
         <GROUP id="{B23B8AA7-F05B-F12A-B0A5-5BD57FA47F9C}" name="StructGRIS">
-          <GROUP id="{BAB1DA5D-3614-7FE4-F736-72955828C38F}" name="Source">
-            <GROUP id="{0DFE46F2-B0F5-8E40-AAE9-0CF60CE955E4}" name="StrongTypes">
-              <FILE id="rKbTvb" name="sg_Degrees.hpp" compile="0" resource="0" file="submodules/StructGRIS/Source/StrongTypes/sg_Degrees.hpp"/>
-              <FILE id="nJuThd" name="sg_Radians.hpp" compile="0" resource="0" file="submodules/StructGRIS/Source/StrongTypes/sg_Radians.hpp"/>
-              <FILE id="TvsWus" name="sg_StrongFloat.hpp" compile="0" resource="0"
-                    file="submodules/StructGRIS/Source/StrongTypes/sg_StrongFloat.hpp"/>
+          <GROUP id="{D28A09FF-D42D-B8EA-EE40-F3CA9F375814}" name="Containers">
+            <FILE id="Ew0tS8" name="sg_AtomicUpdater.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Containers/sg_AtomicUpdater.hpp"/>
+            <FILE id="bJiqoO" name="sg_LogBuffer.cpp" compile="1" resource="0"
+                  file="submodules/StructGRIS/Containers/sg_LogBuffer.cpp"/>
+            <FILE id="hB2Il1" name="sg_LogBuffer.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Containers/sg_LogBuffer.hpp"/>
+            <FILE id="T213DV" name="sg_OwnedMap.hpp" compile="0" resource="0" file="submodules/StructGRIS/Containers/sg_OwnedMap.hpp"/>
+            <FILE id="UuO2Aw" name="sg_StaticMap.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Containers/sg_StaticMap.hpp"/>
+            <FILE id="L4nO5E" name="sg_StaticVector.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Containers/sg_StaticVector.hpp"/>
+            <FILE id="TlYxJL" name="sg_StrongArray.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Containers/sg_StrongArray.hpp"/>
+            <FILE id="vcb1nb" name="sg_TaggedAudioBuffer.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Containers/sg_TaggedAudioBuffer.hpp"/>
+            <FILE id="XcO7Ba" name="sg_ThreadSafeBuffer.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Containers/sg_ThreadSafeBuffer.hpp"/>
+          </GROUP>
+          <GROUP id="{3E90DCB6-BE13-CB2A-BF9F-5B765B65B08A}" name="Data">
+            <GROUP id="{3F6F0FB6-A0A8-93CE-4018-353AC2828093}" name="StrongTypes">
+              <FILE id="egfdN0" name="sg_CartesianVector.cpp" compile="1" resource="0"
+                    file="submodules/StructGRIS/Data/StrongTypes/sg_CartesianVector.cpp"/>
+              <FILE id="YYbSSR" name="sg_CartesianVector.hpp" compile="0" resource="0"
+                    file="submodules/StructGRIS/Data/StrongTypes/sg_CartesianVector.hpp"/>
+              <FILE id="pdTfd8" name="sg_Dbfs.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/StrongTypes/sg_Dbfs.hpp"/>
+              <FILE id="ZGqxFf" name="sg_Degrees.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/StrongTypes/sg_Degrees.hpp"/>
+              <FILE id="uHCUQo" name="sg_Hz.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/StrongTypes/sg_Hz.hpp"/>
+              <FILE id="xWCD4R" name="sg_Meters.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/StrongTypes/sg_Meters.hpp"/>
+              <FILE id="G4rmIL" name="sg_OutputPatch.hpp" compile="0" resource="0"
+                    file="submodules/StructGRIS/Data/StrongTypes/sg_OutputPatch.hpp"/>
+              <FILE id="WqXqG8" name="sg_Radians.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/StrongTypes/sg_Radians.hpp"/>
+              <FILE id="GpNgGE" name="sg_SourceIndex.hpp" compile="0" resource="0"
+                    file="submodules/StructGRIS/Data/StrongTypes/sg_SourceIndex.hpp"/>
+              <FILE id="qHyjdu" name="sg_StrongFloat.hpp" compile="0" resource="0"
+                    file="submodules/StructGRIS/Data/StrongTypes/sg_StrongFloat.hpp"/>
+              <FILE id="IMxxh2" name="sg_StrongIndex.hpp" compile="0" resource="0"
+                    file="submodules/StructGRIS/Data/StrongTypes/sg_StrongIndex.hpp"/>
             </GROUP>
-            <FILE id="JTmTi6" name="Quaternion.cpp" compile="1" resource="0" file="submodules/StructGRIS/Source/Quaternion.cpp"/>
-            <FILE id="OKegiQ" name="Quaternion.hpp" compile="0" resource="0" file="submodules/StructGRIS/Source/Quaternion.hpp"/>
+            <FILE id="b15yfA" name="Quaternion.cpp" compile="1" resource="0" file="submodules/StructGRIS/Data/Quaternion.cpp"/>
+            <FILE id="VeDYVl" name="Quaternion.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/Quaternion.hpp"/>
+            <FILE id="IzEnrV" name="sg_AudioStructs.cpp" compile="1" resource="0"
+                  file="submodules/StructGRIS/Data/sg_AudioStructs.cpp"/>
+            <FILE id="B15QRf" name="sg_AudioStructs.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Data/sg_AudioStructs.hpp"/>
+            <FILE id="tbRo0O" name="sg_CommandId.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Data/sg_CommandId.hpp"/>
+            <FILE id="A7Auur" name="sg_constants.cpp" compile="1" resource="0"
+                  file="submodules/StructGRIS/Data/sg_constants.cpp"/>
+            <FILE id="EbwcWr" name="sg_constants.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Data/sg_constants.hpp"/>
+            <FILE id="QSWRpG" name="sg_LegacyLbapPosition.cpp" compile="1" resource="0"
+                  file="submodules/StructGRIS/Data/sg_LegacyLbapPosition.cpp"/>
+            <FILE id="vNVU0y" name="sg_LegacyLbapPosition.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Data/sg_LegacyLbapPosition.hpp"/>
+            <FILE id="HOxujz" name="sg_LegacySpatFileFormat.cpp" compile="1" resource="0"
+                  file="submodules/StructGRIS/Data/sg_LegacySpatFileFormat.cpp"/>
+            <FILE id="FU08iv" name="sg_LegacySpatFileFormat.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Data/sg_LegacySpatFileFormat.hpp"/>
+            <FILE id="qJR5yQ" name="sg_LogicStrucs.cpp" compile="1" resource="0"
+                  file="submodules/StructGRIS/Data/sg_LogicStrucs.cpp"/>
+            <FILE id="vW2Twc" name="sg_LogicStrucs.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Data/sg_LogicStrucs.hpp"/>
+            <FILE id="Rq51ZY" name="sg_Macros.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/sg_Macros.hpp"/>
+            <FILE id="C5P0MM" name="sg_Narrow.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/sg_Narrow.hpp"/>
+            <FILE id="WRKuqR" name="sg_PolarVector.cpp" compile="1" resource="0"
+                  file="submodules/StructGRIS/Data/sg_PolarVector.cpp"/>
+            <FILE id="LHkbSc" name="sg_PolarVector.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Data/sg_PolarVector.hpp"/>
+            <FILE id="leCkex" name="sg_Position.cpp" compile="1" resource="0" file="submodules/StructGRIS/Data/sg_Position.cpp"/>
+            <FILE id="QF8grV" name="sg_Position.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/sg_Position.hpp"/>
+            <FILE id="BNNh7r" name="sg_SpatMode.cpp" compile="1" resource="0" file="submodules/StructGRIS/Data/sg_SpatMode.cpp"/>
+            <FILE id="ueNfKa" name="sg_SpatMode.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/sg_SpatMode.hpp"/>
+            <FILE id="YnAHij" name="sg_Triplet.hpp" compile="0" resource="0" file="submodules/StructGRIS/Data/sg_Triplet.hpp"/>
+          </GROUP>
+          <GROUP id="{BAF20F31-2A9A-AB69-B1DF-6C056EED0515}" name="tl">
+            <FILE id="tjzQ7d" name="COPYING" compile="0" resource="1" file="submodules/StructGRIS/tl/COPYING"/>
+            <FILE id="C5QFLt" name="optional.hpp" compile="0" resource="0" file="submodules/StructGRIS/tl/optional.hpp"/>
+            <FILE id="BclnvU" name="README.md" compile="0" resource="1" file="submodules/StructGRIS/tl/README.md"/>
+          </GROUP>
+          <GROUP id="{EA400216-2988-F10F-6040-B79CAE67C9EE}" name="Utilities">
+            <FILE id="nz6VTT" name="ValueTreeUtilities.cpp" compile="1" resource="0"
+                  file="submodules/StructGRIS/Utilities/ValueTreeUtilities.cpp"/>
+            <FILE id="a1zM1v" name="ValueTreeUtilities.hpp" compile="0" resource="0"
+                  file="submodules/StructGRIS/Utilities/ValueTreeUtilities.hpp"/>
           </GROUP>
         </GROUP>
       </GROUP>
@@ -240,20 +316,20 @@
     </VS2022>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="1"
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
             useGlobalPath="0"/>
-    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_core" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_events" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="juce_osc" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
   <LIVE_SETTINGS>
     <LINUX/>
