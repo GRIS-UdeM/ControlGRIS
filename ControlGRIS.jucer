@@ -12,21 +12,10 @@
   <MAINGROUP id="gDqxm3" name="ControlGRIS">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
       <GROUP id="{32F49E20-AD3C-BA30-3DC6-5BBC5846D431}" name="Misc">
-        <FILE id="MrPims" name="cg_CartesianVector.cpp" compile="1" resource="0"
-              file="Source/cg_CartesianVector.cpp"/>
-        <FILE id="zlCcu2" name="cg_CartesianVector.hpp" compile="0" resource="0"
-              file="Source/cg_CartesianVector.hpp"/>
         <FILE id="oW9vrz" name="cg_constants.cpp" compile="1" resource="0"
               file="Source/cg_constants.cpp"/>
         <FILE id="IohZol" name="cg_constants.hpp" compile="0" resource="0"
               file="Source/cg_constants.hpp"/>
-        <FILE id="yku20p" name="cg_Narrow.hpp" compile="0" resource="0" file="Source/cg_Narrow.hpp"/>
-        <FILE id="BwPpP6" name="cg_PolarVector.cpp" compile="1" resource="0"
-              file="Source/cg_PolarVector.cpp"/>
-        <FILE id="knzUOe" name="cg_PolarVector.hpp" compile="0" resource="0"
-              file="Source/cg_PolarVector.hpp"/>
-        <FILE id="CISzbz" name="cg_StrongTypes.hpp" compile="0" resource="0"
-              file="Source/cg_StrongTypes.hpp"/>
         <FILE id="pvfyvE" name="cg_utilities.hpp" compile="0" resource="0"
               file="Source/cg_utilities.hpp"/>
         <FILE id="W2OezW" name="cg_Warnings.hpp" compile="0" resource="0" file="Source/cg_Warnings.hpp"/>

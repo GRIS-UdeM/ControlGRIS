@@ -189,7 +189,7 @@ void Source::computeXY()
     float const radius{ [&] {
         if (mSpatMode == SpatMode::dome) { // azimuth - elevation
             jassert(!std::isnan(mElevation.getAsRadians()));
-            auto const result{ mElevation / MAX_ELEVATION };
+            auto const result{ mElevation / Radians{ MAX_ELEVATION } };
             jassert(result >= 0.0f && result <= 1.0f);
             return result;
         }

@@ -28,7 +28,7 @@ namespace gris
 DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent) : mSourceBoxComponent(sourceBoxComponent)
 {
     mCurrentAzimuth = {};
-    mCurrentElevation = MAX_ELEVATION;
+    mCurrentElevation = Radians{ MAX_ELEVATION };
 
     mElevationLabel.setText("Elevation:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mElevationLabel);
@@ -39,7 +39,7 @@ DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent) : mSource
     mElevationSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mElevationSlider);
     mElevationSlider.onValueChange = [this] {
-        mCurrentElevation = MAX_ELEVATION * (1.0f - static_cast<float>(mElevationSlider.getValue()));
+        mCurrentElevation = Radians{ MAX_ELEVATION * (1.0f - static_cast<float>(mElevationSlider.getValue())) };
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
             l.sourcePositionChangedCallback(mSourceBoxComponent.mSelectedSource,
                                             std::nullopt,
@@ -62,7 +62,7 @@ DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent) : mSource
         mCurrentAzimuth = Degrees{ static_cast<float>(mAzimuthSlider.getValue()) };
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
             l.sourcePositionChangedCallback(mSourceBoxComponent.mSelectedSource,
-                                            mCurrentAzimuth,
+                                            Radians { mCurrentAzimuth },
                                             std::nullopt,
                                             std::nullopt,
                                             std::nullopt,
@@ -81,13 +81,13 @@ DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent) : mSource
 void DomeControls::updateSliderValues(Source * source)
 {
     mCurrentAzimuth = source->getAzimuth();
-    mCurrentElevation = MAX_ELEVATION * source->getNormalizedElevation().get();
+    mCurrentElevation = Radians { MAX_ELEVATION * source->getNormalizedElevation().get() };
 
     if (mCurrentAzimuth.getAsDegrees() < 0.0f) {
         mCurrentAzimuth += Degrees{ 360.0f };
     }
     mAzimuthSlider.setValue(mCurrentAzimuth.getAsDegrees(), juce::NotificationType::dontSendNotification);
-    mElevationSlider.setValue(1.0f - mCurrentElevation / MAX_ELEVATION, juce::NotificationType::dontSendNotification);
+    mElevationSlider.setValue(1.0f - mCurrentElevation / Radians { MAX_ELEVATION }, juce::NotificationType::dontSendNotification);
 }
 
 //==============================================================================
@@ -166,7 +166,7 @@ void CubeControls::updateSliderValues(Source * source)
 {
     mCurrentX = source->getX();
     mCurrentY = source->getY();
-    mCurrentZ = 1.0f - source->getElevation() / MAX_ELEVATION;
+    mCurrentZ = 1.0f - source->getElevation() / Radians{ MAX_ELEVATION };
 
     mXSlider.setValue(mCurrentX, juce::NotificationType::dontSendNotification);
     mYSlider.setValue(mCurrentY * -1.0f, juce::NotificationType::dontSendNotification);

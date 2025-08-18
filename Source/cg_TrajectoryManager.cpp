@@ -266,7 +266,7 @@ void PositionTrajectoryManager::applyCurrentTrajectoryPointToPrimarySource()
 void ElevationTrajectoryManager::applyCurrentTrajectoryPointToPrimarySource()
 {
     if (mActivateState) {
-        auto const currentElevation{ MAX_ELEVATION * (mCurrentTrajectoryPoint.getY() + 1.0f) / 2.0f };
+        auto const currentElevation{ Radians{ MAX_ELEVATION } * (mCurrentTrajectoryPoint.getY() + 1.0f) / 2.0f };
         mPrimarySource.setElevation(currentElevation, Source::OriginOfChange::trajectory);
         sendTrajectoryPositionChangedEvent();
     }

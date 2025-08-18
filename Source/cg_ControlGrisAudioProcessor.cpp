@@ -168,7 +168,10 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
         source.setColorFromIndex(mSources.size());
         // .. and coordinates.
         auto const azimuth{ i % 2 == 0 ? Degrees{ -45.0f } : Degrees{ 45.0f } };
-        source.setCoordinates(azimuth, MAX_ELEVATION, 1.0f, Source::OriginOfChange::userAnchorMove);
+        source.setCoordinates(Radians{ azimuth },
+                              Radians{ MAX_ELEVATION },
+                              1.0f,
+                              Source::OriginOfChange::userAnchorMove);
     }
 
     auto * paramX{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::X) };
@@ -225,7 +228,7 @@ void ControlGrisAudioProcessor::parameterChanged(juce::String const & parameterI
         mSources.getPrimarySource().setY(invNormalized, Source::OriginOfChange::automation);
     } else if (parameterId.compare(Automation::Ids::Z) == 0 && mSpatMode == SpatMode::cube) {
         auto const newElevation{ MAX_ELEVATION - (MAX_ELEVATION * normalized.get()) };
-        mSources.getPrimarySource().setElevation(newElevation, Source::OriginOfChange::automation);
+        mSources.getPrimarySource().setElevation(Radians{ newElevation }, Source::OriginOfChange::automation);
     }
 
     if (parameterId.compare(Automation::Ids::POSITION_SOURCE_LINK) == 0) {
@@ -1349,7 +1352,7 @@ void ControlGrisAudioProcessor::updatePrimarySourceParameters(Source::ChangeType
     case Source::ChangeType::elevation: {
         jassert(mSpatMode == SpatMode::cube);
         auto const sl{ mChangeGesturesManager.getScopedLock(Automation::Ids::Z) };
-        auto const normalized_z{ 1.0f - source.getElevation() / MAX_ELEVATION };
+        auto const normalized_z{ 1.0f - source.getElevation() / Radians{ MAX_ELEVATION } };
         mAudioProcessorValueTreeState.getParameter(Automation::Ids::Z)->setValueNotifyingHost(normalized_z);
         break;
     }

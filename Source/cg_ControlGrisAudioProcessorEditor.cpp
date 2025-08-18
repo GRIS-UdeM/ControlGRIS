@@ -466,7 +466,10 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
         auto & source{ mProcessor.getSources()[i] };
         auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
         auto const azimuth{Degrees{ getAzimuthValue(i) }};
-        source.setCoordinates(azimuth, elevation, distance, Source::OriginOfChange::userAnchorMove);
+        source.setCoordinates(Radians{ azimuth },
+                              Radians{ elevation },
+                              distance,
+                              Source::OriginOfChange::userAnchorMove);
     }
 
     // TODO: why are we storing the _normalized_ positions in the processor?
@@ -743,7 +746,7 @@ void ControlGrisAudioProcessorEditor::sourcePositionChangedCallback(SourceIndex 
     } else if (y) {
         source.setY(*y, Source::OriginOfChange::userMove);
     } else if (z) {
-        source.setElevation(MAX_ELEVATION * *z, Source::OriginOfChange::userMove);
+        source.setElevation(Radians{ MAX_ELEVATION } * *z, Source::OriginOfChange::userMove);
     } else {
         jassertfalse;
     }
