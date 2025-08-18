@@ -19,7 +19,7 @@ static juce::PropertiesFile getPersistentStorage()
 
 static bool getShowSecondarySourceDragErrorMessage()
 {
-    return getPersistentStorage().getBoolValue(SHOW_SECONDARY_SOURCE_DRAG_ERROR_MESSAGE_TAG, true);
+    return false ; //getPersistentStorage ().getBoolValue (SHOW_SECONDARY_SOURCE_DRAG_ERROR_MESSAGE_TAG, true);
 }
 
 bool showSecondarySourceDragErrorMessage{ getShowSecondarySourceDragErrorMessage() };
