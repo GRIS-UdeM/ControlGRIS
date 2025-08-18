@@ -111,7 +111,7 @@ void FieldComponent::paint(juce::Graphics & g)
         static constexpr auto padding{ 25 };
         static constexpr auto fontSize{ 16 };
         juce::Rectangle<int> const textArea{ padding, padding, getWidth() - padding * 2, getHeight() - padding * 2 };
-        juce::Font const font{ fontSize, juce::Font::FontStyleFlags::plain };
+        juce::Font const font { juce::FontOptions (fontSize, juce::Font::plain) };
         g.setFont(font);
         g.setColour(juce::Colours::antiquewhite);
         g.drawFittedText(SOURCE_SELECTION_WARNING, textArea, juce::Justification::centredTop, 2);

@@ -171,6 +171,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     addAndMakeVisible(mOscPortLabel);
 
     juce::String defaultPort("18032");
+    mOscPortEditor.setFont (grisLookAndFeel.getFont ());
     mOscPortEditor.setExplicitFocusOrder(4);
     mOscPortEditor.setText(defaultPort);
     mOscPortEditor.setInputRestrictions(5, "0123456789");
@@ -191,6 +192,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     addAndMakeVisible(mOscAddressLabel);
 
     juce::String const defaultAddress{ "127.0.0.1" };
+    mOscAddressEditor.setFont (grisLookAndFeel.getFont ());
     mOscAddressEditor.setExplicitFocusOrder(5);
     mOscAddressEditor.setText(defaultAddress);
     mOscAddressEditor.setInputRestrictions(15, "0123456789.");
@@ -211,6 +213,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     addAndMakeVisible(&mNumOfSourcesLabel);
 
     mNumOfSourcesEditor.setExplicitFocusOrder(2);
+    mNumOfSourcesEditor.setFont (grisLookAndFeel.getFont ());
     mNumOfSourcesEditor.setText("2");
     mNumOfSourcesEditor.setInputFilter(new NumberRangeInputFilter(1, Sources::MAX_NUMBER_OF_SOURCES), true);
     mNumOfSourcesEditor.onReturnKey = [this] { mOscFormatCombo.grabKeyboardFocus(); };
@@ -231,6 +234,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     addAndMakeVisible(&mFirstSourceIdLabel);
 
     mFirstSourceIdEditor.setExplicitFocusOrder(3);
+    mFirstSourceIdEditor.setFont (grisLookAndFeel.getFont ());
     mFirstSourceIdEditor.setText("1");
     mFirstSourceIdEditor.setInputRestrictions(3, "0123456789");
     mFirstSourceIdEditor.onReturnKey = [this] { mOscFormatCombo.grabKeyboardFocus(); };

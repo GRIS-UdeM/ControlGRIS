@@ -61,8 +61,10 @@ public:
     GrisLookAndFeel();
 
     [[nodiscard]] juce::Font getFont() const { return this->mFont; }
+    [[nodiscard]] juce::Font getNumSliderFont() const { return this->mNumSliderFont; }
     juce::Font getLabelFont([[maybe_unused]] juce::Label & label) override { return this->mFont; }
     juce::Font getComboBoxFont([[maybe_unused]] juce::ComboBox & comboBox) override { return this->mFont; }
+    juce::Font getPopupMenuFont() override { return this->mFont; }
     juce::Font getTextButtonFont(juce::TextButton &, [[maybe_unused]] int buttonHeight) override { return this->mFont; }
     juce::Font getMenuBarFont(juce::MenuBarComponent &,
                               [[maybe_unused]] int itemIndex,
@@ -79,11 +81,13 @@ public:
     [[nodiscard]] juce::Colour getDarkColor() const { return this->mDarkColor; }
     [[nodiscard]] juce::Colour getLightColor() const { return this->mLightColor; }
     [[nodiscard]] juce::Colour getEditBackgroundColor() const { return this->mEditBackgroundColor; }
+    [[nodiscard]] juce::Colour getDisableBackgroundColor() const { return this->mDisableBackgroundColor; }
     [[nodiscard]] juce::Colour getHighlightColor() const { return this->mHlBackgroundColor; }
     [[nodiscard]] juce::Colour getOnColor() const { return this->mOnColor; }
     [[nodiscard]] juce::Colour getOffColor() const { return this->mOffColor; }
     [[nodiscard]] juce::Colour getGreenColor() const { return this->mGreenColor; }
     [[nodiscard]] juce::Colour getRedColor() const { return this->mRedColor; }
+    [[nodiscard]] juce::Colour getGreyColor() const { return this->mGreyColor; }
 
     // https://github.com/audioplastic/Juce-look-and-feel-examples/blob/master/JuceLibraryCode/modules/juce_gui_basics/lookandfeel/juce_LookAndFeel.cpp
 
@@ -96,6 +100,8 @@ public:
                       int buttonW,
                       int buttonH,
                       juce::ComboBox & box) override;
+
+    void positionComboBoxText(juce::ComboBox & box, juce::Label & label) override;
 
     void drawRoundThumb(juce::Graphics & g,
                         float x,

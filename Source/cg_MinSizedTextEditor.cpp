@@ -87,7 +87,14 @@ void SpatTextEditor::resized()
 //==============================================================================
 int SpatTextEditor::getMinWidth() const noexcept
 {
-    return mLabel.getFont().getStringWidth(mLabel.getText()) + BOX_WIDTH;
+    juce::Font const font { juce::FontOptions (mLabel.getFont ().getHeight (), juce::Font::plain) };
+    auto labelText { mLabel.getText () };
+    auto textLayout { juce::TextLayout () };
+    auto const attrStr { juce::AttributedString (labelText) };
+    textLayout.createLayout (attrStr, 100);
+    auto strWidth { textLayout.getStringWidth (attrStr) };
+
+    return strWidth + BOX_WIDTH;
 }
 
 //==============================================================================
