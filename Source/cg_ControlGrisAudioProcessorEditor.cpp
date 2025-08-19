@@ -37,7 +37,9 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     , mAudioProcessorValueTreeState(vts)
     , mPositionTrajectoryManager(positionAutomationManager)
     , mElevationTrajectoryManager(elevationAutomationManager)
-    , mPositionField(controlGrisAudioProcessor.getSources(), positionAutomationManager)
+    , mPositionField(controlGrisAudioProcessor.getSources(),
+                     positionAutomationManager,
+                     mProcessor.getPersistentStorage())
     , mElevationField(controlGrisAudioProcessor.getSources(), elevationAutomationManager)
     , mSectionSourceSpan(mGrisLookAndFeel)
     , mSectionTrajectory(mGrisLookAndFeel)

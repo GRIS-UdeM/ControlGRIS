@@ -22,17 +22,19 @@
 
 #include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_FieldComponent.hpp"
-#include "cg_PersistentStorage.h"
 #include "cg_Source.hpp"
 
 namespace gris
 {
 //==============================================================================
-PositionSourceComponent::PositionSourceComponent(PositionFieldComponent & fieldComponent, Source & source)
+PositionSourceComponent::PositionSourceComponent(PositionFieldComponent & fieldComponent,
+                                                 Source & source,
+                                                 PersistentStorage & storage)
     : SourceComponent(source.getColour(), source.getId().toString())
     , mFieldComponent(fieldComponent)
     , mTrajectoryManager(fieldComponent.getAutomationManager())
     , mSource(source)
+    , mStorage(storage)
 {
     source.addGuiListener(this);
     updatePositionInParent();
@@ -60,7 +62,7 @@ void PositionSourceComponent::sourceMovedCallback()
 //==============================================================================
 void PositionSourceComponent::mouseDown(juce::MouseEvent const & event)
 {
-    static auto tempHideError{ !showSecondarySourceDragErrorMessage };
+    static auto tempHideError{ !mStorage.getShowSecondarySourceDragErrorMessage() };
 
     auto const isPrimarySource{ mSource.isPrimarySource() };
     if (mFieldComponent.isPlaying() && !isPrimarySource && !tempHideError) {
@@ -78,7 +80,7 @@ void PositionSourceComponent::mouseDown(juce::MouseEvent const & event)
         switch (userAction) {
         case Button::hideForever:
             tempHideError = true;
-            setShowSecondarySourceDragErrorMessage(false);
+            mStorage.setShowSecondarySourceDragErrorMessage(false);
             break;
         case Button::hideForNow:
             tempHideError = true;

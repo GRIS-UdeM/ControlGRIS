@@ -1252,6 +1252,12 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
 }
 
 //==============================================================================
+PersistentStorage& ControlGrisAudioProcessor::getPersistentStorage ()
+{
+    return mPersistentStorage;
+}
+
+//==============================================================================
 void ControlGrisAudioProcessor::sourceChanged(Source & source,
                                               Source::ChangeType changeType,
                                               Source::OriginOfChange origin)
