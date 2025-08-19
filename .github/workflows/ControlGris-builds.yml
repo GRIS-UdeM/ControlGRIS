@@ -99,23 +99,6 @@ jobs:
                       build
           done
 
-      - name: good ol ls -R
-        run: ls -R
-
-      # - name: Prepare plugin artifacts for upload
-      #   run: |
-      #     mkdir -p macOS
-      #     find /tmp/fakeInstallRoot -name "*.vst3" -exec cp -R {} macOS/ \;
-      #     find /tmp/fakeInstallRoot -name "*.component" -exec cp -R {} macOS/ \;
-      #     find /tmp/fakeInstallRoot -name "*.app" -exec cp -R {} macOS/ \;
-      #     cp -R Builds/MacOSX/Builds/MacOSX/output/Standalone-Plugin-universal/ControlGRIS.app macOS/ || true
-
-      # - name: Upload macOS builds
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ControlGRIS-macOS
-      #     path: macOS/*
-      #     if-no-files-found: error
       - name: Upload macOS builds
         uses: actions/upload-artifact@v4
         with:
