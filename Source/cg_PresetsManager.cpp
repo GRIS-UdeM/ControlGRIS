@@ -139,7 +139,7 @@ void PresetsManager::load(juce::XmlElement & presetData)
             if (presetData.hasAttribute(zPosId)) {
                 auto const elevation{ getFixedPosSourceName(FixedPositionType::initial, index, 2) };
                 auto const inversedNormalizedElevation{ static_cast<float>(presetData.getDoubleAttribute(elevation)) };
-                snapshot.z = MAX_ELEVATION * (1.0f - inversedNormalizedElevation);
+                snapshot.z = Radians { MAX_ELEVATION * (1.0f - inversedNormalizedElevation) };
             }
         }
         if (source.isPrimarySource()) {
@@ -187,7 +187,7 @@ void PresetsManager::load(juce::XmlElement & presetData)
         if (presetData.hasAttribute(zTPositionId)) {
             auto const inversedNormalizedTerminalElevation{ static_cast<float>(
                 presetData.getDoubleAttribute(zTPositionId)) };
-            elevation = MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation);
+            elevation = Radians { MAX_ELEVATION * (1.0f - inversedNormalizedTerminalElevation) };
         } else {
             elevation = snapshots.primary.z;
         };
@@ -247,7 +247,7 @@ std::unique_ptr<juce::XmlElement> PresetsManager::createPresetData(int const pre
         auto const elevation{ elevationsSnapshots[sourceIndex].z };
 
         juce::Point<float> const mirroredPosition{ position.getX(), position.getY() * -1.0f };
-        auto const normalizedElevation{ elevation / MAX_ELEVATION };
+        auto const normalizedElevation{ elevation / Radians{ MAX_ELEVATION } };
 
         auto const mirroredNormalizedPosition{ (mirroredPosition + juce::Point<float>{ 1.0f, 1.0f }) / 2.0f };
         auto const inversedNormalizedElevation{ 1.0f - normalizedElevation };

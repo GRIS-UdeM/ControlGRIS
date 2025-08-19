@@ -19,7 +19,7 @@
  *************************************************************************/
 #pragma once
 
-#include "cg_StrongTypes.hpp"
+#include <Data/StrongTypes/sg_Radians.hpp>
 
 namespace gris
 {
@@ -32,8 +32,8 @@ constexpr float SOURCE_FIELD_COMPONENT_RADIUS = 12.0f;
 constexpr float SOURCE_FIELD_COMPONENT_DIAMETER = SOURCE_FIELD_COMPONENT_RADIUS * 2.0f;
 constexpr auto LBAP_FAR_FIELD = 1.666666667f;
 
-constexpr Radians MIN_ELEVATION = Degrees{ 0.0f };
-constexpr Radians MAX_ELEVATION = Degrees{ 90.0f };
+constexpr auto MIN_ELEVATION = Degrees{ 0.0f };
+constexpr auto MAX_ELEVATION = Degrees{ 90.0f };
 
 //==============================================================================
 // Spatialisation modes.

@@ -22,7 +22,7 @@
 
 #include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_constants.hpp"
-#include <Quaternion.hpp>
+#include <Data/Quaternion.hpp>
 
 namespace gris
 {
@@ -37,7 +37,9 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     , mAudioProcessorValueTreeState(vts)
     , mPositionTrajectoryManager(positionAutomationManager)
     , mElevationTrajectoryManager(elevationAutomationManager)
-    , mPositionField(controlGrisAudioProcessor.getSources(), positionAutomationManager)
+    , mPositionField(controlGrisAudioProcessor.getSources(),
+                     positionAutomationManager,
+                     mProcessor.getPersistentStorage())
     , mElevationField(controlGrisAudioProcessor.getSources(), elevationAutomationManager)
     , mSectionSourceSpan(mGrisLookAndFeel)
     , mSectionTrajectory(mGrisLookAndFeel)
@@ -466,7 +468,10 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
         auto & source{ mProcessor.getSources()[i] };
         auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
         auto const azimuth{Degrees{ getAzimuthValue(i) }};
-        source.setCoordinates(azimuth, elevation, distance, Source::OriginOfChange::userAnchorMove);
+        source.setCoordinates(Radians{ azimuth },
+                              Radians{ elevation },
+                              distance,
+                              Source::OriginOfChange::userAnchorMove);
     }
 
     // TODO: why are we storing the _normalized_ positions in the processor?
@@ -489,28 +494,28 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 }
 
 //==============================================================================
-std::pair<float, float> getAzimuthAndElevationFromDomeXyz(float x, float y, float z)
+std::pair<Radians, Radians> getAzimuthAndElevationFromDomeXyz(float x, float y, float z)
 {
-    //this first part is the constructor from PolarVector
-    auto const length = std::hypot (x, y, z);
+    // this first part is the constructor from PolarVector
+    auto const length = std::hypot(x, y, z);
     if ((x == 0.0f && y == 0.0f) || length == 0.0f)
         return {};
 
     auto elevation = HALF_PI - Radians{ std::acos(std::clamp(z / length, -1.0f, 1.0f)) };
-    auto azimuth = std::copysign(std::acos(std::clamp(x / std::hypot(x, y), -1.0f, 1.0f)), y);
+    auto azimuth = Radians{ std::copysign(std::acos(std::clamp(x / std::hypot(x, y), -1.0f, 1.0f)), y) };
 
-    //then inverse and translate by pi/2
-    azimuth = HALF_PI.get() - azimuth;
+    // then inverse and translate by pi/2
+    azimuth = HALF_PI - azimuth;
     elevation = HALF_PI - elevation;
 
-    //and at this point we have the azimuth and elevation sent to SpatGRIS
-    return { azimuth, elevation.get() };
+    // and at this point we have the azimuth and elevation sent to SpatGRIS
+    return { azimuth, elevation };
 }
 
-juce::Point<float> getXyFromDomeAzimuthAndElevation(float azimuth, float elevation)
+juce::Point<float> getXyFromDomeAzimuthAndElevation(Radians azimuth, Radians elevation)
 {
     // some of this logic is from Source::computeXY()
-    auto const radius{ elevation / MAX_ELEVATION.get()};
+    auto const radius{ elevation / Radians{ MAX_ELEVATION } };
     auto const position = Source::getPositionFromAngle(Radians{ azimuth }, radius);
 
     // these other manipulations are from ControlGrisAudioProcessor::parameterChanged() and
@@ -528,8 +533,8 @@ public:
         beginTest("Test with (0, 0.640747, 0.767752)");
         {
             auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(0.f, 0.640747f, 0.767752f);
-            expectWithinAbsoluteError(azim, 0.f, 0.001f);
-            expectWithinAbsoluteError(elev, 0.69547f, 0.001f);
+            expectWithinAbsoluteError(azim.get(), 0.f, 0.001f);
+            expectWithinAbsoluteError(elev.get(), 0.69547f, 0.001f);
 
             auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
             expectWithinAbsoluteError(cartesianPosition.x, .5f, 0.001f);
@@ -632,7 +637,7 @@ void storeXYZSpeakerPositionInPreset (const gris::SpatMode savedSpatMode,
     if (savedSpatMode == SpatMode::dome) {
         auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(speakerX, speakerY, speakerZ);
         auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
-        auto const z = 1.0f - elev / MAX_ELEVATION.get(); // this is taken from CubeControls::updateSliderValues
+        auto const z = 1.0f - elev / Radians{ MAX_ELEVATION }; // this is taken from CubeControls::updateSliderValues
 
         presetXml.setAttribute("S" + speakerNumber + "_X", cartesianPosition.x);
         presetXml.setAttribute("S" + speakerNumber + "_Y", cartesianPosition.y);
@@ -743,7 +748,7 @@ void ControlGrisAudioProcessorEditor::sourcePositionChangedCallback(SourceIndex 
     } else if (y) {
         source.setY(*y, Source::OriginOfChange::userMove);
     } else if (z) {
-        source.setElevation(MAX_ELEVATION * *z, Source::OriginOfChange::userMove);
+        source.setElevation(Radians{ MAX_ELEVATION } * *z, Source::OriginOfChange::userMove);
     } else {
         jassertfalse;
     }

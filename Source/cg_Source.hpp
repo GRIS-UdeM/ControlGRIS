@@ -20,7 +20,8 @@
 
 #pragma once
 
-#include "cg_StrongTypes.hpp"
+#include <Data/StrongTypes/sg_SourceIndex.hpp>
+#include <Data/StrongTypes/sg_Radians.hpp>
 #include "cg_constants.hpp"
 #include <JuceHeader.h>
 #include <vector>

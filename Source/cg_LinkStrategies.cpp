@@ -248,7 +248,7 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
 
     auto const primarySourceFinalPosition{ primarySourceFinalState.getPos() };
     mPrimarySourceFinalAngle = Radians::angleOf(primarySourceFinalPosition);
-    mDeviationPerSource = Degrees{ 360.0f } / static_cast<float>(finalStates.size());
+    mDeviationPerSource = Radians {Degrees{ 360.0f } / static_cast<float>(finalStates.size())};
     auto const primarySourceInitialAngle{ Radians::angleOf(primarySourceInitialState.position) };
     mRotation = mPrimarySourceFinalAngle - primarySourceInitialAngle;
 
@@ -364,7 +364,7 @@ void CircularFullyFixed::computeParameters_implementation(Sources const & finalS
 
     auto const primarySourceFinalPosition{ primarySourceFinalState.getPos() };
     mPrimarySourceFinalAngle = Radians::angleOf(primarySourceFinalPosition);
-    mDeviationPerSource = Degrees{ 360.0f } / static_cast<float>(finalStates.size());
+    mDeviationPerSource = Radians { Degrees{ 360.0f } / static_cast<float>(finalStates.size()) };
     auto const primarySourceInitialAngle{ Radians::angleOf(primarySourceInitialState.position) };
     mRotation = mPrimarySourceFinalAngle - primarySourceInitialAngle;
 

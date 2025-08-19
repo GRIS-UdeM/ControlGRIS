@@ -20,7 +20,9 @@
 
 #pragma once
 
-#include "cg_StrongTypes.hpp"
+#include <JuceHeader.h>
+#include <Data/StrongTypes/sg_Radians.hpp>
+#include <Data/StrongTypes/sg_SourceIndex.hpp>
 
 namespace gris
 {

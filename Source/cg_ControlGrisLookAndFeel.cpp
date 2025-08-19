@@ -41,13 +41,18 @@ GrisLookAndFeel::GrisLookAndFeel()
     mRedColor = juce::Colour::fromRGB(220, 48, 35);
 
     setColour(juce::PopupMenu::highlightedBackgroundColourId, this->mOnColor);
+    setColour(juce::PopupMenu::backgroundColourId, this->mEditBackgroundColor);
+    setColour(juce::PopupMenu::textColourId, this->mDarkColor);
     setColour(juce::TextEditor::textColourId, this->mLightColor);
     setColour(juce::TextEditor::backgroundColourId, this->mEditBackgroundColor);
     setColour(juce::TextEditor::highlightColourId, this->mHlBackgroundColor);
     setColour(juce::TextEditor::shadowColourId, this->mEditBackgroundColor);
     setColour(juce::TextButton::buttonColourId, this->mEditBackgroundColor);
+    setColour(juce::TextButton::textColourOnId, this->mDarkColor);
+    setColour(juce::TextButton::textColourOffId, this->mDarkColor);
     setColour(juce::ComboBox::backgroundColourId, this->mEditBackgroundColor);
     setColour(juce::ComboBox::outlineColourId, this->mEditBackgroundColor);
+    setColour(juce::ComboBox::textColourId, this->mDarkColor);
     setColour(juce::Slider::thumbColourId, this->mLightColor);
     setColour(juce::Slider::rotarySliderFillColourId, this->mOnColor);
     setColour(juce::Slider::trackColourId, this->mDarkColor);
@@ -67,24 +72,32 @@ GrisLookAndFeel::GrisLookAndFeel()
     mFontSize = 10.0f;
 #endif
     mFont.setHeight(mFontSize);
+    mNumSliderFont.setHeight(mFontSize);
     mBigFont.setHeight(mFontSize + 3.0f);
     mBiggerFont.setHeight(mFontSize + 6.0f);
 }
 
 //==============================================================================
 void GrisLookAndFeel::drawComboBox(juce::Graphics & g,
-                                   int,
-                                   int,
+                                   int width,
+                                   int height,
                                    const bool,
                                    int const buttonX,
                                    int const buttonY,
                                    int const buttonW,
-                                   int const /*buttonH*/,
+                                   int const buttonH,
                                    juce::ComboBox & box)
 {
     box.setColour(juce::ColourSelector::backgroundColourId, mOnColor);
 
-    g.fillAll(this->mEditBackgroundColor); // box.findColour (ComboBox::backgroundColourId))
+    auto cornerSize = box.findParentComponentOfClass<juce::ChoicePropertyComponent>() != nullptr ? 0.0f : 2.0f;
+    juce::Rectangle<int> boxBounds(0, 0, width, height);
+
+    g.setColour(this->mEditBackgroundColor);
+    g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
+
+    g.setColour(this->mEditBackgroundColor);
+    g.drawRoundedRectangle(boxBounds.toFloat().reduced(0.5f, 0.5f), cornerSize, 1.0f);
 
     auto const arrowX{ 0.3f };
     auto const arrowH{ 0.2f };
@@ -92,7 +105,7 @@ void GrisLookAndFeel::drawComboBox(juce::Graphics & g,
     auto const buttonXFloat{ static_cast<float>(buttonX) };
     auto const buttonYFloat{ static_cast<float>(buttonY) };
     auto const buttonWFloat{ static_cast<float>(buttonW) };
-    auto const buttonHFloat{ static_cast<float>(buttonX) };
+    auto const buttonHFloat{ static_cast<float>(buttonH) };
 
     juce::Path p;
     p.addTriangle(buttonXFloat + buttonWFloat * 0.5f,
@@ -112,6 +125,14 @@ void GrisLookAndFeel::drawComboBox(juce::Graphics & g,
     g.setColour(this->mDarkColor.withMultipliedAlpha(
         box.isEnabled() ? 1.0f : 0.3f)); // box.findColour (ComboBox::arrowColourId)
     g.fillPath(p);
+}
+
+//==============================================================================
+void GrisLookAndFeel::positionComboBoxText(juce::ComboBox & box, juce::Label & label)
+{
+    label.setBounds(1, 1, box.getWidth() - 20, box.getHeight() - 2);
+
+    label.setFont(getComboBoxFont(box));
 }
 
 //==============================================================================
@@ -487,7 +508,7 @@ void GrisLookAndFeel::drawToggleButton(juce::Graphics & g,
 
         g.drawFittedText(button.getButtonText(),
                          textX,
-                         0,
+                         1,
                          button.getWidth() - (textX - 5),
                          button.getHeight(),
                          juce::Justification::centredLeft,
@@ -551,7 +572,7 @@ void GrisLookAndFeel::createTabTextLayout(const juce::TabBarButton & button,
     font.setHeight(depth * 0.60f);
 #else
 
-    font.setHeight(depth * 0.35f);
+    font.setHeight(depth * 0.40f);
 #endif
     font.setUnderline(button.hasKeyboardFocus(false));
 

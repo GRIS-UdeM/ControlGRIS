@@ -20,7 +20,7 @@
 #pragma once
 
 #include "cg_MinSizedComponent.hpp"
-#include "cg_Narrow.hpp"
+#include <Data/sg_Narrow.hpp>
 namespace gris
 {
 class GrisLookAndFeel;
