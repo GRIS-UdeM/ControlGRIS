@@ -113,8 +113,18 @@ public:
     }
 
     //==============================================================================
-
-    enum class OriginOfChange { none, userMove, userAnchorMove, link, trajectory, automation, presetRecall, osc };
+    enum class OriginOfChange {
+        none,
+        userMove,
+        userAnchorMove,
+        link,
+        trajectory,
+        automation,
+        presetRecall,
+        osc,
+        audioAnalysis,
+        audioAnalysisRecAutomation
+    };
     enum class ChangeType { position, elevation };
 
     //==============================================================================
@@ -150,8 +160,7 @@ public:
 
 private:
     //==============================================================================
-
-    juce::ListenerList<Listener> mGuiListeners;
+    juce::LightweightListenerList<Listener> mGuiListeners;
 
     /**
      * @brief The internal index of the source.

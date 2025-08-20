@@ -25,9 +25,10 @@ namespace gris
 //==============================================================================
 SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
 {
-    mOscOutputPluginIdLabel.setText("OSC output plugin ID:", juce::NotificationType::dontSendNotification);
+    mOscOutputPluginIdLabel.setText("OSC plugin ID:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mOscOutputPluginIdLabel);
 
+    mOscOutputPluginIdEditor.setFont(grisLookAndFeel.getFont());
     mOscOutputPluginIdEditor.setText(juce::String(1));
     mOscOutputPluginIdEditor.setInputRestrictions(3, "0123456789");
     mOscOutputPluginIdEditor.addListener(this);
@@ -67,11 +68,13 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
         });
     };
 
+    mOscReceiveIpEditor.setFont(grisLookAndFeel.getFont());
     mOscReceiveIpEditor.setText(juce::IPAddress::getLocalAddress().toString());
     // mOscReceiveIpEditor.setText("127.0.0.1");
     mOscReceiveIpEditor.setReadOnly(true);
     addAndMakeVisible(&mOscReceiveIpEditor);
 
+    mOscReceivePortEditor.setFont(grisLookAndFeel.getFont());
     mOscReceivePortEditor.setText(juce::String(mLastOscReceivePort));
     mOscReceivePortEditor.setInputRestrictions(5, "0123456789");
     mOscReceivePortEditor.addListener(this);
@@ -93,6 +96,7 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
     addAndMakeVisible(&mOscReceivePortEditor);
 
     mLastOscSendAddress = juce::String("192.168.1.100");
+    mOscSendIpEditor.setFont(grisLookAndFeel.getFont());
     mOscSendIpEditor.setText(mLastOscSendAddress);
     mOscSendIpEditor.setInputRestrictions(16, ".0123456789");
     mOscSendIpEditor.addListener(this);
@@ -116,6 +120,7 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
 
     addAndMakeVisible(&mOscSendIpEditor);
 
+    mOscSendPortEditor.setFont(grisLookAndFeel.getFont());
     mOscSendPortEditor.setText(juce::String(mLastOscSendPort));
     mOscSendPortEditor.setInputRestrictions(5, "0123456789");
     mOscSendPortEditor.addListener(this);
@@ -174,24 +179,18 @@ void SectionOscController::setOscSendOutputAddress(juce::String const & address)
 }
 
 //==============================================================================
-void SectionOscController::paint(juce::Graphics & g)
-{
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-}
-
-//==============================================================================
 void SectionOscController::resized()
 {
-    mOscOutputPluginIdLabel.setBounds(5, 10, 135, 20);
-    mOscOutputPluginIdEditor.setBounds(140, 10, 70, 20);
+    mOscOutputPluginIdLabel.setBounds(5, 13, 135, 10);
+    mOscOutputPluginIdEditor.setBounds(130, 10, 24, 15);
 
-    mOscReceiveToggle.setBounds(255, 10, 200, 20);
-    mOscReceivePortEditor.setBounds(400, 10, 60, 20);
-    mOscReceiveIpEditor.setBounds(470, 10, 120, 20);
+    mOscReceiveToggle.setBounds(5, 30, 200, 15);
+    mOscReceivePortEditor.setBounds(130, 30, 40, 15);
+    mOscReceiveIpEditor.setBounds(175, 30, 110, 15);
 
-    mOscSendToggle.setBounds(255, 35, 200, 20);
-    mOscSendPortEditor.setBounds(400, 35, 60, 20);
-    mOscSendIpEditor.setBounds(470, 35, 120, 20);
+    mOscSendToggle.setBounds(5, 50, 200, 15);
+    mOscSendPortEditor.setBounds(130, 50, 40, 15);
+    mOscSendIpEditor.setBounds(175, 50, 110, 15);
 }
 
 } // namespace gris

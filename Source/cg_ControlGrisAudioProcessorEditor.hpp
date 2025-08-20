@@ -1,22 +1,22 @@
-/**************************************************************************
- * Copyright 2018 UdeM - GRIS - Olivier Belanger                          *
- *                                                                        *
- * This file is part of ControlGris, a multi-source spatialization plugin *
- *                                                                        *
- * ControlGris is free software: you can redistribute it and/or modify    *
- * it under the terms of the GNU Lesser General Public License as         *
- * published by the Free Software Foundation, either version 3 of the     *
- * License, or (at your option) any later version.                        *
- *                                                                        *
- * ControlGris is distributed in the hope that it will be useful,         *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- * GNU Lesser General Public License for more details.                    *
- *                                                                        *
- * You should have received a copy of the GNU Lesser General Public       *
- * License along with ControlGris.  If not, see                           *
- * <http://www.gnu.org/licenses/>.                                        *
- *************************************************************************/
+/*
+ This file is part of ControlGris.
+
+ Developers: Olivier BELANGER, Gaël LANE LÉPINE
+
+ ControlGris is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+
+ ControlGris is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with ControlGris.  If not, see
+ <http://www.gnu.org/licenses/>.
+*/
 
 #pragma once
 
@@ -24,14 +24,35 @@
 
 #include "cg_BannerComponent.hpp"
 #include "cg_FieldComponent.hpp"
+#include "cg_SectionAbstractTrajectories.hpp"
 #include "cg_SectionOscController.hpp"
 #include "cg_SectionPositionPresets.hpp"
+#include "cg_SectionSoundReactiveTrajectories.h"
 #include "cg_SectionSourcePosition.hpp"
-#include "cg_SectionSourceSpan.hpp"
-#include "cg_SectionTrajectory.hpp"
 
 namespace gris
 {
+//==============================================================================
+class TabbedTrajectoriesComponent final : public juce::TabbedComponent
+{
+private:
+    //==============================================================================
+    ControlGrisAudioProcessor & mAudioProcessor;
+
+public:
+    //==============================================================================
+    TabbedTrajectoriesComponent() = delete;
+    TabbedTrajectoriesComponent(juce::TabbedButtonBar::Orientation orientation,
+                                ControlGrisAudioProcessor & audioProcessor);
+    //==============================================================================
+    TabbedTrajectoriesComponent(TabbedTrajectoriesComponent const &) = delete;
+    TabbedTrajectoriesComponent(TabbedTrajectoriesComponent &&) = delete;
+    TabbedTrajectoriesComponent & operator=(TabbedTrajectoriesComponent const &) = delete;
+    TabbedTrajectoriesComponent & operator=(TabbedTrajectoriesComponent &&) = delete;
+    //==============================================================================
+    void currentTabChanged(int newCurrentTabIndex, const juce::String & newCurrentTabName) override;
+};
+
 //==============================================================================
 class ControlGrisAudioProcessorEditor final
     : public juce::AudioProcessorEditor
@@ -40,7 +61,7 @@ class ControlGrisAudioProcessorEditor final
     , public SectionSourceSpan::Listener
     , public SectionGeneralSettings::Listener
     , public SectionSourcePosition::Listener
-    , public SectionTrajectory::Listener
+    , public SectionAbstractTrajectories::Listener
     , public SectionOscController::Listener
     , public PositionPresetComponent::Listener
 {
@@ -55,9 +76,10 @@ private:
 
     BannerComponent mMainBanner;
     BannerComponent mElevationBanner;
-    BannerComponent mTrajectoryBanner;
+    BannerComponent mTrajectoriesBanner;
     BannerComponent mSettingsBanner;
     BannerComponent mPositionPresetBanner;
+    BannerComponent mSourcesBanner;
 
     juce::ComboBox mElevationModeCombobox;
     juce::Label mElevationModeLabel;
@@ -66,15 +88,19 @@ private:
     ElevationFieldComponent mElevationField;
 
     SectionSourceSpan mSectionSourceSpan;
-    SectionTrajectory mSectionTrajectory;
+    SectionAbstractTrajectories mSectionAbstractTrajectories;
+    SectionSoundReactiveTrajectories mSectionSoundReactiveTrajectories;
 
     juce::TabbedComponent mConfigurationComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop };
+    TabbedTrajectoriesComponent mTrajectoriesComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop, mProcessor };
 
     SectionGeneralSettings mSectionGeneralSettings;
     SectionSourcePosition mSectionSourcePosition;
     SectionOscController mSectionOscController;
 
+    juce::Viewport mPositionPresetViewport;
     PositionPresetComponent mPositionPresetComponent;
+    PositionPresetInfoComponent mPositionPresetInfoComponent;
 
     bool mIsInsideSetPluginState;
     SourceIndex mSelectedSource{};
@@ -105,7 +131,6 @@ public:
     void fieldSourcePositionChangedCallback(SourceIndex sourceIndex, int whichField) override;
 
     // SectionSourceSpan::Listeners
-    void selectedSourceClickedCallback() override;
     void parameterChangedCallback(SourceParameter sourceParameter, double value) override;
     void azimuthSpanDragStartedCallback() override;
     void azimuthSpanDragEndedCallback() override;
@@ -132,12 +157,14 @@ public:
                                        std::optional<float> x,
                                        std::optional<float> y,
                                        std::optional<float> z) override;
-
-    // SectionTrajectory::Listeners
     void positionSourceLinkChangedCallback(PositionSourceLink sourceLink) override;
+    void selectedSourceClickedCallback() override;
+
+    // SectionAbstractTrajectories::Listeners
     void elevationSourceLinkChangedCallback(ElevationSourceLink sourceLink) override;
     void positionTrajectoryTypeChangedCallback(PositionTrajectoryType value) override;
     void elevationTrajectoryTypeChangedCallback(ElevationTrajectoryType value) override;
+    void elevationSourceLinkScaleChangedCallback(double scale) override;
     void positionTrajectoryBackAndForthChangedCallback(bool value) override;
     void elevationTrajectoryBackAndForthChangedCallback(bool value) override;
     void positionTrajectoryDampeningCyclesChangedCallback(int value) override;
@@ -147,6 +174,22 @@ public:
     void trajectoryDurationUnitChangedCallback(double duration, int mode) override;
     void positionTrajectoryStateChangedCallback(bool value) override;
     void elevationTrajectoryStateChangedCallback(bool value) override;
+    void positionTrajectoryCurrentSpeedChangedCallback(double value) override;
+    void elevationTrajectoryCurrentSpeedChangedCallback(double value) override;
+    void positionTrajectoryRandomEnableChangedCallback(bool isEnabled) override;
+    void positionTrajectoryRandomLoopChangedCallback(bool shouldLoop) override;
+    void positionTrajectoryRandomStartChangedCallback(bool shouldStartInMiddle) override;
+    void positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) override;
+    void positionTrajectoryRandomProximityChangedCallback(double value) override;
+    void positionTrajectoryRandomTimeMinChangedCallback(double value) override;
+    void positionTrajectoryRandomTimeMaxChangedCallback(double value) override;
+    void elevationTrajectoryRandomEnableChangedCallback(bool isEnabled) override;
+    void elevationTrajectoryRandomLoopChangedCallback(bool shouldLoop) override;
+    void elevationTrajectoryRandomStartChangedCallback(bool shouldStartInMiddle) override;
+    void elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type) override;
+    void elevationTrajectoryRandomProximityChangedCallback(double value) override;
+    void elevationTrajectoryRandomTimeMinChangedCallback(double value) override;
+    void elevationTrajectoryRandomTimeMaxChangedCallback(double value) override;
 
     // PositionPresetComponent::Listeners
     void positionPresetChangedCallback(int presetNumber) override;
@@ -160,15 +203,23 @@ public:
 
     void reloadUiState();
     void updateSpanLinkButton(bool state);
+    void updateSpeedLinkButton(bool state);
     void updateSourceLinkCombo(PositionSourceLink value);
     void updateElevationSourceLinkCombo(ElevationSourceLink value);
     void updatePositionPreset(int presetNumber);
     void updateElevationMode(ElevationMode mode);
 
+    void setShowTrajectories(bool shouldShowTrajectories);
+
     void elevationModeChangedStartedCallback();
     void elevationModeChangedEndedCallback();
 
+    void updateAudioAnalysisNumInputChannels();
+
     void refresh();
+    void refreshActivateButtonsState();
+
+    void addNewParamValueToDataGraph();
 
     void setSpatMode(SpatMode spatMode);
 

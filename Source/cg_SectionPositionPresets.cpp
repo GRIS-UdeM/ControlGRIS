@@ -80,8 +80,13 @@ void PresetButton::internalClickCallback(juce::ModifierKeys const & mods)
 }
 
 //===============================================================================
-PositionPresetComponent::PositionPresetComponent(PresetsManager & presetsManager) : mPresetsManager(presetsManager)
+PositionPresetComponent::PositionPresetComponent(PresetsManager & presetsManager,
+                                                 PositionPresetInfoComponent & positionPresetStateComponent)
+    : mPositionPresetStateComponent(positionPresetStateComponent)
+    , mPresetsManager(presetsManager)
 {
+    setName("PositionPresetComponent");
+
     constexpr int groupId = 1;
 
     for (int i{}; i < NUMBER_OF_POSITION_PRESETS; ++i) {
@@ -96,15 +101,6 @@ PositionPresetComponent::PositionPresetComponent(PresetsManager & presetsManager
 
         mPresets.add(button.release());
     }
-
-    mActionLog.setColour(juce::Label::backgroundColourId, juce::Colour::fromRGB(120, 120, 120));
-    mActionLog.setColour(juce::Label::outlineColourId, juce::Colour::fromRGB(0, 0, 0));
-    mActionLog.setColour(juce::Label::textColourId, juce::Colour::fromRGB(0, 0, 0));
-    addAndMakeVisible(&mActionLog);
-
-    mAppVersionLabel.setText(juce::String("v. ") + JucePlugin_VersionString,
-                             juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mAppVersionLabel);
 
     mPresetsManager.addChangeListener(this);
 }
@@ -155,8 +151,8 @@ void PositionPresetComponent::presetButtonClickedCallback(PresetButton * button)
 {
     if (button->getToggleState()) {
         mCurrentSelection = button->getButtonText().getIntValue() - 1;
-        mActionLog.setText(juce::String("Load ") + button->getButtonText(),
-                           juce::NotificationType::dontSendNotification);
+        mPositionPresetStateComponent.setActionLogText(juce::String("Load ") + button->getButtonText(),
+                                                       juce::NotificationType::dontSendNotification);
         mListeners.call([&](Listener & l) { l.positionPresetChangedCallback(button->getButtonText().getIntValue()); });
     }
 }
@@ -164,30 +160,84 @@ void PositionPresetComponent::presetButtonClickedCallback(PresetButton * button)
 //==============================================================================
 void PositionPresetComponent::savingPresetClickedCallback(PresetButton * button)
 {
-    mActionLog.setText(juce::String("Save ") + button->getButtonText(), juce::NotificationType::dontSendNotification);
+    mPositionPresetStateComponent.setActionLogText(juce::String("Save ") + button->getButtonText(),
+                                                   juce::NotificationType::dontSendNotification);
     mListeners.call([&](Listener & l) { l.positionPresetSavedCallback(button->getButtonText().getIntValue()); });
 }
 
 //==============================================================================
 void PositionPresetComponent::deletingPresetClickedCallback(PresetButton * button)
 {
-    mActionLog.setText(juce::String("Del ") + button->getButtonText(), juce::NotificationType::dontSendNotification);
+    mPositionPresetStateComponent.setActionLogText(juce::String("Del ") + button->getButtonText(),
+                                                   juce::NotificationType::dontSendNotification);
     mListeners.call([&](Listener & l) { l.positionPresetDeletedCallback(button->getButtonText().getIntValue()); });
 }
 
 //==============================================================================
 void PositionPresetComponent::resized()
 {
-    auto const width{ getWidth() };
-
     for (int i{}; i < NUMBER_OF_POSITION_PRESETS; ++i) {
         auto const x{ i % 2 == 0 ? 1 : 25 };
         auto const y{ (i / 2) * 24 + 1 };
         mPresets[i]->setBounds(x, y, 23, 23);
     }
+}
 
-    mActionLog.setBounds(1, 25 * 24 + 2, width - 3, 20);
-    mAppVersionLabel.setBounds(3, 25 * 24 + 35, width - 3, 20);
+//==============================================================================
+PositionPresetInfoComponent::PositionPresetInfoComponent(GrisLookAndFeel & grisLookAndFeel)
+    : mGrisLookAndFeel(grisLookAndFeel)
+{
+    mActionLog.setColour(juce::Label::backgroundColourId, mGrisLookAndFeel.getGreyColor());
+    mActionLog.setColour(juce::Label::outlineColourId, juce::Colour::fromRGB(0, 0, 0));
+    mActionLog.setColour(juce::Label::textColourId, juce::Colour::fromRGB(0, 0, 0));
+    addAndMakeVisible(&mActionLog);
+
+    addAndMakeVisible(&mAppVersionLabel);
+}
+
+//==============================================================================
+void PositionPresetInfoComponent::resized()
+{
+    mActionLog.setBounds(1, 2, 47, 20);
+    mAppVersionLabel.setBounds(3, 22, 47, 20);
+}
+
+//==============================================================================
+void PositionPresetInfoComponent::timerCallback()
+{
+    if (mTimerFlashCounter > 0) {
+        if (mTimerFlashCounter % 2 == 0) {
+            mActionLog.setColour(juce::Label::backgroundColourId, mGrisLookAndFeel.getOnColor());
+        } else {
+            mActionLog.setColour(juce::Label::backgroundColourId, mGrisLookAndFeel.getGreyColor());
+        }
+        --mTimerFlashCounter;
+    } else {
+        stopTimer();
+        resetTimer();
+    }
+}
+
+//==============================================================================
+void PositionPresetInfoComponent::setActionLogText(juce::String const & text, juce::NotificationType notificationType)
+{
+    mActionLog.setText(text, notificationType);
+    stopTimer();
+    resetTimer();
+    startTimer(500);
+    timerCallback();
+}
+
+//==============================================================================
+void PositionPresetInfoComponent::setAppVersionLabelText(juce::String const & text,
+                                                         juce::NotificationType notificationType)
+{
+    mAppVersionLabel.setText(text, notificationType);
+}
+
+void PositionPresetInfoComponent::resetTimer()
+{
+    mTimerFlashCounter = 6;
 }
 
 } // namespace gris

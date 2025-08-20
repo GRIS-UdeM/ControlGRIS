@@ -25,6 +25,8 @@
 #include <JuceHeader.h>
 
 #include "cg_ControlGrisLookAndFeel.hpp"
+#include "cg_NumSlider.h"
+#include "cg_SectionSourceSpan.hpp"
 #include "cg_Source.hpp"
 #include "cg_constants.hpp"
 
@@ -41,12 +43,12 @@ class DomeControls final : public juce::Component
     Radians mCurrentElevation;
     juce::Label mElevationLabel;
     juce::Label mAzimuthLabel;
-    juce::Slider mElevationSlider;
-    juce::Slider mAzimuthSlider;
+    NumSlider mElevationSlider;
+    NumSlider mAzimuthSlider;
 
 public:
     //==============================================================================
-    explicit DomeControls(SectionSourcePosition & sourceBoxComponent);
+    explicit DomeControls(SectionSourcePosition & sourceBoxComponent, GrisLookAndFeel & grisLookAndFeel);
     ~DomeControls() override = default;
 
     DomeControls(DomeControls const &) = delete;
@@ -73,13 +75,13 @@ class CubeControls final : public juce::Component
     juce::Label mXLabel{};
     juce::Label mYLabel{};
     juce::Label mZLabel{};
-    juce::Slider mXSlider{};
-    juce::Slider mYSlider{};
-    juce::Slider mZSlider{};
+    NumSlider mXSlider;
+    NumSlider mYSlider;
+    NumSlider mZSlider;
 
 public:
     //==============================================================================
-    explicit CubeControls(SectionSourcePosition & sourceBoxComponent);
+    explicit CubeControls(SectionSourcePosition & sourceBoxComponent, GrisLookAndFeel & grisLookAndFeel);
     ~CubeControls() override = default;
 
     CubeControls(CubeControls const &) = delete;
@@ -116,14 +118,21 @@ public:
                                                    std::optional<float> y,
                                                    std::optional<float> z)
             = 0;
+        virtual void positionSourceLinkChangedCallback(PositionSourceLink sourceLink) = 0;
+        virtual void elevationSourceLinkChangedCallback(ElevationSourceLink sourceLink) = 0;
+        virtual void elevationSourceLinkScaleChangedCallback(double scale) = 0;
+        virtual void selectedSourceClickedCallback() = 0;
     };
 
 private:
     //==============================================================================
     GrisLookAndFeel & mGrisLookAndFeel;
+    SectionSourceSpan & mSectionSourceSpan;
+    juce::AudioProcessorValueTreeState & mAPVTS;
 
     juce::ListenerList<Listener> mListeners;
 
+    SpatMode mSpatMode;
     SourceIndex mSelectedSource;
 
     juce::Label mSourcePlacementLabel;
@@ -134,12 +143,24 @@ private:
     juce::Label mSourceNumberLabel;
     juce::ComboBox mSourceNumberCombo;
 
+    juce::Label mSourceLinkLabel;
+    juce::ComboBox mPositionSourceLinkCombo;
+
+    juce::Label mZSourceLinkLabel;
+    juce::ComboBox mZSourceLinkCombo;
+
+    juce::Label mZSourceLinkScaleLabel;
+    NumSlider mZSourceLinkScaleSlider;
+
     DomeControls mDomeControls;
     CubeControls mCubeControls;
 
 public:
     //==============================================================================
-    explicit SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, SpatMode spatMode);
+    explicit SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
+                                   SpatMode spatMode,
+                                   SectionSourceSpan & sectionSourceSpan,
+                                   juce::AudioProcessorValueTreeState & apvts);
     //==============================================================================
     SectionSourcePosition() = delete;
     ~SectionSourcePosition() override = default;
@@ -157,9 +178,22 @@ public:
     void removeListener(Listener * l) { mListeners.remove(l); }
 
     void setSpatMode(SpatMode spatMode);
+
+    void actualizeValueTreeState();
     //==============================================================================
+    void mouseDown(juce::MouseEvent const & event) override;
     void paint(juce::Graphics &) override;
     void resized() override;
+
+    //==============================================================================
+    void setPositionSourceLink(PositionSourceLink value);
+    void setElevationSourceLink(ElevationSourceLink value);
+    void setSymmetricLinkComboState(bool allowed);
+
+    juce::ComboBox const & getPositionSourceLinkCombo() const { return mPositionSourceLinkCombo; }
+    juce::ComboBox & getPositionSourceLinkCombo() { return mPositionSourceLinkCombo; }
+    juce::ComboBox const & getElevationSourceLinkCombo() const { return mZSourceLinkCombo; }
+    juce::ComboBox & getElevationSourceLinkCombo() { return mZSourceLinkCombo; }
 
 private:
     //==============================================================================

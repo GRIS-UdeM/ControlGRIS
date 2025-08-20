@@ -75,7 +75,6 @@ public:
     SectionOscController & operator=(SectionOscController &&) = delete;
     //==============================================================================
     void textEditorReturnKeyPressed([[maybe_unused]] juce::TextEditor & editor) override { unfocusAllComponents(); }
-    void paint(juce::Graphics &) override;
     void resized() override;
 
     void setOscOutputPluginId(int const id) { mOscOutputPluginIdEditor.setText(juce::String(id)); }

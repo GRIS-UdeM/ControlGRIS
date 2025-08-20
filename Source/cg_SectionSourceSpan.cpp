@@ -23,27 +23,29 @@
 namespace gris
 {
 //==============================================================================
-SectionSourceSpan::SectionSourceSpan(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
+SectionSourceSpan::SectionSourceSpan(GrisLookAndFeel & grisLookAndFeel)
+    : mGrisLookAndFeel(grisLookAndFeel)
+    , mAzimuthSpan(grisLookAndFeel)
+    , mElevationSpan(grisLookAndFeel)
 {
+    setName("SectionSourcesSpan");
+
     mAzimuthLabel.setText("Azimuth Span", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mAzimuthLabel);
 
     mElevationLabel.setText("Elevation Span", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mElevationLabel);
 
-    mAzimuthSpan.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
-    mAzimuthSpan.setRange(0.0, 1.0);
     mAzimuthSpan.addListener(this);
+    mElevationSpan.addListener(this);
+
     mAzimuthSpan.onDragStart = [&]() { mListeners.call([&](Listener & l) { l.azimuthSpanDragStartedCallback(); }); };
     mAzimuthSpan.onDragEnd = [&]() { mListeners.call([&](Listener & l) { l.azimuthSpanDragEndedCallback(); }); };
     mElevationSpan.onDragStart
         = [&]() { mListeners.call([&](Listener & l) { l.elevationSpanDragStartedCallback(); }); };
     mElevationSpan.onDragEnd = [&]() { mListeners.call([&](Listener & l) { l.elevationSpanDragEndedCallback(); }); };
-    addAndMakeVisible(&mAzimuthSpan);
 
-    mElevationSpan.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
-    mElevationSpan.setRange(0.0, 1.0);
-    mElevationSpan.addListener(this);
+    addAndMakeVisible(&mAzimuthSpan);
     addAndMakeVisible(&mElevationSpan);
 }
 
@@ -76,25 +78,16 @@ void SectionSourceSpan::setSpanLinkState(bool const spanLinkState)
 //==============================================================================
 void SectionSourceSpan::mouseDown(juce::MouseEvent const & event)
 {
-    float const x{ getWidth() - 35.0f };
-    float constexpr y = 15;
-
     // Area where the spanLinked arrow is shown.
-    juce::Rectangle<float> const spanLinkedArrowArea{ 245.0f, 25.0f, 45.0f, 25.0f };
+    juce::Rectangle<float> const spanLinkedArrowArea{ 132.0f, 5.0f, 30.0f, 17.0f };
     if (spanLinkedArrowArea.contains(event.getMouseDownPosition().toFloat())) {
         mSpanLinked = !mSpanLinked;
         repaint();
     }
-
-    // Area where the selected source is shown.
-    juce::Rectangle<float> const selectedSourceArea{ x - 5.0f, y - 5.0f, 30.0f, 30.0f };
-    if (selectedSourceArea.contains(event.getMouseDownPosition().toFloat())) {
-        mListeners.call([&](Listener & l) { l.selectedSourceClickedCallback(); });
-    }
 }
 
 //==============================================================================
-void SectionSourceSpan::sliderValueChanged(juce::Slider * slider)
+void SectionSourceSpan::sliderValueChanged(NumSlider::Slider * slider)
 {
     auto const value{ slider->getValue() };
     auto const parameterId{ (slider == &mAzimuthSpan) ? SourceParameter::azimuthSpan : SourceParameter::elevationSpan };
@@ -115,45 +108,21 @@ void SectionSourceSpan::sliderValueChanged(juce::Slider * slider)
 //==============================================================================
 void SectionSourceSpan::paint(juce::Graphics & g)
 {
-    auto constexpr y = 15.0f;
-    auto const x{ getWidth() - 35.0f };
-
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-
     if (mSpanLinked)
         g.setColour(juce::Colours::orange);
     else
         g.setColour(juce::Colours::black);
-    g.drawArrow(juce::Line<float>(285.0f, 34.0f, 245.0f, 34.0f), 4, 10, 10);
-    g.drawArrow(juce::Line<float>(250.0f, 34.0f, 290.0f, 34.0f), 4, 10, 10);
-
-    juce::Rectangle<float> area{ x, y, 20, 20 };
-    area.expand(3, 3);
-    g.setColour(juce::Colour(.2f, .2f, .2f, 1.0f));
-    g.drawEllipse(area.translated(.5f, .5f), 1.0f);
-    g.setGradientFill(juce::ColourGradient(mSelectedSource->getColour().withSaturation(1.0f).darker(1.0f),
-                                           x + SOURCE_FIELD_COMPONENT_RADIUS,
-                                           y + SOURCE_FIELD_COMPONENT_RADIUS,
-                                           mSelectedSource->getColour().withSaturation(1.0f),
-                                           x,
-                                           y,
-                                           true));
-    g.fillEllipse(area);
-
-    g.setColour(juce::Colours::white);
-    g.drawFittedText(mSelectedSource->getId().toString(),
-                     area.getSmallestIntegerContainer(),
-                     juce::Justification::centred,
-                     1);
+    g.drawArrow(juce::Line<float>(155.0f, 13.0f, 135.0f, 13.0f), 4, 10, 7);
+    g.drawArrow(juce::Line<float>(140.0f, 13.0f, 160.0f, 13.0f), 4, 10, 7);
 }
 
 //==============================================================================
 void SectionSourceSpan::resized()
 {
-    mAzimuthLabel.setBounds(5, 3, 225, 20);
-    mElevationLabel.setBounds(305, 3, 225, 20);
-    mAzimuthSpan.setBounds(5, 23, 225, 20);
-    mElevationSpan.setBounds(305, 23, 225, 20);
+    mAzimuthLabel.setBounds(5, 3, 80, 20);
+    mAzimuthSpan.setBounds(85, 7, 35, 12);
+    mElevationLabel.setBounds(170, 3, 80, 20);
+    mElevationSpan.setBounds(250, 7, 35, 12);
 }
 
 } // namespace gris

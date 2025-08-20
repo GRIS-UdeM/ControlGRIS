@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include "cg_ControlGrisLookAndFeel.hpp"
 #include <JuceHeader.h>
 
 namespace gris
@@ -87,6 +88,45 @@ private:
 }; // class PresetButton
 
 //================================================================================
+class PositionPresetInfoComponent final
+    : public juce::Component
+    , private juce::Timer
+{
+private:
+    //==============================================================================
+    GrisLookAndFeel & mGrisLookAndFeel;
+    juce::Label mActionLog{};
+    juce::Label mAppVersionLabel{};
+    int mTimerFlashCounter{ 6 };
+
+public:
+    //==============================================================================
+    explicit PositionPresetInfoComponent(GrisLookAndFeel & grisLookAndFeel);
+    //==============================================================================
+    PositionPresetInfoComponent() = delete;
+    ~PositionPresetInfoComponent() = default;
+
+    PositionPresetInfoComponent(PositionPresetInfoComponent const &) = delete;
+    PositionPresetInfoComponent(PositionPresetInfoComponent &&) = delete;
+
+    PositionPresetInfoComponent & operator=(PositionPresetInfoComponent const &) = delete;
+    PositionPresetInfoComponent & operator=(PositionPresetInfoComponent &&) = delete;
+
+    //==============================================================================
+    void paint(juce::Graphics & g) override { g.fillAll(juce::Colour::fromRGB(64, 64, 64)); }
+    void resized() override;
+    void timerCallback() override;
+    //==============================================================================
+    void setActionLogText(juce::String const & text, juce::NotificationType notificationType);
+    void setAppVersionLabelText(juce::String const & text, juce::NotificationType notificationType);
+
+private:
+    void resetTimer();
+    //==============================================================================
+    JUCE_LEAK_DETECTOR(PositionPresetInfoComponent)
+}; // class PositionPresetInfoComponent
+
+//================================================================================
 class PositionPresetComponent final
     : public juce::Component
     , public juce::ChangeListener
@@ -119,13 +159,13 @@ private:
     juce::ListenerList<Listener> mListeners{};
     juce::OwnedArray<PresetButton> mPresets{};
     int mCurrentSelection{ -1 };
-    juce::Label mActionLog{};
-    juce::Label mAppVersionLabel{};
+    PositionPresetInfoComponent & mPositionPresetStateComponent;
     PresetsManager & mPresetsManager;
 
 public:
     //==============================================================================
-    explicit PositionPresetComponent(PresetsManager & presetsManager);
+    explicit PositionPresetComponent(PresetsManager & presetsManager,
+                                     PositionPresetInfoComponent & positionPresetStateComponent);
     //==============================================================================
     PositionPresetComponent() = delete;
     ~PositionPresetComponent() override;
