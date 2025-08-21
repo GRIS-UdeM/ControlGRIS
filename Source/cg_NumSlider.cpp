@@ -1,5 +1,5 @@
 /**************************************************************************
- * Copyright 2024 UdeM - GRIS - Ga'l LANE LƒPINE                         *
+ * Copyright 2024 UdeM - GRIS - Gaël LANE LÉPINE                         *
  *                                                                        *
  * This file is part of ControlGris, a multi-source spatialization plugin *
  *                                                                        *
