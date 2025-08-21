@@ -103,7 +103,7 @@ public:
             editor.insertTextAtCaret("&");
             expectEquals(editor.getText().getIntValue(), 0);
 
-            editor.insertTextAtCaret(juce::CharPointer_UTF8 ("é"));
+            editor.insertTextAtCaret(juce::CharPointer_UTF8 ("Ã©"));
             expectEquals(editor.getText().getIntValue(), 0);
         }
 
@@ -142,7 +142,7 @@ public:
             editor.clear();
             editor.insertTextAtCaret("123");
             editor.setHighlightedRegion({ 1, 3 });
-            editor.insertTextAtCaret(juce::CharPointer_UTF8("ééé123ööö"));
+            editor.insertTextAtCaret(juce::CharPointer_UTF8("Ã©Ã©Ã©123Ã¶Ã¶Ã¶"));
             expectEquals(editor.getText().getIntValue(), 123);
         }
     }

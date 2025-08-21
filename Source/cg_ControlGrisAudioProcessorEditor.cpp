@@ -1,7 +1,7 @@
 /*
  This file is part of ControlGris.
 
- Developers: Olivier BELANGER, Ga‘l LANE LƒPINE
+ Developers: Olivier BELANGER, Ga'l LANE LÆ’PINE
 
  ControlGris is free software: you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as
