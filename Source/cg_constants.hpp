@@ -136,6 +136,7 @@ extern juce::StringArray const ONSET_DETECTION_METRIC_TYPES;
 enum class TrajectoryRandomType { continuous, discrete };
 int TrajectoryRandomTypeToInt(TrajectoryRandomType type);
 TrajectoryRandomType TrajectoryRandomTypeFromInt(int value);
+>>>>>>> origin/ControlGris2
 
 namespace Automation
 {

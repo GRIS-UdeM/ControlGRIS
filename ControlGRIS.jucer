@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="m50y5Z" name="ControlGRIS" projectType="audioplug" pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3"
+<JUCERPROJECT id="m50y5Z" name="ControlGRIS" projectType="audioplug" pluginFormats="buildAAX,buildAU,buildStandalone,buildVST,buildVST3"
               version="1.4.5" bundleIdentifier="com.gris.umontreal.controlgris"
               companyName="UdeM" aaxIdentifier="com.udem.GRIS.ControlGris"
               pluginManufacturer="UdeM" pluginManufacturerCode="UdeM" pluginCode="Xzz1"
@@ -8,7 +8,7 @@
               cppLanguageStandard="latest" projectLineFeed="&#10;" jucerFormatVersion="1"
               companyWebsite="ca.umontreal.musique.gris.controlgris" addUsingNamespaceToJuceHeader="0"
               displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED=1&#10;DEBUG_COORDINATES=0"
-              headerPath="../../submodules/StructGRIS&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl">
+              headerPath="../../submodules/StructGRIS">
   <MAINGROUP id="gDqxm3" name="ControlGRIS">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
       <GROUP id="{32F49E20-AD3C-BA30-3DC6-5BBC5846D431}" name="Misc">
@@ -235,7 +235,7 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" hardenedRuntime="1" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3">
+    <XCODE_MAC targetFolder="Builds/MacOSX" hardenedRuntime="1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS" osxArchitecture="Native"
                        auBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"
@@ -259,7 +259,7 @@
         <MODULEPATH id="juce_audio_devices" path="submodules/StructGRIS/submodules/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="ControlGRIS"/>
@@ -280,7 +280,7 @@
         <MODULEPATH id="juce_audio_devices" path="submodules/StructGRIS/submodules/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="flucoma_VERSION_LIB.lib&#10;fmt.lib&#10;foonathan_memory-0.7.3.lib">
+    <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" vst3BinaryLocation="C:\Program Files\Common Files\VST3"
                        enablePluginBinaryCopyStep="1"/>
