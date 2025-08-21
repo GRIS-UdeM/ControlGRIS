@@ -8,7 +8,7 @@
               cppLanguageStandard="17" projectLineFeed="&#10;" jucerFormatVersion="1"
               companyWebsite="ca.umontreal.musique.gris.controlgris" addUsingNamespaceToJuceHeader="0"
               displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED=1&#10;_USE_MATH_DEFINES=1"
-              pluginName="ControlGris2" pluginDesc="ControlGris2">
+              pluginName="ControlGris2" pluginDesc="ControlGris2" headerPath="../../submodules/StructGRIS">
   <MAINGROUP id="gDqxm3" name="ControlGris">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
       <GROUP id="{84670BD1-D750-4129-B3DC-1ABD8B2CD51E}" name="SpatialParameters">
