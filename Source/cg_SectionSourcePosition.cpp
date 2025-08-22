@@ -413,7 +413,6 @@ void SectionSourcePosition::setSymmetricLinkComboState(bool allowed)
 {
     mPositionSourceLinkCombo.setItemEnabled(static_cast<int>(PositionSourceLink::symmetricX), allowed);
     mPositionSourceLinkCombo.setItemEnabled(static_cast<int>(PositionSourceLink::symmetricY), allowed);
->>>>>>> origin/ControlGris2
 }
 
 //==============================================================================

@@ -461,14 +461,16 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
     mSelectedSource = {};
     mProcessor.setNumberOfSources(numOfSources);
     mSectionGeneralSettings.setNumberOfSources(numOfSources);
-    mSectionTrajectory.setNumberOfSources(numOfSources);
+    // TODO: ???
+    // mSectionTrajectory.setNumberOfSources(numOfSources);
     mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
     mPositionField.refreshSources();
     mElevationField.refreshSources();
     mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
-    if (isNewSourceCount) {
-        sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
-    }
+    // TODO: ???
+    // if (isNewSourceCount) {
+        // sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
+    // }
 }
 
 //==============================================================================

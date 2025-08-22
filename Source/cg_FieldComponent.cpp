@@ -34,8 +34,8 @@ FieldComponent::FieldComponent(Sources & sources) noexcept : mSources(sources)
 //==============================================================================
 FieldComponent::~FieldComponent() noexcept
 {
-    for (SourceIndex i{}; i < SourceIndex{ mSources.MAX_NUMBER_OF_SOURCES }; ++i) {
-        mSources[i].removeGuiListener(this);
+    for (int i{}; i < mSources.MAX_NUMBER_OF_SOURCES ; ++i) {
+        mSources[SourceIndex{i}].removeGuiListener(this);
     }
 }
 

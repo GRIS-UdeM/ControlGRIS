@@ -22,6 +22,7 @@
 
 #include "cg_ControlGrisAudioProcessorEditor.hpp"
 #include "cg_TrajectoryManager.hpp"
+#include "cg_Source.hpp"
 
 namespace gris
 {
@@ -1568,7 +1569,7 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
         setSelectedSoundTrajectoriesTab(tabIdx);
 
         // Load stored sources positions
-        for (int sourceIndex{}; sourceIndex < MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
+        for (int sourceIndex{}; sourceIndex < mSources.MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
             juce::String const id{ sourceIndex };
             juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };
             juce::Identifier const elevationId{ juce::String{ "p_elevation_" } + id };
@@ -1607,12 +1608,6 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
     }
 
     setSourcePositionsFromState();
-}
-
-//==============================================================================
-PersistentStorage& ControlGrisAudioProcessor::getPersistentStorage ()
-{
-    return mPersistentStorage;
 }
 
 //==============================================================================
