@@ -58,6 +58,7 @@
         <FILE id="W2OezW" name="cg_Warnings.hpp" compile="0" resource="0" file="Source/cg_Warnings.hpp"/>
       </GROUP>
       <GROUP id="{8BFD9DB4-C1DD-99C9-FCA0-B0E191B8FE8D}" name="Resources">
+        <FILE id="uU1CAr" name="folder_icon.png" compile="0" resource="1" file="Imgs/folder_icon.png"/>
         <FILE id="JVPA2I" name="SinkinSans-400Regular.otf" compile="0" resource="1"
               file="Source/SinkinSans-400Regular.otf"/>
       </GROUP>

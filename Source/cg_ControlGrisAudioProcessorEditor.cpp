@@ -70,10 +70,6 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     mElevationBanner.setText("Z", juce::dontSendNotification);
     addAndMakeVisible(&mElevationBanner);
 
-    mSourcesBanner.setLookAndFeel(&mGrisLookAndFeel);
-    mSourcesBanner.setText("Sources", juce::dontSendNotification);
-    addAndMakeVisible(&mSourcesBanner);
-
     mElevationModeLabel.setEditable(false, false);
     mElevationModeLabel.setText("Mode", juce::dontSendNotification);
     mElevationModeLabel.setJustificationType(juce::Justification::centredRight);
@@ -1247,8 +1243,8 @@ void ControlGrisAudioProcessorEditor::resized()
     mMainBanner.setBounds(0, 0, fieldSize, 20);
     mPositionField.setBounds(0, 20, fieldSize, fieldSize);
 
-    mSourcesBanner.setBounds(0, fieldSize + 20, fieldSize, 20);
-    mSectionSourcePosition.setBounds(0, fieldSize + 40, fieldSize, 150);
+    // we only do fieldSize + 20 here because the banner is now built into the section.
+    mSectionSourcePosition.setBounds(0, fieldSize + 20, fieldSize, 150 + 20);
     mSettingsBanner.setBounds(fieldSize - 1, fieldSize + 20, width, 20);
     mConfigurationComponent.setBounds(fieldSize - 1, fieldSize + 40, fieldSize, 151);
 

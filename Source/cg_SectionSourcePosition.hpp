@@ -29,6 +29,7 @@
 #include "cg_SectionSourceSpan.hpp"
 #include "cg_Source.hpp"
 #include "cg_constants.hpp"
+#include "cg_BannerComponent.hpp"
 
 namespace gris
 {
@@ -129,16 +130,20 @@ private:
     GrisLookAndFeel & mGrisLookAndFeel;
     SectionSourceSpan & mSectionSourceSpan;
     juce::AudioProcessorValueTreeState & mAPVTS;
-
     juce::ListenerList<Listener> mListeners;
+
+    static constexpr float titleHeight{20};
 
     SpatMode mSpatMode;
     SourceIndex mSelectedSource;
 
+    BannerComponent mSourcesBanner;
+
     juce::Label mSourcePlacementLabel;
     juce::ComboBox mSourcePlacementCombo;
 
-    juce::TextButton mLoadSpeakerSetupButton;
+    juce::Label mLoadSpeakerSetupLabel;
+    juce::ImageButton mLoadSpeakerSetupButton;
 
     juce::Label mSourceNumberLabel;
     juce::ComboBox mSourceNumberCombo;

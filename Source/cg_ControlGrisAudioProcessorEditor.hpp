@@ -79,7 +79,6 @@ private:
     BannerComponent mTrajectoriesBanner;
     BannerComponent mSettingsBanner;
     BannerComponent mPositionPresetBanner;
-    BannerComponent mSourcesBanner;
 
     juce::ComboBox mElevationModeCombobox;
     juce::Label mElevationModeLabel;
