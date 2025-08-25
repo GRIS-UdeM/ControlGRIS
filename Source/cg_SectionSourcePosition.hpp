@@ -142,7 +142,6 @@ private:
     juce::Label mSourcePlacementLabel;
     juce::ComboBox mSourcePlacementCombo;
 
-    juce::Label mLoadSpeakerSetupLabel;
     juce::ImageButton mLoadSpeakerSetupButton;
 
     juce::Label mSourceNumberLabel;

@@ -211,10 +211,6 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
 
     // Speaker Setup as Source position
 
-    mLoadSpeakerSetupLabel.setLookAndFeel(&mGrisLookAndFeel);
-    mLoadSpeakerSetupLabel.setText("Load", juce::dontSendNotification);
-    addAndMakeVisible(mLoadSpeakerSetupLabel);
-
     auto folderImage = juce::ImageCache::getFromMemory(BinaryData::folder_icon_png, BinaryData::folder_icon_pngSize);
 
     mLoadSpeakerSetupButton.setImages(false, true, true, folderImage, 1.0f, juce::Colours::transparentWhite, folderImage, 0.7f, juce::Colours::transparentWhite, folderImage, 0.7f, juce::Colours::transparentWhite);
@@ -356,7 +352,6 @@ void SectionSourcePosition::resized()
     mSourcesBanner.setBounds(0, 0, width, titleHeight);
 
     mLoadSpeakerSetupButton.setBounds(width - 40, 0, 40, titleHeight);
-    mLoadSpeakerSetupLabel.setBounds(width - 65, 0, 40, titleHeight);
 
     mSourceNumberLabel.setBounds(5, 10 + titleHeight, 150, 10);
     mSourceNumberCombo.setBounds(70, 7 + titleHeight, 50, 15);
