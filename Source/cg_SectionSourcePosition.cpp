@@ -351,7 +351,7 @@ void SectionSourcePosition::resized()
 
     mSourcesBanner.setBounds(0, 0, width, titleHeight);
 
-    mLoadSpeakerSetupButton.setBounds(width - 40, 0, 40, titleHeight);
+    mLoadSpeakerSetupButton.setBounds(width - 40, 2, 40, titleHeight - 4);
 
     mSourceNumberLabel.setBounds(5, 10 + titleHeight, 150, 10);
     mSourceNumberCombo.setBounds(70, 7 + titleHeight, 50, 15);

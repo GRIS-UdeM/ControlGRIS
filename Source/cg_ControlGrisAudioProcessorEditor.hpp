@@ -71,6 +71,8 @@ private:
     GrisLookAndFeel mGrisLookAndFeel;
     juce::AudioProcessorValueTreeState & mAudioProcessorValueTreeState;
 
+    juce::TooltipWindow tooltips;
+
     PositionTrajectoryManager & mPositionTrajectoryManager;
     ElevationTrajectoryManager & mElevationTrajectoryManager;
 
