@@ -118,7 +118,6 @@ jobs:
                       ARCHS="arm64 x86_64" \
                       INSTALL_PATH=/tmp/fakeInstall \
                       DSTROOT=/tmp/fakeInstallRoot \
-                      CODE_SIGN_IDENTITY="" \
                       CODE_SIGNING_REQUIRED=YES \
                       CODE_SIGNING_ALLOWED=YES \
                       build
