@@ -142,7 +142,7 @@ jobs:
           echo "pkg-file=$PKG_FILE" >> $GITHUB_ENV
           echo "pkg-path=$PKG_PATH" >> $GITHUB_ENV
           BIN_PATH="Builds/MacOSX/output/"
-          BASE_PATH="$PKG_PATHProduct/Library/Audio/Plug-Ins"
+          BASE_PATH="$PKG_PATH""Product/Library/Audio/Plug-Ins"
 
           AU_PATH="AU-universal"
           VST3_PATH="VST3-universal"
