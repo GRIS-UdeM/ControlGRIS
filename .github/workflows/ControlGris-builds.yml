@@ -148,11 +148,11 @@ jobs:
           VST3_PATH="VST3-universal"
           STANDALONE_PATH="Standalone-Plugin-universal"
 
-          mkdir -p "BASE_PATH$BASE_PATH"
+          mkdir -p "$BASE_PATH$BASE_PATH"
 
-          mkdir -p "BASE_PATH$AU_PATH" || exit 1
-          mkdir -p "BASE_PATH$VST3_PATH" || exit 1
-          mkdir -p "BASE_PATH$STANDALONE_PATH" || exit 1
+          mkdir -p "$BASE_PATH$AU_PATH" || exit 1
+          mkdir -p "$BASE_PATH$VST3_PATH" || exit 1
+          mkdir -p "$BASE_PATH$STANDALONE_PATH" || exit 1
 
           find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
 
