@@ -144,9 +144,9 @@ jobs:
           BIN_PATH="Builds/MacOSX/output/"
           BASE_PATH="$PKG_PATHProduct/Library/Audio/Plug-Ins"
 
-          AU_PATH="/AU-universal"
-          VST3_PATH="/VST3-universal"
-          STANDALONE_PATH="/Standalone-Plugin-universal"
+          AU_PATH="AU-universal"
+          VST3_PATH="VST3-universal"
+          STANDALONE_PATH="Standalone-Plugin-universal"
 
           mkdir -p "BASE_PATH$BASE_PATH"
 
