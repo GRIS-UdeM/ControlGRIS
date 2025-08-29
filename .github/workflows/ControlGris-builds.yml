@@ -65,18 +65,40 @@ jobs:
           submodules: recursive
 
       - name: Build Projucer
+        env:
+          GLL_APPLE_CODESIGN_APPLICATION: ${{ secrets.GLL_APPLE_CODESIGN_APPLICATION }}
         run: |
           cd submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/MacOSX
           xcodebuild -project Projucer.xcodeproj \
             -configuration Release \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGNING_ALLOWED=YES
 
       - name: Generate Xcode project
         run: |
           chmod +x submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/MacOSX/build/Release/Projucer.app/Contents/MacOS/Projucer
           submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/MacOSX/build/Release/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
+
+      - name: Setup certificate files
+      # It would be very nice to have this as part of the external composite actions but it looks like there are limitations around long inputs.
+        env:
+          GLL_APPLE_DEVELOPER_ID_APPLICATION: ${{ secrets.GLL_APPLE_DEVELOPER_ID_APPLICATION }}
+          GLL_APPLE_DEVELOPER_ID_INSTALLER: ${{ secrets.GLL_APPLE_DEVELOPER_ID_INSTALLER }}
+        run: |
+          echo "$GLL_APPLE_DEVELOPER_ID_APPLICATION" | base64 --decode > spatgris-app-cert.p12
+          export CODESIGN_APP_SECUREFILEPATH=$PWD/spatgris-app-cert.p12
+          echo "app_cert_path=$CODESIGN_APP_SECUREFILEPATH" >> $GITHUB_ENV
+
+          echo "$GLL_APPLE_DEVELOPER_ID_INSTALLER" | base64 --decode > spatgris-installer-cert.p12
+          export CODESIGN_INSTALLER_SECUREFILEPATH=$PWD/spatgris-installer-cert.p12
+          echo "installer_cert_path=$CODESIGN_INSTALLER_SECUREFILEPATH" >> $GITHUB_ENV
+
+      - name: Setup codesigning
+        uses: GRIS-UdeM/actions/setup-codesign@main
+        with:
+          apple-application-cert: ${{ env.app_cert_path }}
+          apple-installer-cert: ${{ env.installer_cert_path }}
+          apple-dev-password: ${{ secrets.GLL_APPLE_DEVELOPER_ID_PASSWORD }}
 
       - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
         run: |
@@ -96,16 +118,61 @@ jobs:
                       ARCHS="arm64 x86_64" \
                       INSTALL_PATH=/tmp/fakeInstall \
                       DSTROOT=/tmp/fakeInstallRoot \
+                      CODE_SIGN_IDENTITY="" \
+                      CODE_SIGNING_REQUIRED=YES \
+                      CODE_SIGNING_ALLOWED=YES \
                       build
           done
+
+      - name: Sign all
+        uses: GRIS-UdeM/actions/sign@main
+        with:
+          apple-dev-identity: "Gael Lane Lepine"
+          # another /* is applied in the action.
+          path-to-sign: 'Builds/MacOSX/output/*'
+
+      - name: Build PKG
+        env:
+          INSTALLER_SIGNATURE: "Developer ID Installer: Gael Lane Lepine (62PMMWH49Z)"
+          IDENTIFIER: "ca.umontreal.musique.gris.controlgris.pkg"
+          VERSION: "2.0.0"
+        run: |
+          PKG_PATH="Builds/MacOSX/pkg/"
+          PKG_FILE_PATH="pkg-path="$PKG_PATH/ControlGris_$VERSION.pkg"
+          echo "pkg-file-path=$PKG_FILE_PATH" >> $GITHUB_ENV
+          BIN_PATH="Builds/MacOSX/output/"
+          BASE_PATH="$PKG_PATHProduct/Library/Audio/Plug-Ins"
+
+          AU_PATH="/AU-universal"
+          VST3_PATH="/VST3-universal"
+          STANDALONE_PATH="/Standalone-Plugin-universal"
+
+          mkdir -p "BASE_PATH$BASE_PATH"
+
+          mkdir -p "BASE_PATH$AU_PATH" || exit 1
+          mkdir -p "BASE_PATH$VST3_PATH" || exit 1
+          mkdir -p "BASE_PATH$STANDALONE_PATH" || exit 1
+
+          cp -R -H "$BIN_PATH$AU_PATH/*.component" "$BASE_PATH$AU_PATH" || exit 1
+          cp -R -H "$BIN_PATH$VST3_PATH/*.vst3" "$BASE_PATH$VST3_PATH" || exit 1
+          cp -R -H "$BIN_PATH$STANDALONE_PATH/*.app" "$BASE_PATH$STANDALONE_PATH" || exit 1
+
+          echo -e "Building package...\n"
+
+          pkgbuild  --root "$PKG_PATH/Product" \
+                    --install-location "/" \
+                    --identifier "$IDENTIFIER" \
+                    --version $VERSION \
+                    --sign "$INSTALLER_SIGNATURE" \
+                    --timestamp \
+                    "$PKG_FILE_PATH" || exit 1
 
       - name: Upload macOS builds
         uses: actions/upload-artifact@v4
         with:
           name: ControlGRIS-macOS
-          path: Builds/MacOSX/Builds/MacOSX/output/**
+          path: ${{ env.pkg-file-path }}
           if-no-files-found: error
-
 
   Build-Windows:
     runs-on: windows-latest
