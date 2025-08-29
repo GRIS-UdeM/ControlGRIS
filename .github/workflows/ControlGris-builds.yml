@@ -113,7 +113,7 @@ jobs:
                       -scheme "ControlGRIS - $format" \
                       -configuration Release \
                       -destination 'platform=macOS' \
-                      CONFIGURATION_BUILD_DIR=Builds/MacOSX/output/${safeFormat}-universal \
+                      CONFIGURATION_BUILD_DIR=output/${safeFormat}-universal \
                       MACOSX_DEPLOYMENT_TARGET=10.13 \
                       ARCHS="arm64 x86_64" \
                       INSTALL_PATH=/tmp/fakeInstall \
