@@ -137,8 +137,10 @@ jobs:
           VERSION: "2.0.0"
         run: |
           PKG_PATH="Builds/MacOSX/pkg/"
-          PKG_FILE_PATH="pkg-path="$PKG_PATH/ControlGris_$VERSION.pkg"
-          echo "pkg-file-path=$PKG_FILE_PATH" >> $GITHUB_ENV
+          PKG_FILE="ControlGris_$VERSION.pkg"
+          PKG_FILE_PATH="$PKG_PATH/$PKG_FILE"
+          echo "pkg-file=$PKG_FILE" >> $GITHUB_ENV
+          echo "pkg-path=$PKG_PATH" >> $GITHUB_ENV
           BIN_PATH="Builds/MacOSX/output/"
           BASE_PATH="$PKG_PATHProduct/Library/Audio/Plug-Ins"
 
@@ -165,12 +167,22 @@ jobs:
                     --sign "$INSTALLER_SIGNATURE" \
                     --timestamp \
                     "$PKG_FILE_PATH" || exit 1
-
-      - name: Upload macOS builds
+            - name: Notarize
+      - name:
+        id: notarize
+        uses: GRIS-UdeM/actions/notarize@main
+        with:
+          apple-dev-email: "glanelepine@gmail.com"
+          apple-dev-team: "62PMMWH49Z"
+          apple-app-password: ${{ secrets.GLL_APPLE_APP_PASSWORD }}
+          app-path: ${{ env.pkg-path }}
+          app-name: ${{ env.pkg-file }}
+          app-file-suffix: ".pkg"
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ControlGRIS-macOS
-          path: ${{ env.pkg-file-path }}
+          name: mac-signed-and-notarized
+          path: ${{ steps.notarize.outputs.notarized-app-folder }}
           if-no-files-found: error
 
   Build-Windows:
