@@ -185,7 +185,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mac-signed-and-notarized
+          name: ControlGRIS-Mac-Signed-and-Notarized
           path: ${{ steps.notarize.outputs.notarized-app-folder }}
           if-no-files-found: error
 
