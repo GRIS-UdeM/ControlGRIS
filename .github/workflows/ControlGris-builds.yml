@@ -148,6 +148,7 @@ jobs:
           VST3_PATH="VST3-universal"
           STANDALONE_PATH="Standalone-Plugin-universal"
 
+          pwd
           echo $BASE_PATH
 
           mkdir -p "$BASE_PATH"
@@ -156,9 +157,9 @@ jobs:
           mkdir -p "$BASE_PATH$VST3_PATH" || exit 1
           mkdir -p "$BASE_PATH$STANDALONE_PATH" || exit 1
 
-          cp -R -H "$BIN_PATH$AU_PATH/*.component" "$BASE_PATH$AU_PATH" || exit 1
-          cp -R -H "$BIN_PATH$VST3_PATH/*.vst3" "$BASE_PATH$VST3_PATH" || exit 1
-          cp -R -H "$BIN_PATH$STANDALONE_PATH/*.app" "$BASE_PATH$STANDALONE_PATH" || exit 1
+          cp -R -H "./$BIN_PATH$AU_PATH/*.component" "$BASE_PATH$AU_PATH" || exit 1
+          cp -R -H "./$BIN_PATH$VST3_PATH/*.vst3" "$BASE_PATH$VST3_PATH" || exit 1
+          cp -R -H "./$BIN_PATH$STANDALONE_PATH/*.app" "$BASE_PATH$STANDALONE_PATH" || exit 1
 
           echo -e "Building package...\n"
 
