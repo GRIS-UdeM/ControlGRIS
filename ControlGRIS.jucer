@@ -8,7 +8,8 @@
               cppLanguageStandard="latest" projectLineFeed="&#10;" jucerFormatVersion="1"
               companyWebsite="ca.umontreal.musique.gris.controlgris" addUsingNamespaceToJuceHeader="0"
               displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED=1&#10;DEBUG_COORDINATES=0&#10;_USE_MATH_DEFINES=1"
-              headerPath="../../submodules/StructGRIS">
+              headerPath="../../submodules/StructGRIS" pluginName="ControlGRIS2"
+              pluginDesc="ControlGRIS2">
   <MAINGROUP id="gDqxm3" name="ControlGRIS">
     <GROUP id="{2E3D0AD8-9A99-8E89-6614-B686569C7108}" name="Source">
       <GROUP id="{84670BD1-D750-4129-B3DC-1ABD8B2CD51E}" name="SpatialParameters">
@@ -336,11 +337,11 @@
         <CONFIGURATION isDebug="1" name="Debug" vst3BinaryLocation="C:\Program Files\Common Files\VST3"
                        enablePluginBinaryCopyStep="1" headerPath="..\..\Source\libs\include&#10;..\..\Source\libs\include\flucoma&#10;..\..\Source\libs\include\Eigen&#10;..\..\Source\libs\include\hisstools&#10;..\..\Source\libs\include\Spectra&#10;..\..\Source\libs\include\tl&#10;..\..\Source\libs\include\nlohmann&#10;..\..\Source\libs\include\fmt&#10;..\..\Source\libs\include\foonathan"
                        libraryPath="..\..\Source\libs\lib\flucoma\windows\Debug" usePrecompiledHeaderFile="1"
-                       precompiledHeaderFile="Source\PCH.h"/>
+                       precompiledHeaderFile="Source\PCH.h" targetName="ControlGRIS2"/>
         <CONFIGURATION isDebug="0" name="Release" vst3BinaryLocation="C:\Program Files\Common Files\VST3"
                        enablePluginBinaryCopyStep="1" headerPath="..\..\Source\libs\include&#10;..\..\Source\libs\include\flucoma&#10;..\..\Source\libs\include\Eigen&#10;..\..\Source\libs\include\hisstools&#10;..\..\Source\libs\include\Spectra&#10;..\..\Source\libs\include\tl&#10;..\..\Source\libs\include\nlohmann&#10;..\..\Source\libs\include\fmt&#10;..\..\Source\libs\include\foonathan"
                        libraryPath="..\..\Source\libs\lib\flucoma\windows\Release" usePrecompiledHeaderFile="1"
-                       precompiledHeaderFile="Source\PCH.h"/>
+                       precompiledHeaderFile="Source\PCH.h" targetName="ControlGRIS2"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="submodules/StructGRIS/submodules/JUCE/modules"/>
