@@ -137,8 +137,10 @@ jobs:
           VERSION: "2.0.0"
         run: |
           PKG_PATH="Builds/MacOSX/pkg/"
-          PKG_FILE="ControlGris_$VERSION.pkg"
-          PKG_FILE_PATH="$PKG_PATH/$PKG_FILE"
+          PKG_NAME="ControlGris_$VERSION"
+          PKG_FILE="$PKG_NAME.pkg"
+          PKG_FILE_PATH="$PKG_PATH$PKG_FILE"
+          echo "pkg-name=$PKG_NAME" >> $GITHUB_ENV
           echo "pkg-file=$PKG_FILE" >> $GITHUB_ENV
           echo "pkg-path=$PKG_PATH" >> $GITHUB_ENV
           BIN_PATH="Builds/MacOSX/output/"
@@ -178,7 +180,7 @@ jobs:
           apple-dev-team: "62PMMWH49Z"
           apple-app-password: ${{ secrets.GLL_APPLE_APP_PASSWORD }}
           app-path: ${{ env.pkg-path }}
-          app-name: ${{ env.pkg-file }}
+          app-name: ${{ env.pkg-name }}
           app-file-suffix: ".pkg"
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
