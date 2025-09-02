@@ -170,7 +170,6 @@ jobs:
                     --sign "$INSTALLER_SIGNATURE" \
                     --timestamp \
                     "$PKG_FILE_PATH" || exit 1
-            - name: Notarize
       - name:
         id: notarize
         uses: GRIS-UdeM/actions/notarize@main
