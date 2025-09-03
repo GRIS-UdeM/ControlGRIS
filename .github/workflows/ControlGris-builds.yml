@@ -139,7 +139,7 @@ jobs:
           PKG_PATH="Builds/MacOSX/pkg/"
           PKG_NAME="ControlGris_$VERSION"
           PKG_FILE="$PKG_NAME.pkg"
-          PKG_FILE_PATH="$PKG_PATH$PKG_FILE"
+          PKG_FILE_PATH="$PKG_PATH/$PKG_FILE"
           echo "pkg-name=$PKG_NAME" >> $GITHUB_ENV
           echo "pkg-file=$PKG_FILE" >> $GITHUB_ENV
           echo "pkg-path=$PKG_PATH" >> $GITHUB_ENV
@@ -155,13 +155,13 @@ jobs:
 
           mkdir -p "$BASE_PATH"
 
-          mkdir -p "$BASE_PATH$AU_PATH" || exit 1
-          mkdir -p "$BASE_PATH$VST3_PATH" || exit 1
-          mkdir -p "$BASE_PATH$STANDALONE_PATH" || exit 1
+          mkdir -p "$BASE_PATH/$AU_PATH" || exit 1
+          mkdir -p "$BASE_PATH/$VST3_PATH" || exit 1
+          mkdir -p "$BASE_PATH/$STANDALONE_PATH" || exit 1
 
-          cp -R -H "$BIN_PATH$AU_PATH/ControlGRIS.component" "$BASE_PATH$AU_PATH" || exit 1
-          cp -R -H "$BIN_PATH$VST3_PATH/ControlGRIS.vst3" "$BASE_PATH$VST3_PATH" || exit 1
-          cp -R -H "$BIN_PATH$STANDALONE_PATH/ControlGRIS.app" "$BASE_PATH$STANDALONE_PATH" || exit 1
+          cp -R -H "$BIN_PATH/$AU_PATH/ControlGRIS.component" "$BASE_PATH/$AU_PATH" || exit 1
+          cp -R -H "$BIN_PATH/$VST3_PATH/ControlGRIS.vst3" "$BASE_PATH/$VST3_PATH" || exit 1
+          cp -R -H "$BIN_PATH/$STANDALONE_PATH/ControlGRIS.app" "$BASE_PATH/$STANDALONE_PATH" || exit 1
 
           echo -e "Building package...\n"
 
