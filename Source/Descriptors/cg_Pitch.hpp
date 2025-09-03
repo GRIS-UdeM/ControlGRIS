@@ -32,7 +32,12 @@ class PitchD : public Descriptor
 {
 public:
     //==============================================================================
-    PitchD() { mID = DescriptorID::pitch; }
+    PitchD()
+    {
+        mID = DescriptorID::pitch;
+        mPitchMeanRes = fluid::RealVector(1);
+        mPitchStdDevRes = fluid::RealVector(1);
+    }
 
     void init() override { mPitchRunningStats->init(mRunningStatsHistory, 1); }
 
@@ -47,14 +52,11 @@ public:
 
     void process(fluid::RealMatrix & pitchMat, fluid::algorithm::MultiStats & stats)
     {
-        fluid::RealVector pitchStats = computeStats(pitchMat, stats);
+        mPitchStats = computeStats(pitchMat, stats);
 
-        fluid::RealVector pitchMeanRes(1);
-        fluid::RealVector pitchStdDevRes(1);
-
-        fluid::RealVectorView pitchData = fluid::RealVectorView(pitchStats(fluid::Slice(0, 1)));
-        fluid::RealVectorView pitchMeanOut = fluid::RealVectorView(pitchMeanRes);
-        fluid::RealVectorView pitchStdDevOut = fluid::RealVectorView(pitchStdDevRes);
+        fluid::RealVectorView pitchData = fluid::RealVectorView(mPitchStats(fluid::Slice(0, 1)));
+        fluid::RealVectorView pitchMeanOut = fluid::RealVectorView(mPitchMeanRes);
+        fluid::RealVectorView pitchStdDevOut = fluid::RealVectorView(mPitchStdDevRes);
 
         mPitchRunningStats->process(pitchData, pitchMeanOut, pitchStdDevOut);
 
@@ -118,6 +120,10 @@ private:
     fluid::index mFftSizePitch = 32768;
     fluid::index mMinFreqPitch = 20;
     fluid::index mMaxFreqPitch = 10000;
+
+    fluid::RealVector mPitchStats;
+    fluid::RealVector mPitchMeanRes;
+    fluid::RealVector mPitchStdDevRes;
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(PitchD)

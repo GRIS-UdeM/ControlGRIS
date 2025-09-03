@@ -70,16 +70,16 @@ public:
 
     fluid::RealVector computeStats(fluid::RealMatrixView matrix, fluid::algorithm::MultiStats stats)
     {
-        fluid::index dim = matrix.cols();
-        fluid::RealMatrix tmp(dim, 7);
-        fluid::RealVector result(dim * 7);
-        stats.process(matrix.transpose(), tmp);
+        mDim = matrix.cols();
+        fluid::RealMatrix resMat(mDim, 7);
+        mResult.resize(mDim * 7);
+        stats.process(matrix.transpose(), resMat);
 
-        for (int j = 0; j < dim; j++) {
-            result(fluid::Slice(j * 7, 7)) <<= tmp.row(j);
+        for (int j = 0; j < mDim; j++) {
+            mResult(fluid::Slice(j * 7, 7)) <<= resMat.row(j);
         }
 
-        return result;
+        return mResult;
     }
 
 protected:
@@ -88,6 +88,10 @@ protected:
     int mRunningStatsHistory = 1;
 
 private:
+    //==============================================================================
+    fluid::index mDim;
+    fluid::RealVector mResult;
+
     //==============================================================================
     JUCE_LEAK_DETECTOR(Descriptor)
 };

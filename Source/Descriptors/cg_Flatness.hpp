@@ -31,7 +31,12 @@ class FlatnessD : public Descriptor
 {
 public:
     //==============================================================================
-    FlatnessD() { mID = DescriptorID::noise; }
+    FlatnessD()
+    {
+        mID = DescriptorID::noise;
+        mFlatnessMeanRes = fluid::RealVector(1);
+        mFlatnessStdDevRes = fluid::RealVector(1);
+    }
 
     void reset() override { mFlatnessRunningStats.reset(new fluid::algorithm::RunningStats()); }
 
@@ -56,6 +61,9 @@ private:
     //==============================================================================
     std::unique_ptr<fluid::algorithm::RunningStats> mFlatnessRunningStats;
     double mDescFlatness{};
+
+    fluid::RealVector mFlatnessMeanRes;
+    fluid::RealVector mFlatnessStdDevRes;
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(FlatnessD)

@@ -200,6 +200,27 @@ class ControlGrisAudioProcessor final
     std::array<OnsetDetectionD *, 4> mDomeOnsetDetectionRefs;
     std::array<OnsetDetectionD *, 5> mCubeOnsetDetectionRefs;
 
+    // member variables for audio descriptor calculations
+    fluid::RealVector mInLoudness;
+    fluid::RealVector mPaddedLoudness;
+    fluid::index mNFramesLoudness;
+    fluid::RealVector mLoudnessDesc;
+
+    fluid::RealVector mInPitch;
+    fluid::RealVector mPaddedPitch;
+    fluid::index mNFramesPitch;
+    fluid::ComplexVector mFramePitch;
+    fluid::RealVector mMagnitudePitch;
+    fluid::RealVector mCalculatedPitchDesc;
+
+    fluid::RealVector mInSpectral;
+    fluid::RealVector mPaddedSpectral;
+    fluid::index mNFramesSpectral;
+    fluid::RealVector mShapeStats;
+    fluid::ComplexVector nFrameSpectral;
+    fluid::RealVector mMagnitudeSpectral;
+    fluid::RealVector mCalculatedShapeDesc;
+
 public:
     //==============================================================================
     ControlGrisAudioProcessor();

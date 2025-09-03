@@ -41,10 +41,10 @@ public:
 
     void process(fluid::RealVector & shapeStats)
     {
-        fluid::RealVector centroidMeanRes = fluid::RealVector(1);
-        fluid::RealVector centroidStdDevRes = fluid::RealVector(1);
-        fluid::RealVectorView centroidData = fluid::RealVectorView(shapeStats(fluid::Slice(0, 1)));
         // we don't really need mean and stdDev...
+        // fluid::RealVector centroidMeanRes = fluid::RealVector(1);
+        // fluid::RealVector centroidStdDevRes = fluid::RealVector(1);
+        fluid::RealVectorView centroidData = fluid::RealVectorView(shapeStats(fluid::Slice(0, 1)));
         // fluid::RealVectorView centroidMeanOut = fluid::RealVectorView(centroidMeanRes);
         // fluid::RealVectorView centroidStdDevOut = fluid::RealVectorView(centroidStdDevRes);
         // mCentroidRunningStats->process(centroidData, centroidMeanOut, centroidStdDevOut);

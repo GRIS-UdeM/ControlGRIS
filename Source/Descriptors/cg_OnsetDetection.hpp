@@ -39,15 +39,15 @@ public:
     {
         mID = DescriptorID::iterationsSpeed;
         mOnsetDetectionUnusedSamples.resize(0);
+        mOnsetIn.resize(0);
+        mOnsetPadded.resize(0);
     }
 
     void init() override { mOnsetDetection->init(mWindowSize, mFftSize, mOnsetDetectionFilterSize); }
 
     void reset() override
     {
-        mWindowSize = 256;
-        mFftSize = 256;
-        mHopSize = 64;
+        mOnsetIn.resize(mNumSamplesToProcess);
         mOnsetDetection.reset(new fluid::algorithm::OnsetDetectionFunctions(mWindowSize,
                                                                             mOnesetDetectionMetric,
                                                                             fluid::FluidDefaultAllocator()));
@@ -87,48 +87,52 @@ public:
 
     void process(juce::AudioBuffer<float> & descriptorBuffer, double sampleRate, int blockSize)
     {
-        std::vector<float> allSamples;
-        std::vector<double> onsetDectectionVals{};
+        mAllSamples.clear();
+        mAllSamples.reserve(mOnsetDetectionUnusedSamples.size() + descriptorBuffer.getNumSamples());
+        mOnsetDectectionVals.clear();
         auto * channelData = descriptorBuffer.getReadPointer(0);
         int nFramesDivider{};
-        int numSamplesToProcess{ 256 };
+        auto nSamplesODUnusedSamples{ mOnsetDetectionUnusedSamples.size() };
+        auto nSamplesDescBuf{ descriptorBuffer.getNumSamples() };
 
         // get unprocessed samples from last processBlock call
-        for (int i{}; i < mOnsetDetectionUnusedSamples.size(); ++i) {
-            allSamples.push_back(static_cast<float>(mOnsetDetectionUnusedSamples[i]));
+        for (int i{}; i < nSamplesODUnusedSamples; ++i) {
+            mAllSamples.push_back(static_cast<float>(mOnsetDetectionUnusedSamples[i]));
         }
         // get new samples
-        for (int i{}; i < descriptorBuffer.getNumSamples(); ++i) {
-            allSamples.push_back(channelData[i]);
+        for (int i{}; i < nSamplesDescBuf; ++i) {
+            mAllSamples.push_back(channelData[i]);
         }
-        for (int i{}; i < allSamples.size() / numSamplesToProcess; ++i) {
-            fluid::RealVector onsetIn(numSamplesToProcess);
-            for (int j{}; j < numSamplesToProcess; ++j) {
-                onsetIn[j] = allSamples[j + (i * numSamplesToProcess)];
+        for (int i{}; i < mAllSamples.size() / mNumSamplesToProcess; ++i) {
+            std::fill(mOnsetIn.begin(), mOnsetIn.end(), 0); // necessary?
+            for (int j{}; j < mNumSamplesToProcess; ++j) {
+                mOnsetIn[j] = mAllSamples[j + (i * mNumSamplesToProcess)];
             }
-            fluid::RealVector onsetPadded(onsetIn.size() + mWindowSize + mHopSize);
-            fluid::index nOnsetFrames = static_cast<fluid::index>(floor((onsetPadded.size() - mWindowSize) / mHopSize));
+            mOnsetPadded.resize(mOnsetIn.size() + mWindowSize + mHopSize);
+            fluid::index nOnsetFrames
+                = static_cast<fluid::index>(floor((mOnsetPadded.size() - mWindowSize) / mHopSize));
             nFramesDivider = static_cast<int>(nOnsetFrames);
 
-            std::fill(onsetPadded.begin(), onsetPadded.end(), 0);
-            onsetPadded(fluid::Slice(mWindowSize / 2, onsetIn.size())) <<= onsetIn;
+            std::fill(mOnsetPadded.begin(), mOnsetPadded.end(), 0);
+            mOnsetPadded(fluid::Slice(mWindowSize / 2, mOnsetIn.size())) <<= mOnsetIn;
+            mOnsetDectectionVals.reserve(nOnsetFrames * mAllSamples.size() / mNumSamplesToProcess);
             for (int k = 0; k < nOnsetFrames; k++) {
-                fluid::RealVectorView window = onsetPadded(fluid::Slice(k * mHopSize, mWindowSize));
-                onsetDectectionVals.push_back(mOnsetDetection->processFrame(window,
-                                                                            mOnesetDetectionMetric,
-                                                                            1,
-                                                                            0 /*more than 0 gives assert*/,
-                                                                            fluid::FluidDefaultAllocator()));
+                mWindowOD = mOnsetPadded(fluid::Slice(k * mHopSize, mWindowSize));
+                mOnsetDectectionVals.push_back(mOnsetDetection->processFrame(mWindowOD,
+                                                                             mOnesetDetectionMetric,
+                                                                             1,
+                                                                             0 /*more than 0 gives assert*/,
+                                                                             fluid::FluidDefaultAllocator()));
             }
         }
 
         // store unused samples
-        if (allSamples.size() % numSamplesToProcess != 0) {
-            mOnsetDetectionUnusedSamples.resize(allSamples.size() % numSamplesToProcess);
-            for (int i = static_cast<int>(allSamples.size()) / numSamplesToProcess * numSamplesToProcess, j = 0;
-                 i < allSamples.size();
+        if (mAllSamples.size() % mNumSamplesToProcess != 0) {
+            mOnsetDetectionUnusedSamples.resize(mAllSamples.size() % mNumSamplesToProcess);
+            for (int i = static_cast<int>(mAllSamples.size()) / mNumSamplesToProcess * mNumSamplesToProcess, j = 0;
+                 i < mAllSamples.size();
                  ++i, ++j) {
-                mOnsetDetectionUnusedSamples[j] = allSamples[i];
+                mOnsetDetectionUnusedSamples[j] = mAllSamples[i];
             }
         } else {
             mOnsetDetectionUnusedSamples.resize(0);
@@ -145,9 +149,10 @@ public:
             }
 
             if (mTimeSinceLastOnsetDetectionDeque.size() == 3) {
-                auto timeSinceLastOnsetDetectionVec = mTimeSinceLastOnsetDetectionDeque;
-                std::sort(timeSinceLastOnsetDetectionVec.begin(), timeSinceLastOnsetDetectionVec.end());
-                auto median = timeSinceLastOnsetDetectionVec.at(
+                mTimeSinceLastOnsetDetectionForProcessing = mTimeSinceLastOnsetDetectionDeque;
+                std::sort(mTimeSinceLastOnsetDetectionForProcessing.begin(),
+                          mTimeSinceLastOnsetDetectionForProcessing.end());
+                auto median = mTimeSinceLastOnsetDetectionForProcessing.at(
                     2); // Not the median. The longest time appears to give better results
 
                 if (median >= mOnsetDetectionTimeMin && median <= mOnsetDetectionTimeMax) {
@@ -167,8 +172,8 @@ public:
             }
         } else {
             // get onset detection from audio
-            for (int i{}; i < onsetDectectionVals.size(); ++i) {
-                if (onsetDectectionVals[i] >= mDescOnsetDetectionThreshold && mIsOnsetDetectionReady) {
+            for (int i{}; i < mOnsetDectectionVals.size(); ++i) {
+                if (mOnsetDectectionVals[i] >= mDescOnsetDetectionThreshold && mIsOnsetDetectionReady) {
                     mSampleCounter = 0;
                     mIsOnsetDetectionReady = false;
                     mOnsetDetectionStartCountingSamples = true;
@@ -181,9 +186,10 @@ public:
                     }
 
                     if (mTimeSinceLastOnsetDetectionDeque.size() == 3) {
-                        auto timeSinceLastOnsetDetectionVec = mTimeSinceLastOnsetDetectionDeque;
-                        std::sort(timeSinceLastOnsetDetectionVec.begin(), timeSinceLastOnsetDetectionVec.end());
-                        auto median = timeSinceLastOnsetDetectionVec.at(
+                        mTimeSinceLastOnsetDetectionForProcessing = mTimeSinceLastOnsetDetectionDeque;
+                        std::sort(mTimeSinceLastOnsetDetectionForProcessing.begin(),
+                                  mTimeSinceLastOnsetDetectionForProcessing.end());
+                        auto median = mTimeSinceLastOnsetDetectionForProcessing.at(
                             2); // Not the median. The longest time appears to give better results
 
                         if (median < mOnsetDetectionTimeMin || median > mOnsetDetectionTimeMax) {
@@ -204,11 +210,11 @@ public:
                             ? mOnsetDetectionDirection = Direction::up
                             : mOnsetDetectionDirection = Direction::down;
                     }
-                } else if (onsetDectectionVals[i] < mDescOnsetDetectionThreshold) {
+                } else if (mOnsetDectectionVals[i] < mDescOnsetDetectionThreshold) {
                     mIsOnsetDetectionReady = true;
                 }
                 if (mOnsetDetectionStartCountingSamples) {
-                    mOnsetDetectionNumSamples += numSamplesToProcess;
+                    mOnsetDetectionNumSamples += mNumSamplesToProcess;
                 }
             }
         }
@@ -263,10 +269,16 @@ private:
     juce::uint64 mOnsetDetectionNumSamples{};
     fluid::RealVector mOnsetDetectionUnusedSamples;
     std::deque<double> mTimeSinceLastOnsetDetectionDeque{};
+    std::deque<double> mTimeSinceLastOnsetDetectionForProcessing{};
     Direction mOnsetDetectionDirection{};
     int mSampleCounter{};
     bool mUseTimerButtonclickValue{};
     double mTimerButtonClickvalue{};
+    std::vector<float> mAllSamples;
+    std::vector<double> mOnsetDectectionVals{};
+    fluid::RealVector mOnsetIn;
+    fluid::RealVector mOnsetPadded;
+    fluid::RealVectorView mWindowOD = mOnsetPadded(fluid::Slice(mHopSize, mWindowSize));
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(OnsetDetectionD)

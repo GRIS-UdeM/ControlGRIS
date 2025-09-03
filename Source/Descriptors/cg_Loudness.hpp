@@ -32,7 +32,12 @@ class LoudnessD : public Descriptor
 {
 public:
     //==============================================================================
-    LoudnessD() { mID = DescriptorID::loudness; }
+    LoudnessD()
+    {
+        mID = DescriptorID::loudness;
+        mLoudnessMeanRes = fluid::RealVector(1);
+        mLoudnessStdDevRes = fluid::RealVector(1);
+    }
 
     void init(double mSampleRate)
     {
@@ -50,13 +55,11 @@ public:
 
     void process(fluid::RealMatrix & loudnessMat, fluid::algorithm::MultiStats & stats)
     {
-        fluid::RealVector loudnessStats = computeStats(loudnessMat, stats);
+        mLoudnessStats = computeStats(loudnessMat, stats);
 
-        fluid::RealVector loudnessMeanRes = fluid::RealVector(1);
-        fluid::RealVector loudnessStdDevRes = fluid::RealVector(1);
-        fluid::RealVectorView loudnessData = fluid::RealVectorView(loudnessStats(fluid::Slice(0, 1)));
-        fluid::RealVectorView loudnessMeanOut = fluid::RealVectorView(loudnessMeanRes);
-        fluid::RealVectorView loudnessStdDevOut = fluid::RealVectorView(loudnessStdDevRes);
+        fluid::RealVectorView loudnessData = fluid::RealVectorView(mLoudnessStats(fluid::Slice(0, 1)));
+        fluid::RealVectorView loudnessMeanOut = fluid::RealVectorView(mLoudnessMeanRes);
+        fluid::RealVectorView loudnessStdDevOut = fluid::RealVectorView(mLoudnessStdDevRes);
 
         mLoudnessRunningStats->process(loudnessData, loudnessMeanOut, loudnessStdDevOut);
 
@@ -98,6 +101,10 @@ private:
     fluid::index mHopSizeLoudness = 256;
     fluid::index mWindowSizeLoudness = 512;
     fluid::index mHalfWindowLoudness = mWindowSizeLoudness / 2;
+
+    fluid::RealVector mLoudnessStats;
+    fluid::RealVector mLoudnessMeanRes;
+    fluid::RealVector mLoudnessStdDevRes;
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(LoudnessD)
