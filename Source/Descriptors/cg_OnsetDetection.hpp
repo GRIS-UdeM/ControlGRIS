@@ -43,12 +43,12 @@ public:
         mOnsetPadded.resize(0);
     }
 
-    void init() override { mOnsetDetection->init(mWindowSize, mFftSize, mOnsetDetectionFilterSize); }
+    void init() override { mOnsetDetection->init(WINDOW_SIZE, FFT_SIZE, mOnsetDetectionFilterSize); }
 
     void reset() override
     {
-        mOnsetIn.resize(mNumSamplesToProcess);
-        mOnsetDetection.reset(new fluid::algorithm::OnsetDetectionFunctions(mWindowSize,
+        mOnsetIn.resize(NUM_SAMPLES_TO_PROCESS);
+        mOnsetDetection.reset(new fluid::algorithm::OnsetDetectionFunctions(WINDOW_SIZE,
                                                                             mOnesetDetectionMetric,
                                                                             fluid::FluidDefaultAllocator()));
     }
@@ -103,21 +103,21 @@ public:
         for (int i{}; i < nSamplesDescBuf; ++i) {
             mAllSamples.push_back(channelData[i]);
         }
-        for (int i{}; i < mAllSamples.size() / mNumSamplesToProcess; ++i) {
+        for (int i{}; i < mAllSamples.size() / NUM_SAMPLES_TO_PROCESS; ++i) {
             std::fill(mOnsetIn.begin(), mOnsetIn.end(), 0); // necessary?
-            for (int j{}; j < mNumSamplesToProcess; ++j) {
-                mOnsetIn[j] = mAllSamples[j + (i * mNumSamplesToProcess)];
+            for (int j{}; j < NUM_SAMPLES_TO_PROCESS; ++j) {
+                mOnsetIn[j] = mAllSamples[j + (i * NUM_SAMPLES_TO_PROCESS)];
             }
-            mOnsetPadded.resize(mOnsetIn.size() + mWindowSize + mHopSize);
+            mOnsetPadded.resize(mOnsetIn.size() + WINDOW_SIZE + HOP_SIZE);
             fluid::index nOnsetFrames
-                = static_cast<fluid::index>(floor((mOnsetPadded.size() - mWindowSize) / mHopSize));
+                = static_cast<fluid::index>(floor((mOnsetPadded.size() - WINDOW_SIZE) / HOP_SIZE));
             nFramesDivider = static_cast<int>(nOnsetFrames);
 
             std::fill(mOnsetPadded.begin(), mOnsetPadded.end(), 0);
-            mOnsetPadded(fluid::Slice(mWindowSize / 2, mOnsetIn.size())) <<= mOnsetIn;
-            mOnsetDectectionVals.reserve(nOnsetFrames * mAllSamples.size() / mNumSamplesToProcess);
+            mOnsetPadded(fluid::Slice(WINDOW_SIZE / 2, mOnsetIn.size())) <<= mOnsetIn;
+            mOnsetDectectionVals.reserve(nOnsetFrames * mAllSamples.size() / NUM_SAMPLES_TO_PROCESS);
             for (int k = 0; k < nOnsetFrames; k++) {
-                mWindowOD = mOnsetPadded(fluid::Slice(k * mHopSize, mWindowSize));
+                mWindowOD = mOnsetPadded(fluid::Slice(k * HOP_SIZE, WINDOW_SIZE));
                 mOnsetDectectionVals.push_back(mOnsetDetection->processFrame(mWindowOD,
                                                                              mOnesetDetectionMetric,
                                                                              1,
@@ -127,9 +127,9 @@ public:
         }
 
         // store unused samples
-        if (mAllSamples.size() % mNumSamplesToProcess != 0) {
-            mOnsetDetectionUnusedSamples.resize(mAllSamples.size() % mNumSamplesToProcess);
-            for (int i = static_cast<int>(mAllSamples.size()) / mNumSamplesToProcess * mNumSamplesToProcess, j = 0;
+        if (mAllSamples.size() % NUM_SAMPLES_TO_PROCESS != 0) {
+            mOnsetDetectionUnusedSamples.resize(mAllSamples.size() % NUM_SAMPLES_TO_PROCESS);
+            for (int i = static_cast<int>(mAllSamples.size()) / NUM_SAMPLES_TO_PROCESS * NUM_SAMPLES_TO_PROCESS, j = 0;
                  i < mAllSamples.size();
                  ++i, ++j) {
                 mOnsetDetectionUnusedSamples[j] = mAllSamples[i];
@@ -214,7 +214,7 @@ public:
                     mIsOnsetDetectionReady = true;
                 }
                 if (mOnsetDetectionStartCountingSamples) {
-                    mOnsetDetectionNumSamples += mNumSamplesToProcess;
+                    mOnsetDetectionNumSamples += NUM_SAMPLES_TO_PROCESS;
                 }
             }
         }
@@ -245,13 +245,10 @@ private:
     //==============================================================================
     std::unique_ptr<fluid::algorithm::OnsetDetectionFunctions> mOnsetDetection;
 
-    fluid::index mNBins = 513;
-    fluid::index mFftSize = 2 * (mNBins - 1);
-    fluid::index mHopSize = 1024;
-    fluid::index mWindowSize = 1024;
-    fluid::index mHalfWindow = mWindowSize / 2;
-    fluid::index mNBands = 40;
-    fluid::index mNCoefs = 13;
+    static constexpr fluid::index FFT_SIZE = 256;
+    static constexpr fluid::index HOP_SIZE = 64;
+    static constexpr fluid::index WINDOW_SIZE = 256;
+    static constexpr int NUM_SAMPLES_TO_PROCESS{ 256 };
 
     fluid::index mOnsetDetectionFilterSize = 3;
     fluid::index mOnesetDetectionMetric = 9;
@@ -278,7 +275,7 @@ private:
     std::vector<double> mOnsetDectectionVals{};
     fluid::RealVector mOnsetIn;
     fluid::RealVector mOnsetPadded;
-    fluid::RealVectorView mWindowOD = mOnsetPadded(fluid::Slice(mHopSize, mWindowSize));
+    fluid::RealVectorView mWindowOD = mOnsetPadded(fluid::Slice(HOP_SIZE, WINDOW_SIZE));
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(OnsetDetectionD)

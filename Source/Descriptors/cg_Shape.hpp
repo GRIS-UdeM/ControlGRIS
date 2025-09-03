@@ -34,7 +34,7 @@ public:
     void reset() override
     {
         mShape.reset(new fluid::algorithm::SpectralShape(fluid::FluidDefaultAllocator()));
-        mStft.reset(new fluid::algorithm::STFT{ mWindowSizeSpectral, mFftSizeSpectral, mHopSizeSpectral });
+        mStft.reset(new fluid::algorithm::STFT{ WINDOW_SIZE, FFT_SIZE, HOP_SIZE });
     }
 
     void shapeProcess(fluid::RealVector & magnitude, fluid::RealVector & shapeDesc, double sampleRate)
@@ -42,8 +42,8 @@ public:
         mShape->processFrame(magnitude,
                              shapeDesc,
                              sampleRate,
-                             static_cast<double>(mMinFreqSpectral),
-                             static_cast<double>(mMaxFreqSpectral),
+                             MIN_FREQ,
+                             MAX_FREQ,
                              0.95,
                              true,
                              true,
@@ -59,24 +59,24 @@ public:
 
     fluid::RealVectorView calculateWindow(fluid::RealVector & padded, int & i)
     {
-        return padded(fluid::Slice(i * mHopSizeSpectral, mWindowSizeSpectral));
+        return padded(fluid::Slice(i * HOP_SIZE, WINDOW_SIZE));
     }
 
     fluid::RealVector calculatePadded(fluid::RealVector in)
     {
-        return in.size() + mWindowSizeSpectral + mHopSizeSpectral;
+        return in.size() + WINDOW_SIZE + HOP_SIZE;
     }
 
     fluid::index calculateFrames(fluid::RealVector padded)
     {
-        return static_cast<fluid::index>(floor((padded.size() - mWindowSizeSpectral) / mHopSizeSpectral));
+        return static_cast<fluid::index>(floor((padded.size() - WINDOW_SIZE) / HOP_SIZE));
     }
 
-    fluid::Slice paddedValue(fluid::RealVector in) { return fluid::Slice(mHalfWindowSpectral, in.size()); }
+    fluid::Slice paddedValue(fluid::RealVector in) { return fluid::Slice(HALF_WINDOW, in.size()); }
 
-    void setFrame(fluid::ComplexVector & frame) { frame.resize(mNBinsSpectral); }
+    void setFrame(fluid::ComplexVector & frame) { frame.resize(NBINS); }
 
-    void setMagnitude(fluid::RealVector & magnitude) { magnitude.resize(mNBinsSpectral); }
+    void setMagnitude(fluid::RealVector & magnitude) { magnitude.resize(NBINS); }
 
     //==============================================================================
     // Stft stuff
@@ -100,14 +100,13 @@ private:
     std::unique_ptr<fluid::algorithm::SpectralShape> mShape;
     std::unique_ptr<fluid::algorithm::STFT> mStft;
 
-    // SPECTRAL SHAPE FOR CENTROID, FLATNESS AND SPREAD
-    fluid::index mNBinsSpectral = 4097;      // 257
-    fluid::index mHopSizeSpectral = 512;     // 64
-    fluid::index mWindowSizeSpectral = 4096; // 256
-    fluid::index mHalfWindowSpectral = mWindowSizeSpectral / 2;
-    fluid::index mFftSizeSpectral = 8192; // 512
-    fluid::index mMinFreqSpectral = 20;
-    fluid::index mMaxFreqSpectral = 20000;
+    static constexpr fluid::index NBINS = 4097;
+    static constexpr fluid::index HOP_SIZE = 512;
+    static constexpr fluid::index WINDOW_SIZE = 4096;
+    static constexpr fluid::index HALF_WINDOW = WINDOW_SIZE / 2;
+    static constexpr fluid::index FFT_SIZE = 8192;
+    static constexpr double MIN_FREQ = 20.0;
+    static constexpr double MAX_FREQ = 20000.0;
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(ShapeD)

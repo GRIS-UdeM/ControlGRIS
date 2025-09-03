@@ -41,13 +41,13 @@ public:
 
     void init(double mSampleRate)
     {
-        mLoudness->init(mWindowSizeLoudness, mSampleRate);
+        mLoudness->init(WINDOW_SIZE, mSampleRate);
         mLoudnessRunningStats->init(mRunningStatsHistory, 1);
     }
 
     void reset() override
     {
-        mLoudness.reset(new fluid::algorithm::Loudness{ mWindowSizeLoudness });
+        mLoudness.reset(new fluid::algorithm::Loudness{ WINDOW_SIZE });
         mLoudnessRunningStats.reset(new fluid::algorithm::RunningStats());
     }
 
@@ -73,20 +73,20 @@ public:
 
     fluid::RealVectorView calculateWindow(fluid::RealVector & padded, int & i)
     {
-        return padded(fluid::Slice(i * mHopSizeLoudness, mWindowSizeLoudness));
+        return padded(fluid::Slice(i * HOPSIZE, WINDOW_SIZE));
     }
 
     fluid::RealVector calculatePadded(fluid::RealVector in)
     {
-        return in.size() + mWindowSizeLoudness + mHopSizeLoudness;
+        return in.size() + WINDOW_SIZE + HOPSIZE;
     }
 
     fluid::index calculateFrames(fluid::RealVector padded)
     {
-        return static_cast<fluid::index>(floor((padded.size() - mWindowSizeLoudness) / mHopSizeLoudness));
+        return static_cast<fluid::index>(floor((padded.size() - WINDOW_SIZE) / HOPSIZE));
     }
 
-    fluid::Slice paddedValue(fluid::RealVector in) { return fluid::Slice(mHalfWindowLoudness, in.size()); }
+    fluid::Slice paddedValue(fluid::RealVector in) { return fluid::Slice(HALF_WINDOW, in.size()); }
 
 private:
     //==============================================================================
@@ -97,10 +97,9 @@ private:
     double mDescLoudness{};
     std::unique_ptr<fluid::algorithm::Loudness> mLoudness;
 
-    // LOUDNESS VALUE
-    fluid::index mHopSizeLoudness = 256;
-    fluid::index mWindowSizeLoudness = 512;
-    fluid::index mHalfWindowLoudness = mWindowSizeLoudness / 2;
+    static constexpr fluid::index HOPSIZE = 256;
+    static constexpr fluid::index WINDOW_SIZE = 512;
+    static constexpr fluid::index HALF_WINDOW = WINDOW_SIZE / 2;
 
     fluid::RealVector mLoudnessStats;
     fluid::RealVector mLoudnessMeanRes;
