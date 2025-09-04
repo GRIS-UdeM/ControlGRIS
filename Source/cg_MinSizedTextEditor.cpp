@@ -94,7 +94,7 @@ int SpatTextEditor::getMinWidth() const noexcept
     textLayout.createLayout(attrStr, 100);
     auto strWidth{ textLayout.getStringWidth(attrStr) };
 
-    return strWidth + BOX_WIDTH;
+    return static_cast<int>(strWidth + BOX_WIDTH);
 }
 
 //==============================================================================
