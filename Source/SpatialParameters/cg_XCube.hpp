@@ -85,18 +85,18 @@ public:
         }
 
         if (mActLikeAzimuth) {
-            double clipMax = 1;
-            int multiplier = 360;
+            constexpr double clipMax = 1.0;
+            constexpr int multiplier = 360;
 
-            double clip = juce::jlimit(0.0, clipMax, smooth);
-            double inputRange = range * 0.01;
+            const double clip = juce::jlimit(0.0, clipMax, smooth);
+            const double inputRange = range * 0.01;
             res = clip * inputRange * multiplier * lap;
             res += offset * multiplier;
         } else {
-            double clipMax = 1;
+            constexpr double clipMax = 1.0;
 
-            double clipOne = juce::jlimit(0.0, clipMax, smooth);
-            double inputRange = range * 0.01;
+            const double clipOne = juce::jlimit(0.0, clipMax, smooth);
+            const double inputRange = range * 0.01;
             res = clipOne * inputRange;
             res *= 2.0; // to cover from -1 to 1 on gui
             res += offset;

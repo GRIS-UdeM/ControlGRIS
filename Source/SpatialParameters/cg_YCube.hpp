@@ -77,10 +77,10 @@ public:
             break;
         }
 
-        double clipMax = 0.999999;
+        constexpr double clipMax = 0.999999;
 
-        double clip = juce::jlimit(0.0, clipMax, smooth);
-        double inputRange = range * 0.01;
+        const double clip = juce::jlimit(0.0, clipMax, smooth);
+        const double inputRange = range * 0.01;
         res = clip * inputRange;
         res *= 2.0; // to cover from -1 to 1 on gui
         res += offset;

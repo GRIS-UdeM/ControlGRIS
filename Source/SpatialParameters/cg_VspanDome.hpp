@@ -78,11 +78,11 @@ public:
             break;
         }
 
-        double clipMax = 0.999999;
-        int multiplier = 100;
+        constexpr double clipMax = 0.999999;
+        constexpr int multiplier = 100;
 
-        double clip = juce::jlimit(0.0, clipMax, smooth);
-        double inputRange = range * 0.01;
+        const double clip = juce::jlimit(0.0, clipMax, smooth);
+        const double inputRange = range * 0.01;
         res = clip * inputRange * multiplier;
         res += offset * multiplier;
 
