@@ -150,8 +150,12 @@ public:
     void sourceSelectionChangedCallback(SourceIndex sourceIndex) override;
     void sourcesPlacementChangedCallback(SourcePlacement sourcePlacement) override;
     void speakerSetupSelectedCallback(const juce::File & speakerSetupFile) override;
-    void convertSpeakerPositionToSourcePosition (juce::ValueTree& curSpeaker, const gris::SpatMode savedSpatMode, juce::XmlElement& presetXml);
-    void convertCartesianSpeakerPositionToSourcePosition (const juce::ValueTree& curSpeaker, const gris::SpatMode savedSpatMode, juce::XmlElement& presetXml);
+    void convertSpeakerPositionToSourcePosition(juce::ValueTree & curSpeaker,
+                                                const gris::SpatMode savedSpatMode,
+                                                juce::XmlElement & presetXml);
+    void convertCartesianSpeakerPositionToSourcePosition(const juce::ValueTree & curSpeaker,
+                                                         const gris::SpatMode savedSpatMode,
+                                                         juce::XmlElement & presetXml);
     void sourcePositionChangedCallback(SourceIndex sourceIndex,
                                        std::optional<Radians> azimuth,
                                        std::optional<Radians> elevation,
@@ -229,6 +233,11 @@ private:
     JUCE_LEAK_DETECTOR(ControlGrisAudioProcessorEditor)
 };
 
-void storeXYZSpeakerPositionInPreset (const gris::SpatMode savedSpatMode, const float speakerX, const float speakerY, const float speakerZ, juce::XmlElement& presetXml, const int speakerNumber);
+void storeXYZSpeakerPositionInPreset(const gris::SpatMode savedSpatMode,
+                                     const float speakerX,
+                                     const float speakerY,
+                                     const float speakerZ,
+                                     juce::XmlElement & presetXml,
+                                     const int speakerNumber);
 
 } // namespace gris

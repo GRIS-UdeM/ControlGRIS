@@ -25,7 +25,7 @@
 #include "cg_PersistentStorage.h"
 #include "cg_Source.hpp"
 #include "cg_SourceComponent.hpp"
-//#include "cg_StrongTypes.hpp"
+// #include "cg_StrongTypes.hpp"
 
 namespace gris
 {

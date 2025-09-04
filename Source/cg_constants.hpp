@@ -137,7 +137,6 @@ enum class TrajectoryRandomType { continuous, discrete };
 int TrajectoryRandomTypeToInt(TrajectoryRandomType type);
 TrajectoryRandomType TrajectoryRandomTypeFromInt(int value);
 
-
 namespace Automation
 {
 namespace Ids

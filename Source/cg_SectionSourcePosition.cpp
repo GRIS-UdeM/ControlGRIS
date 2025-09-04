@@ -62,7 +62,7 @@ DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent, GrisLookA
         mCurrentAzimuth = Degrees{ static_cast<float>(mAzimuthSlider.getValue()) };
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
             l.sourcePositionChangedCallback(mSourceBoxComponent.mSelectedSource,
-                                            Radians { mCurrentAzimuth },
+                                            Radians{ mCurrentAzimuth },
                                             std::nullopt,
                                             std::nullopt,
                                             std::nullopt,
@@ -81,13 +81,14 @@ DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent, GrisLookA
 void DomeControls::updateSliderValues(Source * source)
 {
     mCurrentAzimuth = source->getAzimuth();
-    mCurrentElevation = Radians { MAX_ELEVATION * source->getNormalizedElevation().get() };
+    mCurrentElevation = Radians{ MAX_ELEVATION * source->getNormalizedElevation().get() };
 
     if (mCurrentAzimuth.getAsDegrees() < 0.0f) {
         mCurrentAzimuth += Degrees{ 360.0f };
     }
     mAzimuthSlider.setValue(mCurrentAzimuth.getAsDegrees(), juce::NotificationType::dontSendNotification);
-    mElevationSlider.setValue(1.0f - mCurrentElevation / Radians { MAX_ELEVATION }, juce::NotificationType::dontSendNotification);
+    mElevationSlider.setValue(1.0f - mCurrentElevation / Radians{ MAX_ELEVATION },
+                              juce::NotificationType::dontSendNotification);
 }
 
 //==============================================================================
@@ -190,7 +191,6 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
 
     mSelectedSource = SourceIndex{};
 
-
     mSourcesBanner.setLookAndFeel(&mGrisLookAndFeel);
     mSourcesBanner.setText("Sources", juce::dontSendNotification);
     addAndMakeVisible(&mSourcesBanner);
@@ -213,8 +213,19 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
 
     auto folderImage = juce::ImageCache::getFromMemory(BinaryData::folder_icon_png, BinaryData::folder_icon_pngSize);
 
-    mLoadSpeakerSetupButton.setImages(false, true, true, folderImage, 1.0f, juce::Colours::transparentWhite, folderImage, 0.7f, juce::Colours::transparentWhite, folderImage, 0.7f, juce::Colours::transparentWhite);
-    mLoadSpeakerSetupButton.setTooltip ("Load Speaker Setup as source positions");
+    mLoadSpeakerSetupButton.setImages(false,
+                                      true,
+                                      true,
+                                      folderImage,
+                                      1.0f,
+                                      juce::Colours::transparentWhite,
+                                      folderImage,
+                                      0.7f,
+                                      juce::Colours::transparentWhite,
+                                      folderImage,
+                                      0.7f,
+                                      juce::Colours::transparentWhite);
+    mLoadSpeakerSetupButton.setTooltip("Load Speaker Setup as source positions");
 
     addAndMakeVisible(&mLoadSpeakerSetupButton);
     mLoadSpeakerSetupButton.onClick = [this] {
@@ -305,7 +316,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
 void SectionSourcePosition::mouseDown(juce::MouseEvent const & event)
 {
     auto const x{ 267.0f };
-    auto const y{ 15.0f + titleHeight};
+    auto const y{ 15.0f + titleHeight };
     // Area where the selected source is shown.
     juce::Rectangle<float> const selectedSourceArea{ x - 5.0f, y - 13.0f, 24.0f, 24.0f };
     if (selectedSourceArea.contains(event.getMouseDownPosition().toFloat())) {
@@ -389,7 +400,6 @@ void SectionSourcePosition::resized()
         mSourcePlacementLabel.setBounds(5, 105 + titleHeight, 150, 10);
         mSourcePlacementCombo.setBounds(120, 102 + titleHeight, 165, 15);
     }
-
 }
 
 //==============================================================================

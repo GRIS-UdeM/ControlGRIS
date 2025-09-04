@@ -34,8 +34,8 @@ FieldComponent::FieldComponent(Sources & sources) noexcept : mSources(sources)
 //==============================================================================
 FieldComponent::~FieldComponent() noexcept
 {
-    for (int i{}; i < mSources.MAX_NUMBER_OF_SOURCES ; ++i) {
-        mSources[SourceIndex{i}].removeGuiListener(this);
+    for (int i{}; i < mSources.MAX_NUMBER_OF_SOURCES; ++i) {
+        mSources[SourceIndex{ i }].removeGuiListener(this);
     }
 }
 
@@ -385,7 +385,8 @@ void PositionFieldComponent::drawDomeSpans(juce::Graphics & g) const
         path.closeSubPath();
 
         // rotate, scale and translate path
-        auto const rotation{ azimuth - Radians { Degrees{ 90.0f }} }; // correction for the way addCentredArc counts angles
+        auto const rotation{ azimuth
+                             - Radians{ Degrees{ 90.0f } } }; // correction for the way addCentredArc counts angles
         auto const transform{
             juce::AffineTransform::rotation(rotation.getAsRadians()).scaled(magnitude).translated(fieldCenter)
         };
@@ -727,7 +728,7 @@ juce::Point<float> ElevationFieldComponent::sourceElevationToComponentPosition(R
     auto const x{
         LEFT_PADDING + widthBetweenEachSource * (static_cast<float>(index.get() + 1))
     }; // We add +1 to the index for the drawing handle.
-    auto const clippedElevation{ sourceElevation.clamped(Radians {MIN_ELEVATION}, Radians {MAX_ELEVATION}) };
+    auto const clippedElevation{ sourceElevation.clamped(Radians{ MIN_ELEVATION }, Radians{ MAX_ELEVATION }) };
     jassert(!std::isnan(clippedElevation.getAsRadians()));
     auto const y{ clippedElevation / Radians{ MAX_ELEVATION } * availableHeight + TOP_PADDING };
     juce::Point<float> const result{ x, y };
@@ -744,7 +745,7 @@ Radians ElevationFieldComponent::componentPositionToSourceElevation(juce::Point<
     auto const effectiveHeight{ static_cast<float>(getHeight()) - TOP_PADDING - BOTTOM_PADDING };
 
     Radians const elevation{ MAX_ELEVATION * ((componentPosition.getY() - TOP_PADDING) / effectiveHeight) };
-    auto const result{ elevation.clamped(Radians {MIN_ELEVATION}, Radians {MAX_ELEVATION}) };
+    auto const result{ elevation.clamped(Radians{ MIN_ELEVATION }, Radians{ MAX_ELEVATION }) };
 
     return result;
 }

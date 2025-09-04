@@ -62,10 +62,7 @@ public:
         return padded(fluid::Slice(i * HOP_SIZE, WINDOW_SIZE));
     }
 
-    fluid::RealVector calculatePadded(fluid::RealVector in)
-    {
-        return in.size() + WINDOW_SIZE + HOP_SIZE;
-    }
+    fluid::RealVector calculatePadded(fluid::RealVector in) { return in.size() + WINDOW_SIZE + HOP_SIZE; }
 
     fluid::index calculateFrames(fluid::RealVector padded)
     {

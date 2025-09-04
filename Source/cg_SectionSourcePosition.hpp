@@ -24,12 +24,12 @@
 
 #include <JuceHeader.h>
 
+#include "cg_BannerComponent.hpp"
 #include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_NumSlider.h"
 #include "cg_SectionSourceSpan.hpp"
 #include "cg_Source.hpp"
 #include "cg_constants.hpp"
-#include "cg_BannerComponent.hpp"
 
 namespace gris
 {
@@ -132,7 +132,7 @@ private:
     juce::AudioProcessorValueTreeState & mAPVTS;
     juce::ListenerList<Listener> mListeners;
 
-    static constexpr float titleHeight{20};
+    static constexpr float titleHeight{ 20 };
 
     SpatMode mSpatMode;
     SourceIndex mSelectedSource;

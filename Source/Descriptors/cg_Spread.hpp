@@ -42,8 +42,8 @@ public:
     void process(fluid::RealVector & shapeStats)
     {
         // we don't really need mean and stdDev...
-        //fluid::RealVector spreadMeanRes = fluid::RealVector(1);
-        //fluid::RealVector spreadStdDevRes = fluid::RealVector(1);
+        // fluid::RealVector spreadMeanRes = fluid::RealVector(1);
+        // fluid::RealVector spreadStdDevRes = fluid::RealVector(1);
         fluid::RealVectorView spreadData = fluid::RealVectorView(shapeStats(fluid::Slice(1 * 7, 1)));
         // fluid::RealVectorView spreadMeanOut = fluid::RealVectorView(spreadMeanRes);
         // fluid::RealVectorView spreadStdDevOut = fluid::RealVectorView(spreadStdDevRes);

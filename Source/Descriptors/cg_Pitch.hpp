@@ -65,12 +65,7 @@ public:
 
     void yinProcess(fluid::RealVector & magnitude, fluid::RealVector & pitch, double mSampleRate)
     {
-        mYin->processFrame(magnitude,
-                           pitch,
-                           MIN_FREQ,
-                           MAX_FREQ,
-                           mSampleRate,
-                           fluid::FluidDefaultAllocator());
+        mYin->processFrame(magnitude, pitch, MIN_FREQ, MAX_FREQ, mSampleRate, fluid::FluidDefaultAllocator());
     }
 
     fluid::RealVectorView calculateWindow(fluid::RealVector & padded, int & i)

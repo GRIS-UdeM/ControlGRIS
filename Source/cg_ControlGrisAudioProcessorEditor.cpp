@@ -465,7 +465,7 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
     mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
     // TODO: ???
     // if (isNewSourceCount) {
-        // sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
+    // sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
     // }
 }
 
@@ -508,43 +508,44 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
 
     auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
     auto const distance{ isCubeMode ? 0.7f : 1.0f };
-    auto const numOfSources{mProcessor.getSources().size()};
-    auto const increment{360.0f / numOfSources};
+    auto const numOfSources{ mProcessor.getSources().size() };
+    auto const increment{ 360.0f / numOfSources };
     auto curOddAzimuth{ 0.0f + increment / 2 };
     auto curEvenAzimuth{ 360.0f - increment / 2 };
 
-    auto const getAzimuthValue = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth](int const sourceIndex) {
-        switch (sourcePlacement) {
-        case SourcePlacement::leftAlternate:
-            return (sourceIndex % 2 == 0) ? std::exchange(curEvenAzimuth, curEvenAzimuth - increment)
-                                          : std::exchange(curOddAzimuth, curOddAzimuth + increment);
-        case SourcePlacement::rightAlternate:
-            return (sourceIndex % 2 == 0) ? std::exchange(curOddAzimuth, curOddAzimuth + increment)
-                                          : std::exchange(curEvenAzimuth, curEvenAzimuth - increment);
-        case SourcePlacement::leftClockwise:
-            return 360.0f / numOfSources * sourceIndex - increment / 2;
-        case SourcePlacement::leftCounterClockwise:
-            return 360.0f / numOfSources * -sourceIndex - increment / 2;
-        case SourcePlacement::rightClockwise:
-            return 360.0f / numOfSources * sourceIndex + increment / 2;
-        case SourcePlacement::rightCounterClockwise:
-            return 360.0f / numOfSources * -sourceIndex + increment / 2;
-        case SourcePlacement::topClockwise:
-            return 360.0f / numOfSources * sourceIndex;
-        case SourcePlacement::topCounterClockwise:
-            return 360.0f / numOfSources * -sourceIndex;
-        case SourcePlacement::undefined:
-        default:
-            jassertfalse;
-            return 0.f;
-        }
-    };
+    auto const getAzimuthValue
+        = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth](int const sourceIndex) {
+              switch (sourcePlacement) {
+              case SourcePlacement::leftAlternate:
+                  return (sourceIndex % 2 == 0) ? std::exchange(curEvenAzimuth, curEvenAzimuth - increment)
+                                                : std::exchange(curOddAzimuth, curOddAzimuth + increment);
+              case SourcePlacement::rightAlternate:
+                  return (sourceIndex % 2 == 0) ? std::exchange(curOddAzimuth, curOddAzimuth + increment)
+                                                : std::exchange(curEvenAzimuth, curEvenAzimuth - increment);
+              case SourcePlacement::leftClockwise:
+                  return 360.0f / numOfSources * sourceIndex - increment / 2;
+              case SourcePlacement::leftCounterClockwise:
+                  return 360.0f / numOfSources * -sourceIndex - increment / 2;
+              case SourcePlacement::rightClockwise:
+                  return 360.0f / numOfSources * sourceIndex + increment / 2;
+              case SourcePlacement::rightCounterClockwise:
+                  return 360.0f / numOfSources * -sourceIndex + increment / 2;
+              case SourcePlacement::topClockwise:
+                  return 360.0f / numOfSources * sourceIndex;
+              case SourcePlacement::topCounterClockwise:
+                  return 360.0f / numOfSources * -sourceIndex;
+              case SourcePlacement::undefined:
+              default:
+                  jassertfalse;
+                  return 0.f;
+              }
+          };
 
-    //position all sources
+    // position all sources
     for (auto i = 0; i < numOfSources; ++i) {
         auto & source{ mProcessor.getSources()[i] };
         auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-        auto const azimuth{Degrees{ getAzimuthValue(i) }};
+        auto const azimuth{ Degrees{ getAzimuthValue(i) } };
         source.setCoordinates(Radians{ azimuth },
                               Radians{ elevation },
                               distance,
@@ -552,7 +553,7 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     }
 
     // TODO: why are we storing the _normalized_ positions in the processor?
-    //then as a second pass, give the processor the normalized positions
+    // then as a second pass, give the processor the normalized positions
     for (SourceIndex i{}; i < SourceIndex{ numOfSources }; ++i) {
         auto const & source{ mProcessor.getSources()[i] };
         mProcessor.setSourceParameterValue(i, SourceParameter::azimuth, source.getNormalizedAzimuth().get());
@@ -561,10 +562,13 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     }
 
     // update selected source
-    mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource], SourceIndex{}, mProcessor.getSpatMode());
-    mPositionTrajectoryManager.setTrajectoryType(mPositionTrajectoryManager.getTrajectoryType(), mProcessor.getSources().getPrimarySource().getPos());
+    mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource],
+                                                SourceIndex{},
+                                                mProcessor.getSpatMode());
+    mPositionTrajectoryManager.setTrajectoryType(mPositionTrajectoryManager.getTrajectoryType(),
+                                                 mProcessor.getSources().getPrimarySource().getPos());
 
-    //set source link back to its cached value
+    // set source link back to its cached value
     mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
 
     repaint();
@@ -623,7 +627,7 @@ public:
 static GetDomeAzimuthAndElevationFromPositionTest getAzimuthAndElevationFromPositionTest;
 
 //==============================================================================
-void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::File& speakerSetupFile)
+void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::File & speakerSetupFile)
 {
     auto const showError = [](juce::String error) {
         juce::AlertWindow::showMessageBox(juce::AlertWindow::WarningIcon,
@@ -640,7 +644,8 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
 
     // and is a valid speaker setup file
     auto const speakerSetup = juce::ValueTree::fromXml(speakerSetupFile.loadFileAsString());
-    if (!speakerSetup.isValid() || speakerSetup.getType().toString() != SPEAKER_SETUP_XML_TAG || speakerSetup.getNumChildren() < 1) {
+    if (!speakerSetup.isValid() || speakerSetup.getType().toString() != SPEAKER_SETUP_XML_TAG
+        || speakerSetup.getNumChildren() < 1) {
         showError("This file is not a valid Speaker Setup file: " + speakerSetupFile.getFullPathName());
         return;
     }
@@ -657,7 +662,7 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
         else if (savedSpatMode == SPAT_MODE_STRINGS[1])
             return SpatMode::cube;
 
-        //unknown/unsuported mode
+        // unknown/unsuported mode
         jassertfalse;
         return SpatMode::dome;
     }();
@@ -704,7 +709,7 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
         mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
 }
 
-void storeXYZSpeakerPositionInPreset (const gris::SpatMode savedSpatMode,
+void storeXYZSpeakerPositionInPreset(const gris::SpatMode savedSpatMode,
                                      const float speakerX,
                                      const float speakerY,
                                      const float speakerZ,
@@ -767,13 +772,12 @@ void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePos
     auto [speakerX, speakerY, speakerZ] = extractPositionFromString(curSpeaker["CARTESIAN_POSITION"]);
 
     // compute the parent group's rotation quaternion
-    const float yaw { parent["YAW"] };
-    const float pitch { parent["PITCH"] };
-    const float roll { parent["ROLL"] };
-    if (yaw != 0.0 || pitch != 0.0 || roll != 0.0)
-    {
-        auto const parentQuat = getQuaternionFromEulerAngles (yaw, pitch, roll);
-        auto const rotatedVector = quatRotation ({ speakerX, speakerY, speakerZ }, parentQuat);
+    const float yaw{ parent["YAW"] };
+    const float pitch{ parent["PITCH"] };
+    const float roll{ parent["ROLL"] };
+    if (yaw != 0.0 || pitch != 0.0 || roll != 0.0) {
+        auto const parentQuat = getQuaternionFromEulerAngles(yaw, pitch, roll);
+        auto const rotatedVector = quatRotation({ speakerX, speakerY, speakerZ }, parentQuat);
         speakerX = groupX + rotatedVector[0];
         speakerY = groupY + rotatedVector[1];
         speakerZ = groupZ + rotatedVector[2];
@@ -1165,8 +1169,8 @@ void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const pr
     mProcessor.getPresetsManager().forceLoad(presetNumber);
     numberOfSourcesChangedCallback(mProcessor.getSources().size());
 
-    if (auto const presetSourceId {mProcessor.getPresetsManager().getPresetSourceId(presetNumber)})
-        firstSourceIdChangedCallback(SourceId{*presetSourceId});
+    if (auto const presetSourceId{ mProcessor.getPresetsManager().getPresetSourceId(presetNumber) })
+        firstSourceIdChangedCallback(SourceId{ *presetSourceId });
 
     auto * parameter{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::POSITION_PRESET) };
     auto const newValue{ static_cast<float>(presetNumber - 1) / static_cast<float>(NUMBER_OF_POSITION_PRESETS - 1) };
