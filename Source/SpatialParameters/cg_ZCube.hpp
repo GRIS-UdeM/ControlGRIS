@@ -85,6 +85,7 @@ public:
         res += offset;
 
         if (std::isnan(res)) {
+            jassertfalse;
             res = 0.0;
         }
     }

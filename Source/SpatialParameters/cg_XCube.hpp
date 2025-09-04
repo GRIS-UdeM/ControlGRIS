@@ -103,6 +103,7 @@ public:
         }
 
         if (std::isnan(res)) {
+            jassertfalse;
             res = 0.0;
         }
     }
