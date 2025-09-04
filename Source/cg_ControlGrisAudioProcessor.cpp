@@ -1603,9 +1603,13 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
         //---------------------------------------------------------------
         for (const auto & spatParam : mSpatParametersDomeRefs) {
             spatParam->updateParameterState();
+            setOnsetDetectionMinTime(spatParam->getParameterID(), spatParam->getParamMinTime());
+            setOnsetDetectionMaxTime(spatParam->getParameterID(), spatParam->getParamMaxTime());
         }
         for (const auto & spatParam : mSpatParametersCubeRefs) {
             spatParam->updateParameterState();
+            setOnsetDetectionMinTime(spatParam->getParameterID(), spatParam->getParamMinTime());
+            setOnsetDetectionMaxTime(spatParam->getParameterID(), spatParam->getParamMaxTime());
         }
         setXYParamLink(mAudioProcessorValueTreeState.state.getProperty("XYParamLinked"));
     }
