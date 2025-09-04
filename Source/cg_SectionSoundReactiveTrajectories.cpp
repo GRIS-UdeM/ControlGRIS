@@ -989,13 +989,6 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         refreshDescriptorPanel();
     };
 
-    // mSourcePlacementCombo.onChange = [this] {
-    //     mListeners.call([&](Listener & l) {
-    //         l.sourcesPlacementChangedCallback(static_cast<SourcePlacement>(mSourcePlacementCombo.getSelectedId()));
-    //         mSourcePlacementCombo.setSelectedId(0, juce::NotificationType::dontSendNotification);
-    //     });
-    // };
-
     addAndMakeVisible(&mParameterRangeLabel);
     mParameterRangeLabel.setText("Range", juce::dontSendNotification);
 

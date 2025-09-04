@@ -53,10 +53,6 @@ public:
 
     virtual juce::String const & getParameterName() const;
 
-    // virtual void addObserver(PanelView * observer);
-    // virtual void removeObserver(PanelView * observer);
-    // virtual void notifyObservers();
-
     double getDiffValue();
     double getValue();
 

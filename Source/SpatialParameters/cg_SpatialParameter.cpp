@@ -40,29 +40,6 @@ juce::String const & SpatialParameter::getParameterName() const
     return parameterName;
 }
 
-////==============================================================================
-// void SpatialParameter::addObserver(PanelView * observer)
-//{
-//     mObservers.push_back(observer);
-// }
-//
-////==============================================================================
-// void SpatialParameter::removeObserver(PanelView * observer)
-//{
-//     auto it = std::find(mObservers.begin(), mObservers.end(), observer);
-//     if (it != mObservers.end()) {
-//         mObservers.erase(it);
-//     }
-// }
-//
-////==============================================================================
-// void SpatialParameter::notifyObservers()
-//{
-//     for (auto observer : mObservers) {
-//         observer->addNewParamValueToDataGraph(lastRes);
-//     }
-// }
-
 //==============================================================================
 double SpatialParameter::getDiffValue()
 {

@@ -67,14 +67,6 @@ class SectionSoundReactiveTrajectories final
     : public juce::Component
     , private juce::MultiTimer
 {
-public:
-    //==============================================================================
-    struct Listener {
-        virtual ~Listener() = default;
-
-        // virtual void futureVirtualFunctionsHere() = 0;
-    };
-
 private:
     //==============================================================================
     enum timerParamID { azimuth = 1, elevation, x, y, z, azimuthSpan, elevationSpan };
@@ -82,8 +74,6 @@ private:
     GrisLookAndFeel & mGrisLookAndFeel;
     ControlGrisAudioProcessor & mAudioProcessor;
     juce::AudioProcessorValueTreeState & mAPVTS;
-
-    juce::ListenerList<Listener> mListeners;
     SpatMode mSpatMode;
 
     //==============================================================================
@@ -205,9 +195,6 @@ public:
     void timerCallback(int timerID) override;
 
     //==============================================================================
-    void addListener(Listener * l) { mListeners.add(l); }
-    void removeListener(Listener * l) { mListeners.remove(l); }
-
     void setSpatMode(SpatMode spatMode);
     void addNewParamValueToDataGraph();
 
