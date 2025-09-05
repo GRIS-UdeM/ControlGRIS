@@ -315,6 +315,9 @@
                        libraryPath="../../Source/libs/lib/flucoma/linux/Debug"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="ControlGRIS2" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/linux/Release"/>
+        <CONFIGURATION isDebug="0" name="RTSan" targetName="ControlGRIS2" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
+                       libraryPath="../../Source/libs/lib/flucoma/linux/Release" extraCompilerFlags="-fdiagnostics-color=always -fsanitize=realtime"
+                       extraLinkerFlags="-fsanitize=realtime"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="submodules/StructGRIS/submodules/JUCE/modules"/>

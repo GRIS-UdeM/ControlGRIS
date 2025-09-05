@@ -1275,6 +1275,9 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
     };
 
+    // update the datagraph at 60fps
+    startTimer(timerParamID::datagraphUpdate, 17);
+
     addAndMakeVisible(&mClickTimerButton);
     mClickTimerButton.setButtonText("click me!");
     mClickTimerButton.onClick = [this] {
@@ -1723,6 +1726,12 @@ void gris::SectionSoundReactiveTrajectories::mouseDown(juce::MouseEvent const & 
 //==============================================================================
 void gris::SectionSoundReactiveTrajectories::timerCallback(int timerID)
 {
+
+    if (timerID == timerParamID::datagraphUpdate) {
+        addNewParamValueToDataGraph();
+        return;
+    }
+
     auto const checkTimer = [&](int timerID, int & counter) {
         if (counter >= 1000 * 120) {
             stopTimer(timerID);

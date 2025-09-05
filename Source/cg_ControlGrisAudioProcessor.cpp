@@ -1138,11 +1138,23 @@ void ControlGrisAudioProcessor::prepareToPlay([[maybe_unused]] double const samp
     mOnsetDetectionZ.init();
 
     mInLoudness.resize(mBlockSize);
+    mPaddedLoudness = mLoudness.calculatePadded(mInLoudness);
+    mNFramesLoudness = mLoudness.calculateFrames(mPaddedLoudness);
+    mLoudnessMat = fluid::RealMatrix(mNFramesLoudness, 2);
     mLoudnessDesc.resize(2);
+
     mInPitch.resize(mBlockSize);
+    mPaddedPitch = mPitch.calculatePadded(mInPitch);
+    mNFramesPitch = mPitch.calculateFrames(mPaddedPitch);
+    mPitchMat = fluid::RealMatrix(mNFramesPitch, 2);
     mCalculatedPitchDesc.resize(2);
+
     mInSpectral.resize(mBlockSize);
+    mPaddedSpectral = mShape.calculatePadded(mInSpectral);
+    mNFramesSpectral = mShape.calculateFrames(mPaddedSpectral);
+    mShapeMat = fluid::RealMatrix(mNFramesSpectral, 7);
     mCalculatedShapeDesc.resize(7);
+    mDescriptorsBuffer.setSize(1, mBlockSize);
 
     auto * ed{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
     if (ed != nullptr) {
@@ -1181,7 +1193,7 @@ bool ControlGrisAudioProcessor::isBusesLayoutSupported(const BusesLayout & layou
 
 //==============================================================================
 void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<float> & buffer,
-                                             [[maybe_unused]] juce::MidiBuffer & midiMessages)
+                                             [[maybe_unused]] juce::MidiBuffer & midiMessages) [[clang::nonblocking]]
 {
     auto const wasPlaying{ mIsPlaying };
     juce::AudioPlayHead * audioPlayHead = getPlayHead();
@@ -1258,7 +1270,6 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
             buffer.clear(i, 0, buffer.getNumSamples());
 
         mDescriptorsBuffer.clear();
-        mDescriptorsBuffer.setSize(1, buffer.getNumSamples());
         for (int i{}; i < mNumChannelsToAnalyse; ++i) {
             mDescriptorsBuffer.addFrom(0, 0, buffer, i, 0, buffer.getNumSamples());
         }
@@ -1269,15 +1280,12 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
 
         // FLUCOMA
         if (shouldProcessDomeLoudnessAnalysis() || shouldProcessCubeLoudnessAnalysis()) {
-            mInLoudness.resize(mBlockSize);
 
             for (int i{}; i < mDescriptorsBuffer.getNumSamples(); ++i) {
                 mInLoudness[i] = channelData[i];
             }
 
-            mPaddedLoudness = mLoudness.calculatePadded(mInLoudness);
-            mNFramesLoudness = mLoudness.calculateFrames(mPaddedLoudness);
-            fluid::RealMatrix loudnessMat(mNFramesLoudness, 2);
+            mLoudnessMat.fill(0.0);
             std::fill(mPaddedLoudness.begin(), mPaddedLoudness.end(), 0);
             mPaddedLoudness(mLoudness.paddedValue(mInLoudness)) <<= mInLoudness;
 
@@ -1285,10 +1293,10 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
             for (int i{}; i < mNFramesLoudness; i++) {
                 fluid::RealVectorView windowLoudness = mLoudness.calculateWindow(mPaddedLoudness, i);
                 mLoudness.loudnessProcess(windowLoudness, mLoudnessDesc);
-                loudnessMat.row(i) <<= mLoudnessDesc;
+                mLoudnessMat.row(i) <<= mLoudnessDesc;
             }
 
-            mLoudness.process(loudnessMat, *mStats.getStats());
+            mLoudness.process(mLoudnessMat, *mStats.getStats());
             double loudnessValue = mLoudness.getValue();
             loudnessValue = juce::Decibels::decibelsToGain(loudnessValue);
 
@@ -1310,15 +1318,12 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
         }
 
         if (shouldProcessDomePitchAnalysis() || shouldProcessCubePitchAnalysis()) {
-            mInPitch.resize(mBlockSize);
 
             for (int i{}; i < mDescriptorsBuffer.getNumSamples(); ++i) {
                 mInPitch[i] = channelData[i];
             }
 
-            mPaddedPitch = mPitch.calculatePadded(mInPitch);
-            mNFramesPitch = mPitch.calculateFrames(mPaddedPitch);
-            fluid::RealMatrix pitchMat(mNFramesPitch, 2);
+            mPitchMat.fill(0.0);
             std::fill(mPaddedPitch.begin(), mPaddedPitch.end(), 0);
             mPaddedPitch(mPitch.paddedValue(mInPitch)) <<= mInPitch;
 
@@ -1332,10 +1337,10 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
                 mPitch.stftProcess(windowPitch, mFramePitch);
                 mPitch.stftMagnitude(mFramePitch, mMagnitudePitch);
                 mPitch.yinProcess(mMagnitudePitch, mCalculatedPitchDesc, mSampleRate);
-                pitchMat.row(i) <<= mCalculatedPitchDesc;
+                mPitchMat.row(i) <<= mCalculatedPitchDesc;
             }
 
-            mPitch.process(pitchMat, *mStats.getStats());
+            mPitch.process(mPitchMat, *mStats.getStats());
             double pitchValue = mPitch.getValue();
             pitchValue = mParamFunctions.frequencyToMidiNoteNumber(pitchValue);
 
@@ -1357,15 +1362,12 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
         }
 
         if (shouldProcessDomeSpectralAnalysis() || shouldProcessCubeSpectralAnalysis()) {
-            mInSpectral.resize(mBlockSize);
 
             for (int i{}; i < mDescriptorsBuffer.getNumSamples(); ++i) {
                 mInSpectral[i] = channelData[i];
             }
 
-            mPaddedSpectral = mShape.calculatePadded(mInSpectral);
-            mNFramesSpectral = mShape.calculateFrames(mPaddedSpectral);
-            fluid::RealMatrix shapeMat(mNFramesSpectral, 7);
+            mShapeMat.fill(0.0);
             std::fill(mPaddedSpectral.begin(), mPaddedSpectral.end(), 0);
             mPaddedSpectral(mShape.paddedValue(mInSpectral)) <<= mInSpectral;
 
@@ -1377,10 +1379,10 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
                 mShape.stftProcess(windowSpectral, nFrameSpectral);
                 mShape.stftMagnitude(nFrameSpectral, mMagnitudeSpectral);
                 mShape.shapeProcess(mMagnitudeSpectral, mCalculatedShapeDesc, mSampleRate);
-                shapeMat.row(i) <<= mCalculatedShapeDesc;
+                mShapeMat.row(i) <<= mCalculatedShapeDesc;
             }
 
-            mShapeStats = mShape.process(shapeMat, *mStats.getStats());
+            mShapeStats = mShape.process(mShapeMat, *mStats.getStats());
 
             if (shouldProcessDomeCentroidAnalysis() || shouldProcessCubeCentroidAnalysis()) {
                 mCentroid.process(mShapeStats);
@@ -1479,12 +1481,6 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
                 }
             }
         }
-
-        auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-        if (editor != nullptr) {
-            editor->addNewParamValueToDataGraph();
-        }
-
         processParameterValues();
     }
 }

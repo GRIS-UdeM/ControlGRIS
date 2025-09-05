@@ -69,7 +69,7 @@ class SectionSoundReactiveTrajectories final
 {
 private:
     //==============================================================================
-    enum timerParamID { azimuth = 1, elevation, x, y, z, azimuthSpan, elevationSpan };
+    enum timerParamID { azimuth = 1, elevation, x, y, z, azimuthSpan, elevationSpan, datagraphUpdate };
 
     GrisLookAndFeel & mGrisLookAndFeel;
     ControlGrisAudioProcessor & mAudioProcessor;

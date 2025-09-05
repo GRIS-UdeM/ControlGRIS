@@ -204,11 +204,13 @@ class ControlGrisAudioProcessor final
     fluid::RealVector mInLoudness;
     fluid::RealVector mPaddedLoudness;
     fluid::index mNFramesLoudness;
+    fluid::RealMatrix mLoudnessMat;
     fluid::RealVector mLoudnessDesc;
 
     fluid::RealVector mInPitch;
     fluid::RealVector mPaddedPitch;
     fluid::index mNFramesPitch;
+    fluid::RealMatrix mPitchMat;
     fluid::ComplexVector mFramePitch;
     fluid::RealVector mMagnitudePitch;
     fluid::RealVector mCalculatedPitchDesc;
@@ -216,6 +218,7 @@ class ControlGrisAudioProcessor final
     fluid::RealVector mInSpectral;
     fluid::RealVector mPaddedSpectral;
     fluid::index mNFramesSpectral;
+    fluid::RealMatrix mShapeMat;
     fluid::RealVector mShapeStats;
     fluid::ComplexVector nFrameSpectral;
     fluid::RealVector mMagnitudeSpectral;

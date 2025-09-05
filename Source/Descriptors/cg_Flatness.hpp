@@ -46,6 +46,7 @@ public:
 
     void process(fluid::RealVector & shapeStats)
     {
+        // TODO : use members instead of instanciating
         fluid::RealVector flatnessMeanRes = fluid::RealVector(1);
         fluid::RealVector flatnessStdDevRes = fluid::RealVector(1);
         fluid::RealVectorView flatnessData = fluid::RealVectorView(shapeStats(fluid::Slice(5 * 7, 1)));
