@@ -85,7 +85,12 @@ public:
 
     fluid::Slice paddedValue(fluid::RealVector in) { return fluid::Slice(HALF_WINDOW, in.size()); }
 
+    static constexpr fluid::index WINDOW_SIZE = 512;
+    static constexpr fluid::index HALF_WINDOW = WINDOW_SIZE / 2;
+
 private:
+
+
     //==============================================================================
     void init() override {}
 
@@ -95,9 +100,6 @@ private:
     std::unique_ptr<fluid::algorithm::Loudness> mLoudness;
 
     static constexpr fluid::index HOPSIZE = 256;
-    static constexpr fluid::index WINDOW_SIZE = 512;
-    static constexpr fluid::index HALF_WINDOW = WINDOW_SIZE / 2;
-
     fluid::RealVector mLoudnessStats;
     fluid::RealVector mLoudnessMeanRes;
     fluid::RealVector mLoudnessStdDevRes;

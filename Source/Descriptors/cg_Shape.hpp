@@ -89,6 +89,9 @@ public:
         mStft->magnitude(frame, magnitude);
     }
 
+    static constexpr fluid::index WINDOW_SIZE = 4096;
+    static constexpr fluid::index HALF_WINDOW = WINDOW_SIZE / 2;
+
 private:
     //==============================================================================
     void init() override {}
@@ -99,8 +102,6 @@ private:
 
     static constexpr fluid::index NBINS = 4097;
     static constexpr fluid::index HOP_SIZE = 512;
-    static constexpr fluid::index WINDOW_SIZE = 4096;
-    static constexpr fluid::index HALF_WINDOW = WINDOW_SIZE / 2;
     static constexpr fluid::index FFT_SIZE = 8192;
     static constexpr double MIN_FREQ = 20.0;
     static constexpr double MAX_FREQ = 20000.0;

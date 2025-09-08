@@ -1148,6 +1148,8 @@ void ControlGrisAudioProcessor::prepareToPlay([[maybe_unused]] double const samp
     mNFramesPitch = mPitch.calculateFrames(mPaddedPitch);
     mPitchMat = fluid::RealMatrix(mNFramesPitch, 2);
     mCalculatedPitchDesc.resize(2);
+    mPitch.setFrame(mFramePitch);
+    mPitch.setMagnitude(mMagnitudePitch);
 
     mInSpectral.resize(mBlockSize);
     mPaddedSpectral = mShape.calculatePadded(mInSpectral);
@@ -1155,6 +1157,9 @@ void ControlGrisAudioProcessor::prepareToPlay([[maybe_unused]] double const samp
     mShapeMat = fluid::RealMatrix(mNFramesSpectral, 7);
     mCalculatedShapeDesc.resize(7);
     mDescriptorsBuffer.setSize(1, mBlockSize);
+    mShape.setFrame(nFrameSpectral);
+    mShape.setMagnitude(mMagnitudeSpectral);
+
 
     auto * ed{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
     if (ed != nullptr) {
@@ -1287,8 +1292,8 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
 
             mLoudnessMat.fill(0.0);
             std::fill(mPaddedLoudness.begin(), mPaddedLoudness.end(), 0);
-            mPaddedLoudness(mLoudness.paddedValue(mInLoudness)) <<= mInLoudness;
-
+            // Note: this and the other intsances of padding do not pad with a symmetric amount of zeroes. Maybe this is fine ?
+            std::copy(mInLoudness.begin(), mInLoudness.end(), mPaddedLoudness.begin() + mLoudness.HALF_WINDOW);
             std::fill(mLoudnessDesc.begin(), mLoudnessDesc.end(), 0); // necessary?
             for (int i{}; i < mNFramesLoudness; i++) {
                 fluid::RealVectorView windowLoudness = mLoudness.calculateWindow(mPaddedLoudness, i);
@@ -1325,11 +1330,9 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
 
             mPitchMat.fill(0.0);
             std::fill(mPaddedPitch.begin(), mPaddedPitch.end(), 0);
-            mPaddedPitch(mPitch.paddedValue(mInPitch)) <<= mInPitch;
+            std::copy(mInPitch.begin(), mInPitch.end(), mPaddedPitch.begin() + mPitch.HALF_WINDOW);
 
             for (int i{}; i < mNFramesPitch; i++) {
-                mPitch.setFrame(mFramePitch);
-                mPitch.setMagnitude(mMagnitudePitch);
                 std::fill(mCalculatedPitchDesc.begin(), mCalculatedPitchDesc.end(), 0);
                 fluid::RealVectorView windowPitch = mPitch.calculateWindow(mPaddedPitch, i);
                 windowPitch = mPitch.calculateWindow(mPaddedPitch, i);
@@ -1369,11 +1372,9 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
 
             mShapeMat.fill(0.0);
             std::fill(mPaddedSpectral.begin(), mPaddedSpectral.end(), 0);
-            mPaddedSpectral(mShape.paddedValue(mInSpectral)) <<= mInSpectral;
+            std::copy(mInSpectral.begin(), mInSpectral.end(), mPaddedSpectral.begin() + mShape.HALF_WINDOW);
 
             for (int i{}; i < mNFramesSpectral; i++) {
-                mShape.setFrame(nFrameSpectral);
-                mShape.setMagnitude(mMagnitudeSpectral);
                 std::fill(mCalculatedShapeDesc.begin(), mCalculatedShapeDesc.end(), 0);
                 fluid::RealVectorView windowSpectral = mShape.calculateWindow(mPaddedSpectral, i);
                 mShape.stftProcess(windowSpectral, nFrameSpectral);
