@@ -1115,13 +1115,13 @@ void ControlGrisAudioProcessor::prepareToPlay([[maybe_unused]] double const samp
     mCentroid.reset();
     mSpread.reset();
     mFlatness.reset();
-    mOnsetDetectionAzimuth.reset();
-    mOnsetDetectionElevation.reset();
-    mOnsetDetectionHSpan.reset();
-    mOnsetDetectionVSpan.reset();
-    mOnsetDetectionX.reset();
-    mOnsetDetectionY.reset();
-    mOnsetDetectionZ.reset();
+    mOnsetDetectionAzimuth.reset(samplesPerBlock);
+    mOnsetDetectionElevation.reset(samplesPerBlock);
+    mOnsetDetectionHSpan.reset(samplesPerBlock);
+    mOnsetDetectionVSpan.reset(samplesPerBlock);
+    mOnsetDetectionX.reset(samplesPerBlock);
+    mOnsetDetectionY.reset(samplesPerBlock);
+    mOnsetDetectionZ.reset(samplesPerBlock);
 
     mPitch.init();
     mLoudness.init(mSampleRate);
