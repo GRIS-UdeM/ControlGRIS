@@ -26,6 +26,8 @@
 
 #include "cg_Descriptors.hpp"
 
+#include <Containers/circular_deque.hpp>
+
 namespace gris
 {
 //==============================================================================
@@ -151,28 +153,20 @@ public:
 
         if (mUseTimerButtonclickValue) {
             // when user clicks for Iterations Speed
-            mTimeSinceLastOnsetDetectionDeque.push_back(mTimerButtonClickvalue);
+            mTimeSinceLastOnsetDetection.push(mTimerButtonClickvalue);
             mUseTimerButtonclickValue = false;
             mSampleCounter = 0;
 
-            if (mTimeSinceLastOnsetDetectionDeque.size() > 3) {
-                mTimeSinceLastOnsetDetectionDeque.pop_front();
-            }
+            if (mTimeSinceLastOnsetDetection.current_size == 3) {
+                auto max_value = mTimeSinceLastOnsetDetection.max();
 
-            if (mTimeSinceLastOnsetDetectionDeque.size() == 3) {
-                mTimeSinceLastOnsetDetectionForProcessing = mTimeSinceLastOnsetDetectionDeque;
-                std::sort(mTimeSinceLastOnsetDetectionForProcessing.begin(),
-                          mTimeSinceLastOnsetDetectionForProcessing.end());
-                auto median = mTimeSinceLastOnsetDetectionForProcessing.at(
-                    2); // Not the median. The longest time appears to give better results
-
-                if (median >= mOnsetDetectionTimeMin && median <= mOnsetDetectionTimeMax) {
+                if (max_value >= mOnsetDetectionTimeMin && max_value <= mOnsetDetectionTimeMax) {
                     mDescOnsetDetectionTarget
-                        = juce::jmap(median, mOnsetDetectionTimeMin, mOnsetDetectionTimeMax, 1.0, 0.0);
+                        = juce::jmap(max_value, mOnsetDetectionTimeMin, mOnsetDetectionTimeMax, 1.0, 0.0);
                     mDescOnsetDetectionTarget = std::clamp(mDescOnsetDetectionTarget, 0.0, 1.0);
                     mDescOnsetDetectionTarget = std::pow(mDescOnsetDetectionTarget, 4);
-                    mTimeToOnsetDetectionTarget = median * 0.25;
-                    mTimeToOnsetDetectionZero = median * 5;
+                    mTimeToOnsetDetectionTarget = max_value * 0.25;
+                    mTimeToOnsetDetectionZero = max_value * 5;
                     mDifferenceOnsetDetection = mDescOnsetDetectionTarget - mDescOnsetDetectionCurrent;
                     mOnsetDetectionIncrement
                         = (mDifferenceOnsetDetection / (mTimeToOnsetDetectionTarget * (blockSize / sampleRate * 1000)))
@@ -188,31 +182,22 @@ public:
                     mSampleCounter = 0;
                     mIsOnsetDetectionReady = false;
                     mOnsetDetectionStartCountingSamples = true;
-                    mTimeSinceLastOnsetDetectionDeque.push_back(mOnsetDetectionNumSamples / sampleRate * 1000
-                                                                / nFramesDivider);
+                    mTimeSinceLastOnsetDetection.push(mOnsetDetectionNumSamples / sampleRate * 1000 / nFramesDivider);
                     mOnsetDetectionNumSamples = 0;
 
-                    if (mTimeSinceLastOnsetDetectionDeque.size() > 3) {
-                        mTimeSinceLastOnsetDetectionDeque.pop_front();
-                    }
+                    if (mTimeSinceLastOnsetDetection.current_size == 3) {
+                        auto max_value = mTimeSinceLastOnsetDetection.max(); // Not the median. The longest time appears to give better results
 
-                    if (mTimeSinceLastOnsetDetectionDeque.size() == 3) {
-                        mTimeSinceLastOnsetDetectionForProcessing = mTimeSinceLastOnsetDetectionDeque;
-                        std::sort(mTimeSinceLastOnsetDetectionForProcessing.begin(),
-                                  mTimeSinceLastOnsetDetectionForProcessing.end());
-                        auto median = mTimeSinceLastOnsetDetectionForProcessing.at(
-                            2); // Not the median. The longest time appears to give better results
-
-                        if (median < mOnsetDetectionTimeMin || median > mOnsetDetectionTimeMax) {
+                        if (max_value < mOnsetDetectionTimeMin || max_value > mOnsetDetectionTimeMax) {
                             continue;
                         }
 
                         mDescOnsetDetectionTarget
-                            = juce::jmap(median, mOnsetDetectionTimeMin, mOnsetDetectionTimeMax, 1.0, 0.0);
+                            = juce::jmap(max_value, mOnsetDetectionTimeMin, mOnsetDetectionTimeMax, 1.0, 0.0);
                         mDescOnsetDetectionTarget = std::clamp(mDescOnsetDetectionTarget, 0.0, 1.0);
                         mDescOnsetDetectionTarget = std::pow(mDescOnsetDetectionTarget, 4);
-                        mTimeToOnsetDetectionTarget = median * 0.25;
-                        mTimeToOnsetDetectionZero = median * 5;
+                        mTimeToOnsetDetectionTarget = max_value * 0.25;
+                        mTimeToOnsetDetectionZero = max_value * 5;
                         mDifferenceOnsetDetection = mDescOnsetDetectionTarget - mDescOnsetDetectionCurrent;
                         mOnsetDetectionIncrement = (mDifferenceOnsetDetection
                                                     / (mTimeToOnsetDetectionTarget * (blockSize / sampleRate * 1000)))
@@ -247,7 +232,7 @@ public:
             mSampleCounter += blockSize;
 
             if (mSampleCounter / sampleRate * 1000 >= mOnsetDetectionTimeMax) {
-                mTimeSinceLastOnsetDetectionDeque.clear();
+                mTimeSinceLastOnsetDetection.clear();
             }
         }
     }
@@ -277,8 +262,7 @@ private:
     juce::uint64 mOnsetDetectionNumSamples{};
     fluid::RealVector mOnsetDetectionUnusedSamples;
     int mLastUnusedSampleIndex{ 0 };
-    std::deque<double> mTimeSinceLastOnsetDetectionDeque{};
-    std::deque<double> mTimeSinceLastOnsetDetectionForProcessing{};
+    circular_deque<double, 3> mTimeSinceLastOnsetDetection{};
     Direction mOnsetDetectionDirection{};
     int mSampleCounter{};
     bool mUseTimerButtonclickValue{};

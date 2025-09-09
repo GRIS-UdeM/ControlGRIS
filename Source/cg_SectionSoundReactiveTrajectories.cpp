@@ -2044,7 +2044,6 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
 //==============================================================================
 void gris::SectionSoundReactiveTrajectories::addNewParamValueToDataGraph()
 {
-    // this is called by the audio thread
 
     if (mParameterToShow) {
         auto & param{ mParameterToShow->get() };
@@ -2508,7 +2507,6 @@ void gris::DataGraph::timerCallback()
 //==============================================================================
 void gris::DataGraph::addToBuffer(double value)
 {
-    // this is called by the audio thread.
     mBuffer = mBuffer.get() + value;
     ++mBufferCount;
 }
