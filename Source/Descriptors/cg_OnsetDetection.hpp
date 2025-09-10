@@ -158,15 +158,15 @@ public:
             mSampleCounter = 0;
 
             if (mTimeSinceLastOnsetDetection.getCurrentSize() == maxTimeDequeSize) {
-                auto max_value = mTimeSinceLastOnsetDetection.max();
+                auto maxValue = mTimeSinceLastOnsetDetection.max();
 
-                if (max_value >= mOnsetDetectionTimeMin && max_value <= mOnsetDetectionTimeMax) {
+                if (maxValue >= mOnsetDetectionTimeMin && maxValue <= mOnsetDetectionTimeMax) {
                     mDescOnsetDetectionTarget
-                        = juce::jmap(max_value, mOnsetDetectionTimeMin, mOnsetDetectionTimeMax, 1.0, 0.0);
+                        = juce::jmap(maxValue, mOnsetDetectionTimeMin, mOnsetDetectionTimeMax, 1.0, 0.0);
                     mDescOnsetDetectionTarget = std::clamp(mDescOnsetDetectionTarget, 0.0, 1.0);
                     mDescOnsetDetectionTarget = std::pow(mDescOnsetDetectionTarget, 4);
-                    mTimeToOnsetDetectionTarget = max_value * 0.25;
-                    mTimeToOnsetDetectionZero = max_value * 5;
+                    mTimeToOnsetDetectionTarget = maxValue * 0.25;
+                    mTimeToOnsetDetectionZero = maxValue * 5;
                     mDifferenceOnsetDetection = mDescOnsetDetectionTarget - mDescOnsetDetectionCurrent;
                     mOnsetDetectionIncrement
                         = (mDifferenceOnsetDetection / (mTimeToOnsetDetectionTarget * (blockSize / sampleRate * 1000)))
@@ -186,18 +186,18 @@ public:
                     mOnsetDetectionNumSamples = 0;
 
                     if (mTimeSinceLastOnsetDetection.getCurrentSize() == maxTimeDequeSize) {
-                        auto max_value = mTimeSinceLastOnsetDetection.max(); // Not the median. The longest time appears to give better results
+                        auto maxValue = mTimeSinceLastOnsetDetection.max(); // Not the median. The longest time appears to give better results
 
-                        if (max_value < mOnsetDetectionTimeMin || max_value > mOnsetDetectionTimeMax) {
+                        if (maxValue < mOnsetDetectionTimeMin || maxValue > mOnsetDetectionTimeMax) {
                             continue;
                         }
 
                         mDescOnsetDetectionTarget
-                            = juce::jmap(max_value, mOnsetDetectionTimeMin, mOnsetDetectionTimeMax, 1.0, 0.0);
+                            = juce::jmap(maxValue, mOnsetDetectionTimeMin, mOnsetDetectionTimeMax, 1.0, 0.0);
                         mDescOnsetDetectionTarget = std::clamp(mDescOnsetDetectionTarget, 0.0, 1.0);
                         mDescOnsetDetectionTarget = std::pow(mDescOnsetDetectionTarget, 4);
-                        mTimeToOnsetDetectionTarget = max_value * 0.25;
-                        mTimeToOnsetDetectionZero = max_value * 5;
+                        mTimeToOnsetDetectionTarget = maxValue * 0.25;
+                        mTimeToOnsetDetectionZero = maxValue * 5;
                         mDifferenceOnsetDetection = mDescOnsetDetectionTarget - mDescOnsetDetectionCurrent;
                         mOnsetDetectionIncrement = (mDifferenceOnsetDetection
                                                     / (mTimeToOnsetDetectionTarget * (blockSize / sampleRate * 1000)))
