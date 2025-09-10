@@ -41,6 +41,10 @@ class Base
     friend SourceLinkEnforcer;
     bool mInitialized{ false };
 
+protected:
+    //==============================================================================
+    double mSourceLinkScale{ 1.0 };
+
 public:
     //==============================================================================
     Base() noexcept = default;
@@ -60,8 +64,10 @@ public:
                                                                    SourceIndex sourceIndex) const;
     [[nodiscard]] bool isInitialized() const { return mInitialized; }
     //==============================================================================
+    void setSourceLinkScale(double scale) { mSourceLinkScale = scale; }
+    //==============================================================================
     static std::unique_ptr<Base> make(PositionSourceLink sourceLink);
-    static std::unique_ptr<Base> make(ElevationSourceLink sourceLink);
+    static std::unique_ptr<Base> make(ElevationSourceLink sourceLink, double scale = 1.0);
 
 private:
     //==============================================================================
@@ -82,7 +88,7 @@ private:
 }; // class Base
 
 //==============================================================================
-// only use full to recall saved positions
+// only useful to recall saved positions
 class PositionIndependent final : public Base
 {
     void computeParameters_implementation(Sources const &, SourcesSnapshots const &) override {}
@@ -139,9 +145,9 @@ class CircularFixedAngle final : public Base
     Radians mDeviationPerSource{};
     Radians mPrimarySourceFinalAngle{};
     Radians mRotation{};
-    std::array<float, MAX_NUMBER_OF_SOURCES> mSecSourcesLengthRatio{};
+    std::vector<float> mSecSourcesLengthRatio{};
     bool mSecSourcesLengthRatioInitialized{};
-    std::array<int, MAX_NUMBER_OF_SOURCES> mOrdering{};
+    std::vector<int> mOrdering{};
     //==============================================================================
     void computeParameters_implementation(Sources const & finalStates, SourcesSnapshots const & initialStates) override;
     void enforce_implementation(Sources & finalStates,
@@ -153,8 +159,8 @@ class CircularFixedAngle final : public Base
                                                          SourceIndex sourceIndex) const override;
     //==============================================================================
 public:
-    std::array<float, MAX_NUMBER_OF_SOURCES> getSecSourcesLengthRatio();
-    void setSecSourcesLengthRatio(std::array<float, MAX_NUMBER_OF_SOURCES> & secSourcesLengthRatio);
+    std::vector<float> getSecSourcesLengthRatio();
+    void setSecSourcesLengthRatio(std::vector<float> & secSourcesLengthRatio);
     void setSecSourcesLengthRatioInitialized();
     //==============================================================================
     JUCE_LEAK_DETECTOR(CircularFixedAngle)
@@ -168,7 +174,7 @@ class CircularFullyFixed final : public Base
     Radians mPrimarySourceFinalAngle{};
     Radians mRotation{};
     float mRadius{};
-    std::array<int, MAX_NUMBER_OF_SOURCES> mOrdering{};
+    std::vector<int> mOrdering{};
     bool mOrderingInitialized{};
     //==============================================================================
     void computeParameters_implementation(Sources const & finalStates, SourcesSnapshots const & initialStates) override;
@@ -181,8 +187,8 @@ class CircularFullyFixed final : public Base
                                                          SourceIndex sourceIndex) const override;
     //==============================================================================
 public:
-    std::array<int, MAX_NUMBER_OF_SOURCES> getOrdering();
-    void setOrdering(std::array<int, MAX_NUMBER_OF_SOURCES> & ordering);
+    std::vector<int> getOrdering();
+    void setOrdering(std::vector<int> & ordering);
     void setOrderingInitialized();
     //==============================================================================
     JUCE_LEAK_DETECTOR(CircularFullyFixed)
@@ -240,7 +246,7 @@ class PositionDeltaLock final : public Base
 };
 
 //==============================================================================
-// only usefuLl to recall saved positions
+// only useful to recall saved positions
 class ElevationIndependent final : public Base
 {
     void computeParameters_implementation(Sources const &, SourcesSnapshots const &) override {}

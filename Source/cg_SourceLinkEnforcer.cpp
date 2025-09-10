@@ -73,7 +73,7 @@ void SourceLinkEnforcer::setSourceLink(ElevationSourceLink const sourceLink, Ori
     if (sourceLink != mElevationSourceLink) {
         mElevationSourceLink = sourceLink;
         mPositionSourceLink = PositionSourceLink::undefined;
-        mLinkStrategy = source_link_strategies::Base::make(sourceLink);
+        mLinkStrategy = source_link_strategies::Base::make(sourceLink, mElevationSourceLinkScale);
         enforceSourceLink();
     }
 }
@@ -89,6 +89,13 @@ void SourceLinkEnforcer::enforceSourceLink()
         // relative ordering with the mouse won't make any sense.
         saveCurrentPositionsToInitialStates();
     }
+}
+
+//==============================================================================
+void SourceLinkEnforcer::setElevationSourceLinkScale(double scale)
+{
+    mElevationSourceLinkScale = scale;
+    mLinkStrategy->setSourceLinkScale(scale);
 }
 
 //==============================================================================
@@ -126,7 +133,7 @@ void SourceLinkEnforcer::primarySourceMoved()
 //==============================================================================
 void SourceLinkEnforcer::secondarySourceMoved(SourceIndex const sourceIndex)
 {
-    jassert(sourceIndex.get() > 0 && sourceIndex.get() < MAX_NUMBER_OF_SOURCES);
+    jassert(sourceIndex.get() > 0 && sourceIndex.get() < mSources.MAX_NUMBER_OF_SOURCES);
 
     auto const spatMode{ mSources.getPrimarySource().getSpatMode() };
     auto const isElevationSourceLink{ mElevationSourceLink != ElevationSourceLink::undefined };
@@ -160,7 +167,7 @@ void SourceLinkEnforcer::secondarySourceMoved(SourceIndex const sourceIndex)
         SourceSnapshot const secondaryEnd{ mSources[sourceIndex] };
 
         // take a snapshot of sources length ratios if mLinkStrategy is circularFixedAngle
-        std::array<float, MAX_NUMBER_OF_SOURCES> tmpFixedAngleSecSourcesLengthRatio;
+        auto tmpFixedAngleSecSourcesLengthRatio = std::vector<float>(mSources.MAX_NUMBER_OF_SOURCES);
         if (mLinkStrategy.get()->isInitialized()) {
             if (mPositionSourceLink == PositionSourceLink::circularFixedAngle) {
                 source_link_strategies::CircularFixedAngle * circularFixedLinkStrategy
@@ -170,7 +177,7 @@ void SourceLinkEnforcer::secondarySourceMoved(SourceIndex const sourceIndex)
         }
 
         // take a snapshot of source ordering if mLinkStrategy is circularFullyFixed
-        std::array<int, MAX_NUMBER_OF_SOURCES> tmpCircularFullyFixedOrdering;
+        auto tmpCircularFullyFixedOrdering = std::vector<int>(mSources.MAX_NUMBER_OF_SOURCES);
         if (mLinkStrategy.get()->isInitialized()) {
             if (mPositionSourceLink == PositionSourceLink::circularFullyFixed) {
                 source_link_strategies::CircularFullyFixed * circularFullyFixedLinkStrategy
@@ -243,7 +250,7 @@ void SourceLinkEnforcer::primaryAnchorMoved()
 //==============================================================================
 void SourceLinkEnforcer::secondaryAnchorMoved(SourceIndex const sourceIndex)
 {
-    jassert(sourceIndex.get() > 0 && sourceIndex.get() < MAX_NUMBER_OF_SOURCES);
+    jassert(sourceIndex.get() > 0 && sourceIndex.get() < mSources.MAX_NUMBER_OF_SOURCES);
 
     auto const secondaryIndex{ sourceIndex.get() - 1 };
     auto & snapshot{ mSnapshots.secondaries.getReference(secondaryIndex) };

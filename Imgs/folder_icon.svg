@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.2"
+   viewBox="0 0 14933.071 10295.542"
+   clip-path="url(#presentation_clip_path)"
+   xml:space="preserve"
+   id="svg2"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   sodipodi:docname="folder_icon2.svg"
+   style="fill-rule:evenodd;stroke-width:28.222;stroke-linejoin:round"
+   width="14933.07"
+   height="10295.542"
+   inkscape:export-filename="folder_icon2.png"
+   inkscape:export-xdpi="1.2857369"
+   inkscape:export-ydpi="1.2857369"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:ooo="http://xml.openoffice.org/svg/export">
+  <metadata
+   id="metadata74">
+    <rdf:RDF>
+      <cc:Work
+   rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+   rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1172"
+   id="namedview72"
+   showgrid="false"
+   units="cm"
+   fit-margin-top="1"
+   fit-margin-left="1"
+   fit-margin-right="1"
+   fit-margin-bottom="1"
+   inkscape:zoom="0.056064348"
+   inkscape:cx="9221.5466"
+   inkscape:cy="7304.1071"
+   inkscape:window-x="1920"
+   inkscape:window-y="0"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="g54"
+   inkscape:showpageshadow="2"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1" />
+  <defs
+   class="ClipPathGroup"
+   id="defs4">
+    <clipPath
+   id="presentation_clip_path"
+   clipPathUnits="userSpaceOnUse">
+      <rect
+   x="0"
+   y="0"
+   width="21000"
+   height="29700"
+   id="rect7" />
+    </clipPath>
+  </defs>
+  <defs
+   class="TextShapeIndex"
+   id="defs9">
+    <g
+   ooo:slide="id1"
+   ooo:id-list="id3 id4"
+   id="g11" />
+  </defs>
+  <defs
+   class="EmbeddedBulletChars"
+   id="defs13">
+    <g
+   id="bullet-char-template(57356)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="M 580,1141 1163,571 580,0 -4,571 Z"
+   id="path16"
+   inkscape:connector-curvature="0" />
+    </g>
+    <g
+   id="bullet-char-template(57354)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="M 8,1128 H 1137 V 0 H 8 Z"
+   id="path19"
+   inkscape:connector-curvature="0" />
+    </g>
+    <g
+   id="bullet-char-template(10146)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="M 174,0 602,739 174,1481 1456,739 Z M 1358,739 309,1346 659,739 Z"
+   id="path22"
+   inkscape:connector-curvature="0" />
+    </g>
+    <g
+   id="bullet-char-template(10132)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="M 2015,739 1276,0 H 717 l 543,543 H 174 v 393 h 1086 l -543,545 h 557 z"
+   id="path25"
+   inkscape:connector-curvature="0" />
+    </g>
+    <g
+   id="bullet-char-template(10007)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="m 0,-2 c -7,16 -16,29 -25,39 l 381,530 c -94,256 -141,385 -141,387 0,25 13,38 40,38 9,0 21,-2 34,-5 21,4 42,12 65,25 l 27,-13 111,-251 280,301 64,-25 24,25 c 21,-10 41,-24 62,-43 C 886,937 835,863 770,784 769,783 710,716 594,584 L 774,223 c 0,-27 -21,-55 -63,-84 l 16,-20 C 717,90 699,76 672,76 641,76 570,178 457,381 L 164,-76 c -22,-34 -53,-51 -92,-51 -42,0 -63,17 -64,51 -7,9 -10,24 -10,44 0,9 1,19 2,30 z"
+   id="path28"
+   inkscape:connector-curvature="0" />
+    </g>
+    <g
+   id="bullet-char-template(10004)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="M 285,-33 C 182,-33 111,30 74,156 52,228 41,333 41,471 c 0,78 14,145 41,201 34,71 87,106 158,106 53,0 88,-31 106,-94 l 23,-176 c 8,-64 28,-97 59,-98 l 735,706 c 11,11 33,17 66,17 42,0 63,-15 63,-46 V 965 c 0,-36 -10,-64 -30,-84 L 442,47 C 390,-6 338,-33 285,-33 Z"
+   id="path31"
+   inkscape:connector-curvature="0" />
+    </g>
+    <g
+   id="bullet-char-template(9679)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="M 813,0 C 632,0 489,54 383,161 276,268 223,411 223,592 c 0,181 53,324 160,431 106,107 249,161 430,161 179,0 323,-54 432,-161 108,-107 162,-251 162,-431 0,-180 -54,-324 -162,-431 C 1136,54 992,0 813,0 Z"
+   id="path34"
+   inkscape:connector-curvature="0" />
+    </g>
+    <g
+   id="bullet-char-template(8226)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="m 346,457 c -73,0 -137,26 -191,78 -54,51 -81,114 -81,188 0,73 27,136 81,188 54,52 118,78 191,78 73,0 134,-26 185,-79 51,-51 77,-114 77,-187 0,-75 -25,-137 -76,-188 -50,-52 -112,-78 -186,-78 z"
+   id="path37"
+   inkscape:connector-curvature="0" />
+    </g>
+    <g
+   id="bullet-char-template(8211)"
+   transform="matrix(4.8828125e-4,0,0,-4.8828125e-4,0,0)">
+      <path
+   d="M -4,459 H 1135 V 606 H -4 Z"
+   id="path40"
+   inkscape:connector-curvature="0" />
+    </g>
+  </defs>
+  <defs
+   class="TextEmbeddedBitmaps"
+   id="defs42" />
+  <g
+   id="g44"
+   transform="translate(1113.1785,642.40631)">
+    <g
+   id="id2"
+   class="Master_Slide">
+      <g
+   id="bg-id2"
+   class="Background" />
+      <g
+   id="bo-id2"
+   class="BackgroundObjects" />
+    </g>
+  </g>
+  <g
+   class="SlideGroup"
+   id="g49"
+   transform="translate(1113.1785,642.40631)">
+    <g
+   id="g51">
+      <g
+   id="id1"
+   class="Slide"
+   clip-path="url(#presentation_clip_path)">
+        <g
+   class="Page"
+   id="g54">
+          <g
+   class="Group"
+   id="g56"
+   transform="translate(1373.4218,1212.8921)"
+   inkscape:export-filename="folder_icon2.png"
+   inkscape:export-xdpi="1.2857369"
+   inkscape:export-ydpi="1.2857369">
+            <g
+   class="com.sun.star.drawing.PolyPolygonShape"
+   id="g58">
+              <g
+   id="id3">
+                <path
+   d="M 1100,8590 V 1759 l 683,-759 h 3038 l 759,759 h 4556 v 6831 z"
+   id="path61"
+   inkscape:connector-curvature="0"
+   style="fill:#ffdba5;fill-opacity:1;stroke:none" />
+                <path
+   d="M 1100,8590 V 1759 l 683,-759 h 3038 l 759,759 h 4556 v 6831 z"
+   id="path63"
+   inkscape:connector-curvature="0"
+   style="fill:none;stroke:#000000;stroke-width:300;stroke-linejoin:round" />
+              </g>
+            </g>
+            <g
+   class="com.sun.star.drawing.CustomShape"
+   id="g65">
+              <g
+   id="id4">
+                <path
+   d="M 5618,8589 H 1100 L 4064,2604 h 9036 l -2964,5985 z"
+   id="path68"
+   inkscape:connector-curvature="0"
+   style="fill:#ffa31d;fill-opacity:1;stroke:none" />
+                <path
+   d="M 5618,8589 H 1100 L 4064,2604 h 9036 l -2964,5985 z"
+   id="path70"
+   inkscape:connector-curvature="0"
+   style="fill:none;stroke:#000000;stroke-width:300;stroke-linejoin:round" />
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

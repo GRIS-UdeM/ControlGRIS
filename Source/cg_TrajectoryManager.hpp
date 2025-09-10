@@ -71,6 +71,7 @@ protected:
     Direction mBackAndForthDirection{ Direction::forward };
 
     int mDampeningCycles{};
+    int mTmpDampeningCycleForRandom{};
     int mDampeningCycleCount{};
     double mDampeningLastDelta{};
 
@@ -80,9 +81,32 @@ protected:
 
     double mTrajectoryDeltaTime{};
     double mLastTrajectoryDeltaTime{};
+    double mTrajectoryDeltaTimeWithoutRandom{};
+    double mTrajectoryRandomDeltaTimeBackAndForthBuffer{};
     std::optional<Trajectory> mTrajectory{};
     juce::Point<float> mCurrentTrajectoryPoint{};
     juce::Point<float> mLastRecordingPoint{};
+
+    std::atomic<double> mTrajectoryCurrentSpeed{ 1.0 };
+    std::atomic<double> mTrajectoryLastSpeed{ 1.0 };
+    double mNormalizedTimeBufferAdjustment{};
+    double mRandomTimeAdjustment{};
+    double mRandomTimeAdjustmentContinuousDestination{};
+    double mRandomTimeAdjustmentContinuousIncrement{};
+    double mRandomTimeAdjustmentContinuousNextStep{};
+    bool mTrajectoryRandomEnabled{};
+    bool mTrajectoryRandomLoop{};
+    bool mTrajectoryJustStartedPlaying{};
+    TrajectoryRandomType mTrajectoryRandomType{};
+    double mTrajectoryRandomProximity{};
+    double mTrajectoryRandomStartPosition{ 0.0 };
+    double mTrajectoryRandomTimeMin{ 0.03 };
+    double mTrajectoryRandomTimeMax{ 5.0 };
+    double mCurrentRandomTime{};
+    double mTrajectoryRandomTimeFromPlaySinceLastPosChange{};
+
+    juce::Random mRandomTrajectoryDeviation{};
+    juce::Random mRandomGenrerator{};
 
     Degrees mDegreeOfDeviationPerCycle{};
     Degrees mCurrentDegreeOfDeviation{};
@@ -113,11 +137,19 @@ public:
     [[nodiscard]] juce::Point<float> getCurrentTrajectoryPoint() const;
 
     void setTrajectoryDeltaTime(double relativeTimeFromPlay);
+    void setTrajectoryCurrentSpeed(double speed);
+    void setTrajectoryRandomEnabled(bool isEnabled);
+    void setTrajectoryRandomLoop(bool shouldLoop);
+    void setTrajectoryRandomStart(bool shoulStartInMiddle);
+    void setTrajectoryRandomType(TrajectoryRandomType type);
+    void setTrajectoryRandomProximity(double proximity);
+    void setTrajectoryRandomTimeMin(double timeMin);
+    void setTrajectoryRandomTimeMax(double timeMax);
     [[nodiscard]] std::optional<Trajectory> const & getTrajectory() const { return mTrajectory; }
 
     void setPositionBackAndForth(bool const newState) { mIsBackAndForth = newState; }
 
-    void setPositionDampeningCycles(int const value) { this->mDampeningCycles = value; }
+    void setPositionDampeningCycles(int const value);
     void setDeviationPerCycle(Degrees const value) { this->mDegreeOfDeviationPerCycle = value; }
     void addListener(Listener * l) { mListeners.add(l); }
 
@@ -136,6 +168,7 @@ private:
     void invertBackAndForthDirection();
     void computeCurrentTrajectoryPoint();
     [[nodiscard]] juce::Point<float> smoothRecordingPosition(juce::Point<float> const & pos);
+    void calculateCurrentRandomTime();
     //==============================================================================
     JUCE_LEAK_DETECTOR(TrajectoryManager)
 

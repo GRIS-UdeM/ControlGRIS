@@ -90,17 +90,23 @@ std::unique_ptr<Base> Base::make(PositionSourceLink const sourceLink)
 }
 
 //==============================================================================
-std::unique_ptr<Base> Base::make(ElevationSourceLink const sourceLink)
+std::unique_ptr<Base> Base::make(ElevationSourceLink const sourceLink, double scale)
 {
+    std::unique_ptr<Base> eleSrcLink;
+
     switch (sourceLink) {
     case ElevationSourceLink::independent:
         return std::make_unique<ElevationIndependent>();
     case ElevationSourceLink::fixedElevation:
         return std::make_unique<FixedElevation>();
     case ElevationSourceLink::linearMin:
-        return std::make_unique<LinearMin>();
+        eleSrcLink = std::make_unique<LinearMin>();
+        eleSrcLink->mSourceLinkScale = scale;
+        return eleSrcLink;
     case ElevationSourceLink::linearMax:
-        return std::make_unique<LinearMax>();
+        eleSrcLink = std::make_unique<LinearMax>();
+        eleSrcLink->mSourceLinkScale = scale;
+        return eleSrcLink;
     case ElevationSourceLink::deltaLock:
         return std::make_unique<ElevationDeltaLock>();
     case ElevationSourceLink::undefined:
@@ -215,6 +221,9 @@ SourceSnapshot
 void CircularFixedAngle::computeParameters_implementation(Sources const & finalStates,
                                                           SourcesSnapshots const & initialStates)
 {
+    mSecSourcesLengthRatio.resize(finalStates.MAX_NUMBER_OF_SOURCES);
+    mOrdering.resize(finalStates.MAX_NUMBER_OF_SOURCES);
+
     auto const & primarySourceInitialState{ initialStates.primary };
     auto const & primarySourceFinalState{ finalStates.getPrimarySource() };
 
@@ -223,7 +232,7 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
 
     // initialize distance ratios of secondary sources
     if (!mSecSourcesLengthRatioInitialized) {
-        mSecSourcesLengthRatio.fill(0.0f);
+        std::fill(mSecSourcesLengthRatio.begin(), mSecSourcesLengthRatio.end(), 0.f);
         for (auto const & finalState : finalStates) {
             auto const sourceIndex{ finalState.getIndex() };
             auto const primaryDistFromOrig{ primarySourceInitialState.position.getDistanceFromOrigin() };
@@ -245,12 +254,14 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
 
     auto const primarySourceFinalPosition{ primarySourceFinalState.getPos() };
     mPrimarySourceFinalAngle = Radians::angleOf(primarySourceFinalPosition);
-    mDeviationPerSource = Degrees{ 360.0f } / static_cast<float>(finalStates.size());
+    mDeviationPerSource = Radians{ Degrees{ 360.0f } / static_cast<float>(finalStates.size()) };
     auto const primarySourceInitialAngle{ Radians::angleOf(primarySourceInitialState.position) };
     mRotation = mPrimarySourceFinalAngle - primarySourceInitialAngle;
 
     // copy initialAngles
-    std::array<std::pair<Degrees, SourceIndex>, MAX_NUMBER_OF_SOURCES> initialAngles{};
+    JUCE_ASSERT_MESSAGE_THREAD
+    auto initialAngles = std::vector<std::pair<Degrees, SourceIndex>>(finalStates.MAX_NUMBER_OF_SOURCES);
+
     for (auto const & finalState : finalStates) {
         auto const sourceIndex{ finalState.getIndex() };
 
@@ -329,13 +340,13 @@ SourceSnapshot
 }
 
 //==============================================================================
-std::array<float, MAX_NUMBER_OF_SOURCES> CircularFixedAngle::getSecSourcesLengthRatio()
+std::vector<float> CircularFixedAngle::getSecSourcesLengthRatio()
 {
     return mSecSourcesLengthRatio;
 }
 
 //==============================================================================
-void CircularFixedAngle::setSecSourcesLengthRatio(std::array<float, MAX_NUMBER_OF_SOURCES> & secSourcesLengthRatio)
+void CircularFixedAngle::setSecSourcesLengthRatio(std::vector<float> & secSourcesLengthRatio)
 {
     mSecSourcesLengthRatio = secSourcesLengthRatio;
 }
@@ -350,6 +361,8 @@ void CircularFixedAngle::setSecSourcesLengthRatioInitialized()
 void CircularFullyFixed::computeParameters_implementation(Sources const & finalStates,
                                                           SourcesSnapshots const & initialStates)
 {
+    mOrdering.resize(finalStates.MAX_NUMBER_OF_SOURCES);
+
     auto const & primarySourceInitialState{ initialStates.primary };
     auto const & primarySourceFinalState{ finalStates.getPrimarySource() };
 
@@ -357,13 +370,15 @@ void CircularFullyFixed::computeParameters_implementation(Sources const & finalS
 
     auto const primarySourceFinalPosition{ primarySourceFinalState.getPos() };
     mPrimarySourceFinalAngle = Radians::angleOf(primarySourceFinalPosition);
-    mDeviationPerSource = Degrees{ 360.0f } / static_cast<float>(finalStates.size());
+    mDeviationPerSource = Radians{ Degrees{ 360.0f } / static_cast<float>(finalStates.size()) };
     auto const primarySourceInitialAngle{ Radians::angleOf(primarySourceInitialState.position) };
     mRotation = mPrimarySourceFinalAngle - primarySourceInitialAngle;
 
     if (!mOrderingInitialized) {
         // copy initialAngles
-        std::array<std::pair<Degrees, SourceIndex>, MAX_NUMBER_OF_SOURCES> initialAngles{};
+        JUCE_ASSERT_MESSAGE_THREAD
+        auto initialAngles = std::vector<std::pair<Degrees, SourceIndex>>(finalStates.MAX_NUMBER_OF_SOURCES);
+
         for (auto const & finalState : finalStates) {
             auto const sourceIndex{ finalState.getIndex() };
 
@@ -432,13 +447,13 @@ SourceSnapshot
 }
 
 //==============================================================================
-std::array<int, MAX_NUMBER_OF_SOURCES> CircularFullyFixed::getOrdering()
+std::vector<int> CircularFullyFixed::getOrdering()
 {
     return mOrdering;
 }
 
 //==============================================================================
-void CircularFullyFixed::setOrdering(std::array<int, MAX_NUMBER_OF_SOURCES> & ordering)
+void CircularFullyFixed::setOrdering(std::vector<int> & ordering)
 {
     mOrdering = ordering;
 }
@@ -573,7 +588,7 @@ SourceSnapshot FixedElevation::computeInitialStateFromFinalState_implementation(
 void LinearMin::computeParameters_implementation(Sources const & sources, SourcesSnapshots const & /*snapshots*/)
 {
     mBaseElevation = sources.getPrimarySource().getElevation();
-    mElevationPerSource = ELEVATION_DIFF / static_cast<float>((sources.size() - 1));
+    mElevationPerSource = (ELEVATION_DIFF * mSourceLinkScale) / static_cast<float>((sources.size() - 1));
 }
 
 //==============================================================================
@@ -599,7 +614,7 @@ SourceSnapshot LinearMin::computeInitialStateFromFinalState_implementation([[may
 void LinearMax::computeParameters_implementation(Sources const & sources, SourcesSnapshots const & /*snapshots*/)
 {
     mBaseElevation = sources.getPrimarySource().getElevation();
-    mElevationPerSource = ELEVATION_DIFF / static_cast<float>((sources.size() - 1));
+    mElevationPerSource = (ELEVATION_DIFF * mSourceLinkScale) / static_cast<float>((sources.size() - 1));
 }
 
 //==============================================================================
