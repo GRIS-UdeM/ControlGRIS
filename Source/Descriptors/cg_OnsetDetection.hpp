@@ -157,7 +157,7 @@ public:
             mUseTimerButtonclickValue = false;
             mSampleCounter = 0;
 
-            if (mTimeSinceLastOnsetDetection.current_size == 3) {
+            if (mTimeSinceLastOnsetDetection.getCurrentSize() == maxTimeDequeSize) {
                 auto max_value = mTimeSinceLastOnsetDetection.max();
 
                 if (max_value >= mOnsetDetectionTimeMin && max_value <= mOnsetDetectionTimeMax) {
@@ -185,7 +185,7 @@ public:
                     mTimeSinceLastOnsetDetection.push(mOnsetDetectionNumSamples / sampleRate * 1000 / nFramesDivider);
                     mOnsetDetectionNumSamples = 0;
 
-                    if (mTimeSinceLastOnsetDetection.current_size == 3) {
+                    if (mTimeSinceLastOnsetDetection.getCurrentSize() == maxTimeDequeSize) {
                         auto max_value = mTimeSinceLastOnsetDetection.max(); // Not the median. The longest time appears to give better results
 
                         if (max_value < mOnsetDetectionTimeMin || max_value > mOnsetDetectionTimeMax) {
@@ -262,7 +262,8 @@ private:
     juce::uint64 mOnsetDetectionNumSamples{};
     fluid::RealVector mOnsetDetectionUnusedSamples;
     int mLastUnusedSampleIndex{ 0 };
-    circular_deque<double, 3> mTimeSinceLastOnsetDetection{};
+    static constexpr int maxTimeDequeSize {3};
+    CircularDeque<double, maxTimeDequeSize> mTimeSinceLastOnsetDetection{};
     Direction mOnsetDetectionDirection{};
     int mSampleCounter{};
     bool mUseTimerButtonclickValue{};
