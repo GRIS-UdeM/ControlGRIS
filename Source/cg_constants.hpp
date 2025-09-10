@@ -1,22 +1,23 @@
-/**************************************************************************
- * Copyright 2018 UdeM - GRIS - Olivier Belanger                          *
- *                                                                        *
- * This file is part of ControlGris, a multi-source spatialization plugin *
- *                                                                        *
- * ControlGris is free software: you can redistribute it and/or modify    *
- * it under the terms of the GNU Lesser General Public License as         *
- * published by the Free Software Foundation, either version 3 of the     *
- * License, or (at your option) any later version.                        *
- *                                                                        *
- * ControlGris is distributed in the hope that it will be useful,         *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- * GNU Lesser General Public License for more details.                    *
- *                                                                        *
- * You should have received a copy of the GNU Lesser General Public       *
- * License along with ControlGris.  If not, see                           *
- * <http://www.gnu.org/licenses/>.                                        *
- *************************************************************************/
+/*
+ This file is part of ControlGris.
+
+ Developers: Olivier BELANGER, Gaël LANE LÉPINE
+
+ ControlGris is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+
+ ControlGris is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with ControlGris.  If not, see
+ <http://www.gnu.org/licenses/>.
+*/
+
 #pragma once
 
 #include <Data/StrongTypes/sg_Radians.hpp>
@@ -34,6 +35,10 @@ constexpr auto LBAP_FAR_FIELD = 1.666666667f;
 
 constexpr auto MIN_ELEVATION = Degrees{ 0.0f };
 constexpr auto MAX_ELEVATION = Degrees{ 90.0f };
+
+constexpr double ALMOST_ZERO{ 0.0000000000001 };
+constexpr double MIN_FREQ_RANGE_ANALYSIS_BELOW_1000{ 50.0 };
+constexpr double MIN_FREQ_RANGE_ANALYSIS_ABOVE_1000{ 1000.0 };
 
 //==============================================================================
 // Spatialisation modes.
@@ -120,6 +125,17 @@ constexpr auto PRESET_SPAT_MODE_XML_TAG = "SPAT_MODE";
 
 // taken from sg_SpatMode.cpp in SpatGRIS
 constexpr auto SPAT_MODE_STRINGS = std::array<const char *, 2>{ "Dome", "Cube" };
+
+//==============================================================================
+// Sound reactive stuff
+extern juce::StringArray const AUDIO_DESCRIPTOR_TYPES;
+extern juce::StringArray const ONSET_DETECTION_METRIC_TYPES;
+
+//==============================================================================
+// Random trajectories
+enum class TrajectoryRandomType { continuous, discrete };
+int TrajectoryRandomTypeToInt(TrajectoryRandomType type);
+TrajectoryRandomType TrajectoryRandomTypeFromInt(int value);
 
 namespace Automation
 {

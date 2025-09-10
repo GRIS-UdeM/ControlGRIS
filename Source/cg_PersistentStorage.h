@@ -23,7 +23,7 @@
 
 extern bool showSecondarySourceDragErrorMessage;
 
-//void setShowSecondarySourceDragErrorMessage(bool state);
+void setShowSecondarySourceDragErrorMessage(bool state);
 
 namespace gris
 {

@@ -30,6 +30,29 @@
 #include "cg_TrajectoryManager.hpp"
 #include "cg_constants.hpp"
 
+#include "FluidVersion.hpp"
+
+#include "Descriptors/cg_Centroid.hpp"
+#include "Descriptors/cg_Flatness.hpp"
+#include "Descriptors/cg_Loudness.hpp"
+#include "Descriptors/cg_OnsetDetection.hpp"
+#include "Descriptors/cg_Pitch.hpp"
+#include "Descriptors/cg_Shape.hpp"
+#include "Descriptors/cg_Spread.hpp"
+#include "Descriptors/cg_Stats.hpp"
+
+#include "SpatialParameters/cg_SpatParamHelperFunctions.h"
+
+#include "SpatialParameters/cg_AzimuthDome.hpp"
+#include "SpatialParameters/cg_ElevationDome.hpp"
+#include "SpatialParameters/cg_HspanCube.hpp"
+#include "SpatialParameters/cg_HspanDome.hpp"
+#include "SpatialParameters/cg_VspanCube.hpp"
+#include "SpatialParameters/cg_VspanDome.hpp"
+#include "SpatialParameters/cg_XCube.hpp"
+#include "SpatialParameters/cg_YCube.hpp"
+#include "SpatialParameters/cg_ZCube.hpp"
+
 namespace gris
 {
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -107,6 +130,100 @@ class ControlGrisAudioProcessor final
 
     ElevationMode mElevationMode{};
 
+    int mSelectedSoundTrajectoriesTabIdx{};
+
+    //==============================================================================
+    // Audio Descriptors
+    double mSampleRate{};
+    int mBlockSize{};
+    juce::AudioBuffer<float> mDescriptorsBuffer;
+    double mAudioAnalysisInputGainMultiplier{};
+    int mNumChannelsToAnalyse{};
+    bool mXYParamLinked{};
+    bool mAudioAnalysisActivateState{};
+    bool mAudioAnalysisAzimuthSpanFlag{};
+    bool mAudioAnalysisElevationSpanFlag{};
+
+    float mSpatParamElevationBuffer{};
+    float mSpatParamHSpanBuffer{};
+    float mSpatParamVSpanBuffer{};
+    float mSpatParamXBuffer{};
+    float mSpatParamYBuffer{};
+    float mSpatParamZBuffer{};
+
+    double mAzimuthDomeValue{};
+    double mElevationDomeValue{};
+    double mHspanDomeValue{};
+    double mVspanDomeValue{};
+
+    double mXCubeValue{};
+    double mYCubeValue{};
+    double mZCubeValue{};
+    double mHspanCubeValue{};
+    double mVspanCubeValue{};
+
+    StatsD mStats;
+    ShapeD mShape;
+    PitchD mPitch;
+    LoudnessD mLoudness;
+    CentroidD mCentroid;
+    SpreadD mSpread;
+    FlatnessD mFlatness;
+    OnsetDetectionD mOnsetDetectionAzimuth;
+    OnsetDetectionD mOnsetDetectionElevation;
+    OnsetDetectionD mOnsetDetectionHSpan;
+    OnsetDetectionD mOnsetDetectionVSpan;
+    OnsetDetectionD mOnsetDetectionX;
+    OnsetDetectionD mOnsetDetectionY;
+    OnsetDetectionD mOnsetDetectionZ;
+
+    SpatParamHelperFunctions mParamFunctions;
+
+    AzimuthDome mAzimuthDome;
+    ElevationDome mElevationDome;
+    HspanDome mHSpanDome;
+    VspanDome mVSpanDome;
+    XCube mXCube;
+    YCube mYCube;
+    ZCube mZCube;
+    HspanCube mHSpanCube;
+    VspanCube mVSpanCube;
+
+    std::array<SpatialParameter *, 4> mSpatParametersDomeRefs; // just an array of references to dome spatial parameters
+    std::array<SpatialParameter *, 5> mSpatParametersCubeRefs; // just an array of references to cube spatial parameters
+    std::array<double *, 4>
+        mSpatParametersDomeValueRefs; // just an array of references to dome spatial parameters values
+    std::array<double *, 5>
+        mSpatParametersCubeValueRefs; // just an array of references to cube spatial parameters values
+    // just an arrays of references to OnsetDetection objs. We use the same span OnsetDetection
+    // objs in both dome and cube modes
+    std::array<OnsetDetectionD *, 4> mDomeOnsetDetectionRefs;
+    std::array<OnsetDetectionD *, 5> mCubeOnsetDetectionRefs;
+
+    // member variables for audio descriptor calculations
+    fluid::RealVector mInLoudness;
+    fluid::RealVector mPaddedLoudness;
+    fluid::index mNFramesLoudness;
+    fluid::RealMatrix mLoudnessMat;
+    fluid::RealVector mLoudnessDesc;
+
+    fluid::RealVector mInPitch;
+    fluid::RealVector mPaddedPitch;
+    fluid::index mNFramesPitch;
+    fluid::RealMatrix mPitchMat;
+    fluid::ComplexVector mFramePitch;
+    fluid::RealVector mMagnitudePitch;
+    fluid::RealVector mCalculatedPitchDesc;
+
+    fluid::RealVector mInSpectral;
+    fluid::RealVector mPaddedSpectral;
+    fluid::index mNFramesSpectral;
+    fluid::RealMatrix mShapeMat;
+    fluid::RealVector mShapeStats;
+    fluid::ComplexVector nFrameSpectral;
+    fluid::RealVector mMagnitudeSpectral;
+    fluid::RealVector mCalculatedShapeDesc;
+
 public:
     //==============================================================================
     ControlGrisAudioProcessor();
@@ -155,7 +272,7 @@ public:
     void setStateInformation(const void * data, int sizeInBytes) override;
 
     //==============================================================================
-    PersistentStorage& getPersistentStorage ();
+    PersistentStorage & getPersistentStorage();
 
     //==============================================================================
     void parameterChanged(juce::String const & parameterId, float newValue) override;
@@ -222,6 +339,7 @@ public:
 
     void setPositionSourceLink(PositionSourceLink newSourceLink, SourceLinkEnforcer::OriginOfChange originOfChange);
     void setElevationSourceLink(ElevationSourceLink newSourceLink, SourceLinkEnforcer::OriginOfChange originOfChange);
+    void setElevationSourceLinkScale(double scale);
 
     PresetsManager & getPresetsManager() { return mPresetManager; }
     PresetsManager const & getPresetsManager() const { return mPresetManager; }
@@ -229,6 +347,51 @@ public:
     void sourceChanged(Source & source, Source::ChangeType changeType, Source::OriginOfChange origin);
     void setSelectedSource(Source const & source);
     void updatePrimarySourceParameters(Source::ChangeType changeType);
+    void setGainMultiplierForAudioAnalysis(double gainMult);
+    void setNumChannelsForAudioAnalysis(int numChannels);
+    void setSelectedSoundTrajectoriesTab(int newCurrentTabIndex);
+    void processParameterValues();
+    bool getXYParamLink();
+    void setXYParamLink(bool isXYParamLinked);
+    bool getAudioAnalysisState();
+    void setAudioAnalysisState(bool state);
+
+    //=================================================================================
+    // Audio Descriptors
+
+    AzimuthDome & getAzimuthDome();
+    ElevationDome & getElevationDome();
+    HspanDome & getHSpanDome();
+    VspanDome & getVSpanDome();
+    XCube & getXCube();
+    YCube & getYCube();
+    ZCube & getZCube();
+    HspanCube & getHSpanCube();
+    VspanCube & getVSpanCube();
+
+    void setOnsetDetectionMetric(ParameterID paramID, const int metric);
+    void setOnsetDetectionThreshold(ParameterID paramID, const float tresh);
+    void setOnsetDetectionMinTime(ParameterID paramID, const double minTime);
+    void setOnsetDetectionMaxTime(ParameterID paramID, const double maxTime);
+    void setOnsetDetectionFromClick(ParameterID paramID, const double timeValue);
+
+    void setAudioAnalysisAzimuthSpanFlag(bool flag) { mAudioAnalysisAzimuthSpanFlag = flag; }
+    void setAudioAnalysisElevationSpanFlag(bool flag) { mAudioAnalysisElevationSpanFlag = flag; }
+
+    bool shouldProcessDomeSpectralAnalysis();
+    bool shouldProcessDomeLoudnessAnalysis();
+    bool shouldProcessDomePitchAnalysis();
+    bool shouldProcessDomeCentroidAnalysis();
+    bool shouldProcessDomeSpreadAnalysis();
+    bool shouldProcessDomeNoiseAnalysis();
+    bool shouldProcessDomeOnsetDetectionAnalysis();
+    bool shouldProcessCubeSpectralAnalysis();
+    bool shouldProcessCubeLoudnessAnalysis();
+    bool shouldProcessCubePitchAnalysis();
+    bool shouldProcessCubeCentroidAnalysis();
+    bool shouldProcessCubeSpreadAnalysis();
+    bool shouldProcessCubeNoiseAnalysis();
+    bool shouldProcessCubeOnsetDetectionAnalysis();
 
 private:
     //==============================================================================

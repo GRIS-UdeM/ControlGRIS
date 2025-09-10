@@ -25,7 +25,10 @@
 namespace gris
 {
 //==============================================================================
-DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent) : mSourceBoxComponent(sourceBoxComponent)
+DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent, GrisLookAndFeel & grisLookAndFeel)
+    : mSourceBoxComponent(sourceBoxComponent)
+    , mElevationSlider(grisLookAndFeel)
+    , mAzimuthSlider(grisLookAndFeel)
 {
     mCurrentAzimuth = {};
     mCurrentElevation = Radians{ MAX_ELEVATION };
@@ -35,8 +38,6 @@ DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent) : mSource
 
     mElevationSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0f, 1.0f, 0.01f));
     mElevationSlider.setValue(1.0, juce::NotificationType::dontSendNotification);
-    mElevationSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
-    mElevationSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mElevationSlider);
     mElevationSlider.onValueChange = [this] {
         mCurrentElevation = Radians{ MAX_ELEVATION * (1.0f - static_cast<float>(mElevationSlider.getValue())) };
@@ -53,16 +54,15 @@ DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent) : mSource
     mAzimuthLabel.setText("Azimuth:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mAzimuthLabel);
 
-    mAzimuthSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0f, 360.0f, 0.01f));
+    mAzimuthSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0f, 360.0f, 0.1f));
     mAzimuthSlider.setValue(0.0, juce::NotificationType::dontSendNotification);
-    mAzimuthSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
-    mAzimuthSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    mAzimuthSlider.setNumDecimalPlacesToDisplay(1);
     addAndMakeVisible(&mAzimuthSlider);
     mAzimuthSlider.onValueChange = [this] {
         mCurrentAzimuth = Degrees{ static_cast<float>(mAzimuthSlider.getValue()) };
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
             l.sourcePositionChangedCallback(mSourceBoxComponent.mSelectedSource,
-                                            Radians { mCurrentAzimuth },
+                                            Radians{ mCurrentAzimuth },
                                             std::nullopt,
                                             std::nullopt,
                                             std::nullopt,
@@ -70,28 +70,33 @@ DomeControls::DomeControls(SectionSourcePosition & sourceBoxComponent) : mSource
         });
     };
 
-    mElevationLabel.setBounds(0, 0, 150, 15);
-    mElevationSlider.setBounds(75, 0, 200, 20);
+    mAzimuthLabel.setBounds(0, 4, 100, 10);
+    mAzimuthSlider.setBounds(80, 3, 35, 12);
 
-    mAzimuthLabel.setBounds(0, 30, 150, 15);
-    mAzimuthSlider.setBounds(75, 30, 200, 20);
+    mElevationLabel.setBounds(165, 4, 100, 10);
+    mElevationSlider.setBounds(245, 3, 35, 12);
 }
 
 //==============================================================================
 void DomeControls::updateSliderValues(Source * source)
 {
     mCurrentAzimuth = source->getAzimuth();
-    mCurrentElevation = Radians { MAX_ELEVATION * source->getNormalizedElevation().get() };
+    mCurrentElevation = Radians{ MAX_ELEVATION * source->getNormalizedElevation().get() };
 
     if (mCurrentAzimuth.getAsDegrees() < 0.0f) {
         mCurrentAzimuth += Degrees{ 360.0f };
     }
     mAzimuthSlider.setValue(mCurrentAzimuth.getAsDegrees(), juce::NotificationType::dontSendNotification);
-    mElevationSlider.setValue(1.0f - mCurrentElevation / Radians { MAX_ELEVATION }, juce::NotificationType::dontSendNotification);
+    mElevationSlider.setValue(1.0f - mCurrentElevation / Radians{ MAX_ELEVATION },
+                              juce::NotificationType::dontSendNotification);
 }
 
 //==============================================================================
-CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent) : mSourceBoxComponent(sourceBoxComponent)
+CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent, GrisLookAndFeel & grisLookAndFeel)
+    : mSourceBoxComponent(sourceBoxComponent)
+    , mXSlider(grisLookAndFeel)
+    , mYSlider(grisLookAndFeel)
+    , mZSlider(grisLookAndFeel)
 {
     auto const initLabel = [&](juce::Label & label, juce::String const & text) {
         label.setText(text + ":", juce::NotificationType::dontSendNotification);
@@ -99,11 +104,9 @@ CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent) : mSource
         addAndMakeVisible(label);
     };
 
-    auto const initSlider = [&](juce::Slider & slider, double const minValue) {
-        slider.setNormalisableRange(juce::NormalisableRange<double>{ minValue, 1.0, 0.01 });
+    auto const initSlider = [&](NumSlider & slider, double const minValue) {
+        slider.setNormalisableRange(juce::NormalisableRange<double>{ minValue, 1.0, 0.001 });
         slider.setValue(0.0, juce::dontSendNotification);
-        slider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-        slider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 15);
         addAndMakeVisible(slider);
     };
 
@@ -149,16 +152,15 @@ CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent) : mSource
         });
     };
 
-    auto const setLine = [&](juce::Label & label, juce::Slider & slider, int const line) {
-        static constexpr auto LINE_HEIGHT = 20;
-        auto const y{ line * LINE_HEIGHT };
-        label.setBounds(0, y, 70, LINE_HEIGHT);
-        slider.setBounds(75, y, 200, LINE_HEIGHT);
+    auto const setLine = [&](juce::Label & label, NumSlider & slider, int x, int y) {
+        constexpr auto X_SPACE = 30;
+        label.setBounds(x, y + 1, 30, 10);
+        slider.setBounds(x + X_SPACE, y, 35, 12);
     };
 
-    setLine(mXLabel, mXSlider, 0);
-    setLine(mYLabel, mYSlider, 1);
-    setLine(mZLabel, mZSlider, 2);
+    setLine(mXLabel, mXSlider, -10, 3); // why -10 ?
+    setLine(mYLabel, mYSlider, 50, 3);
+    setLine(mZLabel, mZSlider, 110, 3);
 }
 
 //==============================================================================
@@ -174,12 +176,24 @@ void CubeControls::updateSliderValues(Source * source)
 }
 
 //==============================================================================
-SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, SpatMode const spatMode)
+SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
+                                             SpatMode const spatMode,
+                                             SectionSourceSpan & sectionSourceSpan,
+                                             juce::AudioProcessorValueTreeState & apvts)
     : mGrisLookAndFeel(grisLookAndFeel)
-    , mDomeControls(*this)
-    , mCubeControls(*this)
+    , mSectionSourceSpan(sectionSourceSpan)
+    , mAPVTS(apvts)
+    , mZSourceLinkScaleSlider(grisLookAndFeel)
+    , mDomeControls(*this, grisLookAndFeel)
+    , mCubeControls(*this, grisLookAndFeel)
 {
+    setName("SectionSourcePosition");
+
     mSelectedSource = SourceIndex{};
+
+    mSourcesBanner.setLookAndFeel(&mGrisLookAndFeel);
+    mSourcesBanner.setText("Sources", juce::dontSendNotification);
+    addAndMakeVisible(&mSourcesBanner);
 
     // Source Placement
     mSourcePlacementLabel.setText("Sources Placement:", juce::NotificationType::dontSendNotification);
@@ -196,8 +210,24 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
     };
 
     // Speaker Setup as Source position
+
+    auto folderImage = juce::ImageCache::getFromMemory(BinaryData::folder_icon_png, BinaryData::folder_icon_pngSize);
+
+    mLoadSpeakerSetupButton.setImages(false,
+                                      true,
+                                      true,
+                                      folderImage,
+                                      1.0f,
+                                      juce::Colours::transparentWhite,
+                                      folderImage,
+                                      0.7f,
+                                      juce::Colours::transparentWhite,
+                                      folderImage,
+                                      0.7f,
+                                      juce::Colours::transparentWhite);
+    mLoadSpeakerSetupButton.setTooltip("Load Speaker Setup as source positions");
+
     addAndMakeVisible(&mLoadSpeakerSetupButton);
-    mLoadSpeakerSetupButton.setButtonText("Load Speaker Setup as source position...");
     mLoadSpeakerSetupButton.onClick = [this] {
         juce::FileChooser chooser("Select a Speaker Setup file...", {}, "*.xml");
         if (chooser.browseForFileToOpen())
@@ -205,10 +235,11 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
     };
 
     // Source Number
-    mSourceNumberLabel.setText("Source Number:", juce::NotificationType::dontSendNotification);
+    mSourceNumberLabel.setText("Source ID:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mSourceNumberLabel);
 
     addAndMakeVisible(&mSourceNumberCombo);
+    mSourceNumberCombo.setLookAndFeel(&mGrisLookAndFeel);
     mSourceNumberCombo.setTextWhenNothingSelected("Choose a source...");
     for (auto i{ 1 }; i <= 8; ++i) {
         mSourceNumberCombo.addItem(juce::String{ i }, i);
@@ -217,44 +248,177 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel, 
     mSourceNumberCombo.onChange = [this] {
         mSelectedSource = SourceIndex{ mSourceNumberCombo.getSelectedItemIndex() };
         mListeners.call([&](Listener & l) { l.sourceSelectionChangedCallback(mSelectedSource); });
+        repaint();
+    };
+
+    mSourceLinkLabel.setText("Sources Link:", juce::NotificationType::dontSendNotification);
+    addAndMakeVisible(&mSourceLinkLabel);
+
+    mPositionSourceLinkCombo.addItemList(POSITION_SOURCE_LINK_TYPES, 1);
+    mPositionSourceLinkCombo.setSelectedId(1);
+    addAndMakeVisible(&mPositionSourceLinkCombo);
+    mPositionSourceLinkCombo.onChange = [this] {
+        mListeners.call([&](Listener & l) {
+            l.positionSourceLinkChangedCallback(
+                static_cast<PositionSourceLink>(mPositionSourceLinkCombo.getSelectedId()));
+        });
+    };
+
+    mZSourceLinkLabel.setText("Z Sources Link", juce::dontSendNotification);
+    addAndMakeVisible(&mZSourceLinkLabel);
+
+    mZSourceLinkCombo.addItemList(ELEVATION_SOURCE_LINK_TYPES, 1);
+    mZSourceLinkCombo.setSelectedId(1);
+    addChildComponent(&mZSourceLinkCombo);
+    mZSourceLinkCombo.onChange = [this] {
+        mListeners.call([&](Listener & l) {
+            l.elevationSourceLinkChangedCallback(static_cast<ElevationSourceLink>(mZSourceLinkCombo.getSelectedId()));
+        });
+
+        if (mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3) {
+            mZSourceLinkScaleLabel.setVisible(true);
+            mZSourceLinkScaleSlider.setVisible(true);
+            mZSourceLinkCombo.setBounds(120, 102 + titleHeight, 96, 15);
+            mZSourceLinkScaleLabel.setBounds(214, 106 + titleHeight, 40, 10);
+            mZSourceLinkScaleSlider.setBounds(250, 104 + titleHeight, 35, 12);
+        } else {
+            mZSourceLinkScaleLabel.setVisible(false);
+            mZSourceLinkScaleSlider.setVisible(false);
+            mZSourceLinkCombo.setBounds(120, 102 + titleHeight, 165, 15);
+        }
+    };
+
+    mZSourceLinkScaleLabel.setText("Scale", juce::dontSendNotification);
+    addAndMakeVisible(&mZSourceLinkScaleLabel);
+
+    mZSourceLinkScaleSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
+    auto eleSourceLinkScale{ mAPVTS.state.getProperty("eleSourceLinkScale") };
+    if (eleSourceLinkScale.isVoid()) {
+        eleSourceLinkScale = 1.0;
+    }
+    mZSourceLinkScaleSlider.setValue(eleSourceLinkScale, juce::dontSendNotification);
+    mZSourceLinkScaleSlider.setNumDecimalPlacesToDisplay(2);
+    mZSourceLinkScaleSlider.setDoubleClickReturnValue(true, 1.0);
+    addAndMakeVisible(&mZSourceLinkScaleSlider);
+    mZSourceLinkScaleSlider.onValueChange = [this] {
+        auto scaleVal{ mZSourceLinkScaleSlider.getValue() };
+        mAPVTS.state.setProperty("eleSourceLinkScale", scaleVal, nullptr);
+        mListeners.call([&](Listener & l) { l.elevationSourceLinkScaleChangedCallback(scaleVal); });
     };
 
     // Other controls
     addAndMakeVisible(&mDomeControls);
     addAndMakeVisible(&mCubeControls);
+    addAndMakeVisible(&mSectionSourceSpan);
     setSpatMode(spatMode);
+}
+
+void SectionSourcePosition::mouseDown(juce::MouseEvent const & event)
+{
+    auto const x{ 267.0f };
+    auto const y{ 15.0f + titleHeight };
+    // Area where the selected source is shown.
+    juce::Rectangle<float> const selectedSourceArea{ x - 5.0f, y - 13.0f, 24.0f, 24.0f };
+    if (selectedSourceArea.contains(event.getMouseDownPosition().toFloat())) {
+        mListeners.call([&](Listener & l) { l.selectedSourceClickedCallback(); });
+    }
 }
 
 //==============================================================================
 void SectionSourcePosition::paint(juce::Graphics & g)
 {
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
+    Source * selectedSource = mSectionSourceSpan.getSectionSourceSpanSelectedSource();
+
+    // draw Source ellipse
+    if (selectedSource != nullptr) {
+        auto const x{ 267.0f };
+        auto const y{ 5.0f + titleHeight };
+
+        juce::Rectangle<float> area{ x, y, 15, 15 };
+        area.expand(3, 3);
+        g.setColour(juce::Colour(.2f, .2f, .2f, 1.0f));
+        g.drawEllipse(area.translated(.5f, .5f), 1.0f);
+        g.setGradientFill(juce::ColourGradient(selectedSource->getColour().withSaturation(1.0f).darker(1.0f),
+                                               x + SOURCE_FIELD_COMPONENT_RADIUS,
+                                               y + SOURCE_FIELD_COMPONENT_RADIUS,
+                                               selectedSource->getColour().withSaturation(1.0f),
+                                               x,
+                                               y,
+                                               true));
+        g.fillEllipse(area);
+
+        g.setColour(juce::Colours::white);
+        g.drawFittedText(selectedSource->getId().toString(),
+                         area.getSmallestIntegerContainer(),
+                         juce::Justification::centred,
+                         1);
+    }
 }
 
 //==============================================================================
 void SectionSourcePosition::resized()
 {
-    auto const positionLabelAndCombo = [](juce::Rectangle<int> && bounds, juce::Label & label, juce::ComboBox & combo) {
-        auto const labelWidth = label.getFont().getStringWidth(label.getText());
-        label.setBounds(bounds.removeFromLeft(labelWidth));
-        combo.setBounds(bounds);
-    };
+    const auto width = getWidth();
 
-    auto bounds = getLocalBounds().reduced(5, 10);
+    mSourcesBanner.setBounds(0, 0, width, titleHeight);
 
-    //left half
-    auto leftHalf = bounds.removeFromLeft(bounds.getWidth() / 2);
-    positionLabelAndCombo(leftHalf.removeFromTop(20), mSourcePlacementLabel, mSourcePlacementCombo);
-    leftHalf.removeFromTop(5);
-    mLoadSpeakerSetupButton.setBounds(leftHalf.removeFromTop(20));
+    mLoadSpeakerSetupButton.setBounds(width - 40, 2, 40, titleHeight - 4);
 
-    //right half
-    positionLabelAndCombo(bounds.removeFromTop(20), mSourceNumberLabel, mSourceNumberCombo);
+    mSourceNumberLabel.setBounds(5, 10 + titleHeight, 150, 10);
+    mSourceNumberCombo.setBounds(70, 7 + titleHeight, 50, 15);
 
-    bounds.removeFromTop(5);
-    auto const domeAndCubeBounds{ bounds.removeFromTop(500) };
-    mDomeControls.setBounds(domeAndCubeBounds);
-    mCubeControls.setBounds(domeAndCubeBounds.withHeight (550));
+    mDomeControls.setBounds(5, 30 + titleHeight, 300, 15);
+    mCubeControls.setBounds(5, 30 + titleHeight, 300, 15);
+
+    mSectionSourceSpan.setBounds(0, 50 + titleHeight, getWidth(), 25);
+
+    mSourceLinkLabel.setBounds(5, 81 + titleHeight, 150, 10);
+    mPositionSourceLinkCombo.setBounds(120, 77 + titleHeight, 165, 15);
+
+    if (mSpatMode == SpatMode::cube) {
+        mZSourceLinkLabel.setVisible(true);
+        mZSourceLinkCombo.setVisible(true);
+        mZSourceLinkLabel.setBounds(5, 106 + titleHeight, 150, 10);
+        if (mZSourceLinkCombo.getSelectedItemIndex() == 3 || mZSourceLinkCombo.getSelectedItemIndex() == 4) {
+            mZSourceLinkScaleLabel.setVisible(true);
+            mZSourceLinkScaleSlider.setVisible(true);
+            mZSourceLinkCombo.setBounds(120, 102 + titleHeight, 96, 15);
+            mZSourceLinkScaleLabel.setBounds(214, 106 + titleHeight, 40, 10);
+            mZSourceLinkScaleSlider.setBounds(250, 104 + titleHeight, 35, 12);
+        } else {
+            mZSourceLinkScaleLabel.setVisible(false);
+            mZSourceLinkScaleSlider.setVisible(false);
+            mZSourceLinkCombo.setBounds(120, 102 + titleHeight, 165, 15);
+        }
+        mSourcePlacementLabel.setBounds(5, 130 + titleHeight, 150, 10);
+        mSourcePlacementCombo.setBounds(120, 127 + titleHeight, 165, 15);
+    } else {
+        mZSourceLinkLabel.setVisible(false);
+        mZSourceLinkCombo.setVisible(false);
+        mZSourceLinkScaleLabel.setVisible(false);
+        mZSourceLinkScaleSlider.setVisible(false);
+        mSourcePlacementLabel.setBounds(5, 105 + titleHeight, 150, 10);
+        mSourcePlacementCombo.setBounds(120, 102 + titleHeight, 165, 15);
+    }
+}
+
+//==============================================================================
+void SectionSourcePosition::setPositionSourceLink(PositionSourceLink value)
+{
+    mPositionSourceLinkCombo.setSelectedId(static_cast<int>(value));
+}
+
+//==============================================================================
+void SectionSourcePosition::setElevationSourceLink(ElevationSourceLink value)
+{
+    mZSourceLinkCombo.setSelectedId(static_cast<int>(value));
+}
+
+//==============================================================================
+void SectionSourcePosition::setSymmetricLinkComboState(bool allowed)
+{
+    mPositionSourceLinkCombo.setItemEnabled(static_cast<int>(PositionSourceLink::symmetricX), allowed);
+    mPositionSourceLinkCombo.setItemEnabled(static_cast<int>(PositionSourceLink::symmetricY), allowed);
 }
 
 //==============================================================================
@@ -267,6 +431,24 @@ void SectionSourcePosition::setNumberOfSources(int const numOfSources, SourceId 
     if (mSelectedSource >= SourceIndex{ numOfSources })
         mSelectedSource = SourceIndex{ 0 };
     mSourceNumberCombo.setSelectedItemIndex(mSelectedSource.get());
+
+    if (numOfSources == 1) {
+        mPositionSourceLinkCombo.setSelectedId(1);
+        mPositionSourceLinkCombo.setEnabled(false);
+        mZSourceLinkCombo.setSelectedId(1);
+        mZSourceLinkCombo.setEnabled(false);
+    } else {
+        mPositionSourceLinkCombo.setEnabled(true);
+        mZSourceLinkCombo.setEnabled(true);
+    }
+
+    if (numOfSources == 2) {
+        mPositionSourceLinkCombo.setItemEnabled(static_cast<int>(PositionSourceLink::symmetricX), true);
+        mPositionSourceLinkCombo.setItemEnabled(static_cast<int>(PositionSourceLink::symmetricY), true);
+    } else {
+        mPositionSourceLinkCombo.setItemEnabled(static_cast<int>(PositionSourceLink::symmetricX), false);
+        mPositionSourceLinkCombo.setItemEnabled(static_cast<int>(PositionSourceLink::symmetricY), false);
+    }
 }
 
 //==============================================================================
@@ -281,6 +463,8 @@ void SectionSourcePosition::updateSelectedSource(Source * source, SourceIndex co
 //==============================================================================
 void SectionSourcePosition::setSpatMode(SpatMode const spatMode)
 {
+    mSpatMode = spatMode;
+
     switch (spatMode) {
     case SpatMode::dome:
         mDomeControls.setVisible(true);
@@ -293,6 +477,14 @@ void SectionSourcePosition::setSpatMode(SpatMode const spatMode)
     default:
         jassertfalse;
     }
+
+    resized();
+}
+
+//==============================================================================
+void SectionSourcePosition::actualizeValueTreeState()
+{
+    mZSourceLinkScaleSlider.onValueChange();
 }
 
 } // namespace gris

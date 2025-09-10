@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include <Data/StrongTypes/sg_SourceIndex.hpp>
-#include <Data/StrongTypes/sg_Radians.hpp>
 #include "cg_constants.hpp"
+#include <Data/StrongTypes/sg_Radians.hpp>
+#include <Data/StrongTypes/sg_SourceIndex.hpp>
 #include <JuceHeader.h>
 #include <vector>
 
@@ -113,8 +113,18 @@ public:
     }
 
     //==============================================================================
-
-    enum class OriginOfChange { none, userMove, userAnchorMove, link, trajectory, automation, presetRecall, osc };
+    enum class OriginOfChange {
+        none,
+        userMove,
+        userAnchorMove,
+        link,
+        trajectory,
+        automation,
+        presetRecall,
+        osc,
+        audioAnalysis,
+        audioAnalysisRecAutomation
+    };
     enum class ChangeType { position, elevation };
 
     //==============================================================================
@@ -150,8 +160,7 @@ public:
 
 private:
     //==============================================================================
-
-    juce::ListenerList<Listener> mGuiListeners;
+    juce::LightweightListenerList<Listener> mGuiListeners;
 
     /**
      * @brief The internal index of the source.
@@ -168,7 +177,6 @@ private:
      * between sources in the OSC messages.
      */
     SourceId mId{ 1 };
-
 
     SpatMode mSpatMode{ SpatMode::dome };
 
@@ -194,7 +202,7 @@ private:
      */
     Radians mElevation{};
 
-     /**
+    /**
      * @brief The distance of the source from the origin.
      *
      * This represents the radial distance of the source to the origin of the spatialization field.
@@ -206,7 +214,8 @@ private:
      * @brief The XY position of the source in Cartesian coordinates.
      *
      * This represents the (x, y) position of the source in the spatialization field.
-     * It is modified in setX(), setY(), setPosition(), setElevation(), setCoordinates() and computeXY(), computeAzimuthElevation.
+     * It is modified in setX(), setY(), setPosition(), setElevation(), setCoordinates() and computeXY(),
+     * computeAzimuthElevation.
      */
     juce::Point<float> mPosition{};
 
@@ -365,13 +374,10 @@ class Sources
     std::vector<Source> mSecondarySources{};
 
 public:
-    static const int MAX_NUMBER_OF_SOURCES {256};
+    static const int MAX_NUMBER_OF_SOURCES{ 256 };
 
     //==============================================================================
-    Sources()
-    {
-        mSecondarySources.resize(MAX_NUMBER_OF_SOURCES - 1);
-    }
+    Sources() { mSecondarySources.resize(MAX_NUMBER_OF_SOURCES - 1); }
 
     [[nodiscard]] int size() const { return mSize; }
     void setSize(int size);

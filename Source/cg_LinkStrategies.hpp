@@ -41,6 +41,10 @@ class Base
     friend SourceLinkEnforcer;
     bool mInitialized{ false };
 
+protected:
+    //==============================================================================
+    double mSourceLinkScale{ 1.0 };
+
 public:
     //==============================================================================
     Base() noexcept = default;
@@ -60,8 +64,10 @@ public:
                                                                    SourceIndex sourceIndex) const;
     [[nodiscard]] bool isInitialized() const { return mInitialized; }
     //==============================================================================
+    void setSourceLinkScale(double scale) { mSourceLinkScale = scale; }
+    //==============================================================================
     static std::unique_ptr<Base> make(PositionSourceLink sourceLink);
-    static std::unique_ptr<Base> make(ElevationSourceLink sourceLink);
+    static std::unique_ptr<Base> make(ElevationSourceLink sourceLink, double scale = 1.0);
 
 private:
     //==============================================================================

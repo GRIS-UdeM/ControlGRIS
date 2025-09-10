@@ -39,6 +39,7 @@ private:
     PositionSourceLink mPositionSourceLink{ PositionSourceLink::undefined };
     ElevationSourceLink mElevationSourceLink{ ElevationSourceLink::undefined };
     std::unique_ptr<source_link_strategies::Base> mLinkStrategy;
+    double mElevationSourceLinkScale{ 1.0 };
 
 public:
     //==============================================================================
@@ -58,6 +59,7 @@ public:
     void setSourceLink(PositionSourceLink sourceLink, OriginOfChange originOfChange);
     void numberOfSourcesChanged();
     void enforceSourceLink();
+    void setElevationSourceLinkScale(double scale);
 
     [[nodiscard]] auto const & getSnapshots() const { return mSnapshots; }
 

@@ -34,6 +34,8 @@ bool Source::shouldForceNotifications(Source::OriginOfChange const origin) const
     case Source::OriginOfChange::userAnchorMove:
     case Source::OriginOfChange::automation:
     case Source::OriginOfChange::osc:
+    case Source::OriginOfChange::audioAnalysis:
+    case Source::OriginOfChange::audioAnalysisRecAutomation:
         return false;
     case Source::OriginOfChange::trajectory:
     case Source::OriginOfChange::link:
@@ -208,7 +210,7 @@ void Source::computeAzimuthElevation()
     jassert(!std::isnan(mPosition.getX()) && !std::isnan(mPosition.getY()));
 
     // update the azimuth only if we're not exactly at origin.
-    if (! mPosition.isOrigin()) {
+    if (!mPosition.isOrigin()) {
         // TODO : when the position converges to the origin via an automation, one of the dimension is going to get to
         // zero before the other. This is going to drastically change the angle. We need to insulate the real automation
         // from a listener callback initiated by some other source.
@@ -223,7 +225,7 @@ void Source::computeAzimuthElevation()
     // update both the elevation and distance in dome mode, otherwise only set the distance to the origin
     auto const radius{ mPosition.getDistanceFromOrigin() };
 #if DEBUG_COORDINATES
-    DBG("OG Radius: " + juce::String (radius));
+    DBG("OG Radius: " + juce::String(radius));
 #endif
 
     if (mSpatMode == SpatMode::dome) {
@@ -242,7 +244,7 @@ void Source::computeAzimuthElevation()
 
         mElevation = HALF_PI * clippedRadius;
 #if DEBUG_COORDINATES
-        DBG("mElevation : " + juce::String (mElevation.get()));
+        DBG("mElevation : " + juce::String(mElevation.get()));
 #endif
 
         mDistance = clippedRadius;
