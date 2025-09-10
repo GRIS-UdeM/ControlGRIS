@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "cg_StrongTypes.hpp"
 #include "cg_constants.hpp"
 
 namespace gris
