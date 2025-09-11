@@ -15,20 +15,20 @@ export PASS="$1"
 export IDENTIFIER="ca.umontreal.musique.gris.controlgris.pkg"
 
 export PROJECT_PATH="`pwd`"
-export PROJECT_FILE="$PROJECT_PATH/ControlGris.jucer"
+export PROJECT_FILE="$PROJECT_PATH/ControlGRIS.jucer"
 export XCODE_PATH="$PROJECT_PATH/Builds/MacOSX"
 export BIN_PATH="$XCODE_PATH/build/Release/"
 export TEMP_PATH="$PROJECT_PATH/out"
 export PLIST_PATH="$PROJECT_PATH/Application.plist"
 export ZIP_PATH="$TEMP_PATH/plugins.zip"
 
-Projucer=~/JUCE/Projucer.app/Contents/MacOS/Projucer
+Projucer="$PROJECT_PATH/submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/MacOSX/build/Release/Projucer.app/Contents/MacOS/Projucer"
 
 #==============================================================================
 # get app version
 export VERSION=`$Projucer --get-version "$PROJECT_FILE"`
 echo -e "$LINE\nVersion is $VERSION"
-export PKG_PATH="$TEMP_PATH/ControlGris_$VERSION.pkg"
+export PKG_PATH="$TEMP_PATH/ControlGRIS_$VERSION.pkg"
 
 #==============================================================================
 function generate_project() {
@@ -40,7 +40,7 @@ function generate_project() {
 
 #==============================================================================
 function build() {
-	echo -e "$LINE\nBuilding ControlGris $VERSION\n$LINE"
+	echo -e "$LINE\nBuilding ControlGRIS $VERSION\n$LINE"
 	cd "$XCODE_PATH"
 	chmod -R 755 .
 	xcodebuild -configuration Release || exit 1
@@ -52,9 +52,6 @@ function copy_to_temp() {
 	cd "$BIN_PATH" || exit 1
 	rm -fr "$TEMP_PATH"
 	mkdir "$TEMP_PATH"
-	for filename in *.vst; do
-		cp -R -H "$filename" "$TEMP_PATH"
-	done
 	for filename in *.vst3; do
 		cp -R -H "$filename" "$TEMP_PATH"
 	done
@@ -107,17 +104,14 @@ function build_tree() {
 	cd $TEMP_PATH
 	BASE_PATH="Product/Library/Audio/Plug-Ins"
 	AU_PATH="$BASE_PATH/Components"
-	VST_PATH="$BASE_PATH/VST"
 	VST3_PATH="$BASE_PATH/VST3"
 	AAX_PATH="Product/Library/Application Support/Avid/Audio/Plug-Ins"
 
 	mkdir -p "$AU_PATH" || exit 1
-	mkdir -p "$VST_PATH" || exit 1
 	mkdir -p "$VST3_PATH" || exit 1
 	mkdir -p "$AAX_PATH" || exit 1
 
 	cp -R -H *.component "$AU_PATH" || exit 1
-	cp -R -H *.vst "$VST_PATH" || exit 1
 	cp -R -H *.vst3 "$VST3_PATH" || exit 1
 	cp -R -H *.aaxplugin "$AAX_PATH" || exit 1
 }
@@ -146,7 +140,7 @@ function notarize_pkg()
 	xcrun notarytool submit --apple-id "$NOTARIZE_USER" \
 							--password "$PASS" \
 							--team-id $TEAM_ID \
-							"ControlGris_$VERSION.pkg" || exit 1
+							"ControlGRIS_$VERSION.pkg" || exit 1
 
 	wait_for_notarization
 	xcrun stapler staple "$PKG_PATH" || exit 1
