@@ -310,7 +310,7 @@ void ControlGrisAudioProcessorEditor::updateSpeedLinkButton(bool state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateSourceLinkCombo(PositionSourceLink value)
 {
-    auto action = [=]() {
+    auto action = [this, value]() {
         mSectionSourcePosition.getPositionSourceLinkCombo().setSelectedId(static_cast<int>(value),
                                                                           juce::NotificationType::dontSendNotification);
     };
@@ -325,7 +325,7 @@ void ControlGrisAudioProcessorEditor::updateSourceLinkCombo(PositionSourceLink v
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateElevationSourceLinkCombo(ElevationSourceLink value)
 {
-    juce::MessageManager::callAsync([=] {
+    juce::MessageManager::callAsync([this, value] {
         mSectionSourcePosition.getElevationSourceLinkCombo().setSelectedId(
             static_cast<int>(value),
             juce::NotificationType::dontSendNotification);
@@ -342,7 +342,7 @@ void ControlGrisAudioProcessorEditor::updatePositionPreset(int const presetNumbe
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateElevationMode(ElevationMode mode)
 {
-    auto const updateElevMode = [=]() {
+    auto const updateElevMode = [this, mode]() {
         mElevationModeCombobox.setSelectedId(static_cast<int>(mode) + 1, juce::dontSendNotification);
         mElevationField.setElevationMode(mode);
     };
