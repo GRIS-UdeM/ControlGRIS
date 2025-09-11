@@ -1726,7 +1726,6 @@ void gris::SectionSoundReactiveTrajectories::mouseDown(juce::MouseEvent const & 
 //==============================================================================
 void gris::SectionSoundReactiveTrajectories::timerCallback(int timerID)
 {
-
     if (timerID == timerParamID::datagraphUpdate) {
         addNewParamValueToDataGraph();
         return;
@@ -2044,7 +2043,6 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
 //==============================================================================
 void gris::SectionSoundReactiveTrajectories::addNewParamValueToDataGraph()
 {
-
     if (mParameterToShow) {
         auto & param{ mParameterToShow->get() };
         auto value{ param.getValue() };

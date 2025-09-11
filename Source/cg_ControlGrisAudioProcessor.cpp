@@ -1160,7 +1160,6 @@ void ControlGrisAudioProcessor::prepareToPlay([[maybe_unused]] double const samp
     mShape.setFrame(nFrameSpectral);
     mShape.setMagnitude(mMagnitudeSpectral);
 
-
     auto * ed{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
     if (ed != nullptr) {
         ed->updateAudioAnalysisNumInputChannels();
@@ -1285,14 +1284,14 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
 
         // FLUCOMA
         if (shouldProcessDomeLoudnessAnalysis() || shouldProcessCubeLoudnessAnalysis()) {
-
             for (int i{}; i < mDescriptorsBuffer.getNumSamples(); ++i) {
                 mInLoudness[i] = channelData[i];
             }
 
             mLoudnessMat.fill(0.0);
             std::fill(mPaddedLoudness.begin(), mPaddedLoudness.end(), 0);
-            // Note: this and the other intsances of padding do not pad with a symmetric amount of zeroes. Maybe this is fine ?
+            // Note: this and the other intsances of padding do not pad with a symmetric amount of zeroes. Maybe this is
+            // fine ?
             std::copy(mInLoudness.begin(), mInLoudness.end(), mPaddedLoudness.begin() + mLoudness.HALF_WINDOW);
             std::fill(mLoudnessDesc.begin(), mLoudnessDesc.end(), 0); // necessary?
             for (int i{}; i < mNFramesLoudness; i++) {
@@ -1323,7 +1322,6 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
         }
 
         if (shouldProcessDomePitchAnalysis() || shouldProcessCubePitchAnalysis()) {
-
             for (int i{}; i < mDescriptorsBuffer.getNumSamples(); ++i) {
                 mInPitch[i] = channelData[i];
             }
@@ -1365,7 +1363,6 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
         }
 
         if (shouldProcessDomeSpectralAnalysis() || shouldProcessCubeSpectralAnalysis()) {
-
             for (int i{}; i < mDescriptorsBuffer.getNumSamples(); ++i) {
                 mInSpectral[i] = channelData[i];
             }
