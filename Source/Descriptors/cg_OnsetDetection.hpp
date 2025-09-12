@@ -26,7 +26,7 @@
 
 #include "cg_Descriptors.hpp"
 
-#include <Containers/circular_deque.hpp>
+#include <Containers/sg_CircularDeque.hpp>
 
 namespace gris
 {
