@@ -168,9 +168,7 @@ public:
                     mTimeToOnsetDetectionTarget = maxValue * 0.25;
                     mTimeToOnsetDetectionZero = maxValue * 5;
                     mDifferenceOnsetDetection = mDescOnsetDetectionTarget - mDescOnsetDetectionCurrent;
-                    mOnsetDetectionIncrement
-                        = (mDifferenceOnsetDetection / (mTimeToOnsetDetectionTarget * (blockSize / sampleRate * 1000)))
-                          * 200;
+                    mOnsetDetectionIncrement = mDifferenceOnsetDetection / mTimeToOnsetDetectionTarget;
                     mDescOnsetDetectionTarget > mDescOnsetDetectionCurrent ? mOnsetDetectionDirection = Direction::up
                                                                            : mOnsetDetectionDirection = Direction::down;
                 }
@@ -199,9 +197,7 @@ public:
                         mTimeToOnsetDetectionTarget = maxValue * 0.25;
                         mTimeToOnsetDetectionZero = maxValue * 5;
                         mDifferenceOnsetDetection = mDescOnsetDetectionTarget - mDescOnsetDetectionCurrent;
-                        mOnsetDetectionIncrement = (mDifferenceOnsetDetection
-                                                    / (mTimeToOnsetDetectionTarget * (blockSize / sampleRate * 1000)))
-                                                   * 200; // 200 could be adjusted for smoothed value
+                        mOnsetDetectionIncrement = mDifferenceOnsetDetection / mTimeToOnsetDetectionTarget;
                         mDescOnsetDetectionTarget > mDescOnsetDetectionCurrent
                             ? mOnsetDetectionDirection = Direction::up
                             : mOnsetDetectionDirection = Direction::down;
@@ -215,7 +211,7 @@ public:
             }
         }
 
-        mDescOnsetDetectionCurrent += mOnsetDetectionIncrement;
+        mDescOnsetDetectionCurrent += mOnsetDetectionIncrement * (blockSize / sampleRate * 1000); // happens each processBlock call
         mDescOnsetDetectionCurrent = std::clamp(mDescOnsetDetectionCurrent, 0.0, 1.0);
         if (mDescOnsetDetectionCurrent > 0) {
             if ((mOnsetDetectionDirection == Direction::up && mDescOnsetDetectionCurrent >= mDescOnsetDetectionTarget)
@@ -224,9 +220,7 @@ public:
                 mOnsetDetectionDirection = Direction::down;
                 mDescOnsetDetectionTarget = 0.0;
                 mDifferenceOnsetDetection = mDescOnsetDetectionTarget - mDescOnsetDetectionCurrent;
-                mOnsetDetectionIncrement
-                    = (mDifferenceOnsetDetection / (mTimeToOnsetDetectionZero * (blockSize / sampleRate * 1000)))
-                      * 200; // 200 could be adjusted for smoothed value
+                mOnsetDetectionIncrement = mDifferenceOnsetDetection / mTimeToOnsetDetectionZero;
             }
         } else {
             mSampleCounter += blockSize;
