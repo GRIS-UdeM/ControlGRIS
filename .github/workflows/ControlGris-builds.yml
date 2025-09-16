@@ -205,13 +205,14 @@ jobs:
           cd submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/VisualStudio2022
           msbuild Projucer.sln /p:Configuration=Release /p:Platform=x64 /p:WarningsAsErrors=False
 
+      - name: Disable plugin binary copy step in .jucer
+        shell: bash
+        run: |
+          sed -i 's/enablePluginBinaryCopyStep="1"/enablePluginBinaryCopyStep="0"/g' ControlGRIS.jucer || true
+
       - name: Generate Visual Studio project
         run: |
           submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/VisualStudio2022/x64/Release/App/Projucer.exe --resave ControlGRIS.jucer
-
-      - name: Remove VST3 copy step from .vcxproj #this copy step is useless on the pipeline, and causes it to fail
-        run: sed -i '/<PostBuildEvent>/,/<\/PostBuildEvent>/d' Builds/VisualStudio2022/ControlGRIS_VST3.vcxproj
-        shell: bash
 
       - name: build shared code
         run: msbuild Builds/VisualStudio2022/ControlGRIS_SharedCode.vcxproj -p:Configuration=Release -p:Platform=x64
