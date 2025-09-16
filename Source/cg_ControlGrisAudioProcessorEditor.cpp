@@ -1304,7 +1304,7 @@ TabbedTrajectoriesComponent::TabbedTrajectoriesComponent(juce::TabbedButtonBar::
 }
 
 //==============================================================================
-void TabbedTrajectoriesComponent::currentTabChanged(int newCurrentTabIndex, const juce::String & newCurrentTabName)
+void TabbedTrajectoriesComponent::currentTabChanged(int newCurrentTabIndex, const juce::String & /*newCurrentTabName*/)
 {
     mAudioProcessor.setSelectedSoundTrajectoriesTab(newCurrentTabIndex);
 

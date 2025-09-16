@@ -565,7 +565,7 @@ void GrisLookAndFeel::drawTabButton(juce::TabBarButton & button,
 //==============================================================================
 void GrisLookAndFeel::createTabTextLayout(const juce::TabBarButton & button,
                                           float const length,
-                                          float const depth,
+                                          float const /*depth*/,
                                           juce::Colour const color,
                                           juce::TextLayout & textLayout) const
 {

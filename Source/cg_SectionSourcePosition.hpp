@@ -132,7 +132,7 @@ private:
     juce::AudioProcessorValueTreeState & mAPVTS;
     juce::ListenerList<Listener> mListeners;
 
-    static constexpr float titleHeight{ 20 };
+    static constexpr int titleHeight{ 20 };
 
     SpatMode mSpatMode;
     SourceIndex mSelectedSource;
