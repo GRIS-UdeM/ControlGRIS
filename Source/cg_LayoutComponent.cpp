@@ -156,9 +156,12 @@ int LayoutComponent::getMinInnerWidth() const noexcept
     JUCE_ASSERT_MESSAGE_THREAD;
 
     if (mOrientation == Orientation::horizontal) {
-        return std::transform_reduce(mSections.begin(), mSections.end(), 0, std::plus(), [this](Section const & section) {
-            return section.getMinSectionWidth(mOrientation);
-        });
+        return std::transform_reduce(
+            mSections.begin(),
+            mSections.end(),
+            0,
+            std::plus(),
+            [this](Section const & section) { return section.getMinSectionWidth(mOrientation); });
     }
     jassert(mOrientation == Orientation::vertical);
     return std::transform_reduce(mSections.begin(), mSections.end(), 0, MAX_ELEM, [this](Section const & section) {
@@ -172,9 +175,12 @@ int LayoutComponent::getMinInnerHeight() const noexcept
     JUCE_ASSERT_MESSAGE_THREAD;
 
     if (mOrientation == Orientation::vertical) {
-        return std::transform_reduce(mSections.begin(), mSections.end(), 0, std::plus(), [this](Section const & section) {
-            return section.getMinSectionHeight(mOrientation);
-        });
+        return std::transform_reduce(
+            mSections.begin(),
+            mSections.end(),
+            0,
+            std::plus(),
+            [this](Section const & section) { return section.getMinSectionHeight(mOrientation); });
     }
     jassert(mOrientation == Orientation::horizontal);
     return std::transform_reduce(mSections.begin(), mSections.end(), 0, MAX_ELEM, [this](Section const & section) {

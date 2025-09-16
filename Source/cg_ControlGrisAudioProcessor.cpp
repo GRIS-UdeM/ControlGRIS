@@ -1184,7 +1184,7 @@ bool ControlGrisAudioProcessor::isBusesLayoutSupported(const BusesLayout & layou
         && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
         return false;
 
-            // This checks if the input layout matches the output layout
+        // This checks if the input layout matches the output layout
         #if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -1277,7 +1277,8 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
         for (int i{}; i < mNumChannelsToAnalyse; ++i) {
             mDescriptorsBuffer.addFrom(0, 0, buffer, i, 0, buffer.getNumSamples());
         }
-        mDescriptorsBuffer.applyGain((1.0f / mNumChannelsToAnalyse) * static_cast<float>(mAudioAnalysisInputGainMultiplier));
+        mDescriptorsBuffer.applyGain((1.0f / mNumChannelsToAnalyse)
+                                     * static_cast<float>(mAudioAnalysisInputGainMultiplier));
 
         auto bufferMagnitude = mDescriptorsBuffer.getMagnitude(0, mDescriptorsBuffer.getNumSamples());
         auto * channelData = mDescriptorsBuffer.getReadPointer(0);

@@ -588,7 +588,8 @@ SourceSnapshot FixedElevation::computeInitialStateFromFinalState_implementation(
 void LinearMin::computeParameters_implementation(Sources const & sources, SourcesSnapshots const & /*snapshots*/)
 {
     mBaseElevation = sources.getPrimarySource().getElevation();
-    mElevationPerSource = (ELEVATION_DIFF * static_cast<float>(mSourceLinkScale)) / static_cast<float>((sources.size() - 1));
+    mElevationPerSource
+        = (ELEVATION_DIFF * static_cast<float>(mSourceLinkScale)) / static_cast<float>((sources.size() - 1));
 }
 
 //==============================================================================
@@ -614,7 +615,8 @@ SourceSnapshot LinearMin::computeInitialStateFromFinalState_implementation([[may
 void LinearMax::computeParameters_implementation(Sources const & sources, SourcesSnapshots const & /*snapshots*/)
 {
     mBaseElevation = sources.getPrimarySource().getElevation();
-    mElevationPerSource = (ELEVATION_DIFF * static_cast<float>(mSourceLinkScale)) / static_cast<float>((sources.size() - 1));
+    mElevationPerSource
+        = (ELEVATION_DIFF * static_cast<float>(mSourceLinkScale)) / static_cast<float>((sources.size() - 1));
 }
 
 //==============================================================================
