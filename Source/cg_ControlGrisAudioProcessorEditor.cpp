@@ -168,8 +168,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     mPositionPresetViewport.setScrollBarsShown(false, false, true, true);
     addAndMakeVisible(&mPositionPresetViewport);
 
-    mPositionPresetInfoComponent.setAppVersionLabelText(juce::String("v. ") + JucePlugin_VersionString
-                                                            + juce::String("\n") + juce::String("RC.4"),
+    mPositionPresetInfoComponent.setAppVersionLabelText(juce::String("v. ") + JucePlugin_VersionString,
                                                         juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mPositionPresetInfoComponent);
 
@@ -310,7 +309,7 @@ void ControlGrisAudioProcessorEditor::updateSpeedLinkButton(bool state)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateSourceLinkCombo(PositionSourceLink value)
 {
-    auto action = [=]() {
+    auto action = [this, value]() {
         mSectionSourcePosition.getPositionSourceLinkCombo().setSelectedId(static_cast<int>(value),
                                                                           juce::NotificationType::dontSendNotification);
     };
@@ -325,7 +324,7 @@ void ControlGrisAudioProcessorEditor::updateSourceLinkCombo(PositionSourceLink v
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateElevationSourceLinkCombo(ElevationSourceLink value)
 {
-    juce::MessageManager::callAsync([=] {
+    juce::MessageManager::callAsync([this, value] {
         mSectionSourcePosition.getElevationSourceLinkCombo().setSelectedId(
             static_cast<int>(value),
             juce::NotificationType::dontSendNotification);
@@ -342,7 +341,7 @@ void ControlGrisAudioProcessorEditor::updatePositionPreset(int const presetNumbe
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateElevationMode(ElevationMode mode)
 {
-    auto const updateElevMode = [=]() {
+    auto const updateElevMode = [this, mode]() {
         mElevationModeCombobox.setSelectedId(static_cast<int>(mode) + 1, juce::dontSendNotification);
         mElevationField.setElevationMode(mode);
     };
@@ -1305,7 +1304,7 @@ TabbedTrajectoriesComponent::TabbedTrajectoriesComponent(juce::TabbedButtonBar::
 }
 
 //==============================================================================
-void TabbedTrajectoriesComponent::currentTabChanged(int newCurrentTabIndex, const juce::String & newCurrentTabName)
+void TabbedTrajectoriesComponent::currentTabChanged(int newCurrentTabIndex, const juce::String & /*newCurrentTabName*/)
 {
     mAudioProcessor.setSelectedSoundTrajectoriesTab(newCurrentTabIndex);
 

@@ -1726,7 +1726,6 @@ void gris::SectionSoundReactiveTrajectories::mouseDown(juce::MouseEvent const & 
 //==============================================================================
 void gris::SectionSoundReactiveTrajectories::timerCallback(int timerID)
 {
-
     if (timerID == timerParamID::datagraphUpdate) {
         addNewParamValueToDataGraph();
         return;
@@ -1739,7 +1738,7 @@ void gris::SectionSoundReactiveTrajectories::timerCallback(int timerID)
         }
     };
 
-    auto const updateButtonText = [&](int timerID, int & counter) {
+    auto const updateButtonText = [&](int & counter) {
         if (counter >= 1000 * 120 || counter == 0) {
             mClickTimerButton.setButtonText(juce::String("click me!"));
         } else {
@@ -1793,31 +1792,31 @@ void gris::SectionSoundReactiveTrajectories::timerCallback(int timerID)
         switch (param.getParameterID()) {
         case ParameterID::azimuth:
             selectedTimeToShow = mOnsetDetectiontimerCounterAzimuth;
-            updateButtonText(timerID, mOnsetDetectiontimerCounterAzimuth);
+            updateButtonText(mOnsetDetectiontimerCounterAzimuth);
             break;
         case ParameterID::elevation:
             selectedTimeToShow = mOnsetDetectiontimerCounterElevation;
-            updateButtonText(timerID, mOnsetDetectiontimerCounterElevation);
+            updateButtonText(mOnsetDetectiontimerCounterElevation);
             break;
         case ParameterID::x:
             selectedTimeToShow = mOnsetDetectiontimerCounterX;
-            updateButtonText(timerID, mOnsetDetectiontimerCounterX);
+            updateButtonText(mOnsetDetectiontimerCounterX);
             break;
         case ParameterID::y:
             selectedTimeToShow = mOnsetDetectiontimerCounterY;
-            updateButtonText(timerID, mOnsetDetectiontimerCounterY);
+            updateButtonText(mOnsetDetectiontimerCounterY);
             break;
         case ParameterID::z:
             selectedTimeToShow = mOnsetDetectiontimerCounterZ;
-            updateButtonText(timerID, mOnsetDetectiontimerCounterZ);
+            updateButtonText(mOnsetDetectiontimerCounterZ);
             break;
         case ParameterID::azimuthspan:
             selectedTimeToShow = mOnsetDetectiontimerCounterAzimuthSpan;
-            updateButtonText(timerID, mOnsetDetectiontimerCounterAzimuthSpan);
+            updateButtonText(mOnsetDetectiontimerCounterAzimuthSpan);
             break;
         case ParameterID::elevationspan:
             selectedTimeToShow = mOnsetDetectiontimerCounterElevationSpan;
-            updateButtonText(timerID, mOnsetDetectiontimerCounterElevationSpan);
+            updateButtonText(mOnsetDetectiontimerCounterElevationSpan);
             break;
         case ParameterID::invalid:
         default:
@@ -2044,7 +2043,6 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
 //==============================================================================
 void gris::SectionSoundReactiveTrajectories::addNewParamValueToDataGraph()
 {
-
     if (mParameterToShow) {
         auto & param{ mParameterToShow->get() };
         auto value{ param.getValue() };

@@ -69,7 +69,7 @@ GrisLookAndFeel::GrisLookAndFeel()
 #if JUCE_WINDOWS
     mFontSize = 11.0f;
 #elif JUCE_LINUX
-    mFontSize = 12.0f;
+    mFontSize = 11.5f;
 #else
     mFontSize = 10.0f;
 #endif
@@ -565,7 +565,7 @@ void GrisLookAndFeel::drawTabButton(juce::TabBarButton & button,
 //==============================================================================
 void GrisLookAndFeel::createTabTextLayout(const juce::TabBarButton & button,
                                           float const length,
-                                          float const depth,
+                                          float const /*depth*/,
                                           juce::Colour const color,
                                           juce::TextLayout & textLayout) const
 {
