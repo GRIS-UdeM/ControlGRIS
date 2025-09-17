@@ -59,6 +59,8 @@
         <FILE id="W2OezW" name="cg_Warnings.hpp" compile="0" resource="0" file="Source/cg_Warnings.hpp"/>
       </GROUP>
       <GROUP id="{8BFD9DB4-C1DD-99C9-FCA0-B0E191B8FE8D}" name="Resources">
+        <FILE id="P6dbot" name="ControlGRIS2_Logo.png" compile="0" resource="1"
+              file="Imgs/ControlGRIS2_Logo.png"/>
         <FILE id="uU1CAr" name="folder_icon.png" compile="0" resource="1" file="Imgs/folder_icon.png"/>
         <FILE id="JVPA2I" name="SinkinSans-400Regular.otf" compile="0" resource="1"
               file="Source/SinkinSans-400Regular.otf"/>
@@ -283,7 +285,8 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" hardenedRuntime="1" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3">
+    <XCODE_MAC targetFolder="Builds/MacOSX" hardenedRuntime="1" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3"
+               bigIcon="P6dbot">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS2" osxArchitecture="Native"
                        auBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"
@@ -311,7 +314,8 @@
         <MODULEPATH id="juce_audio_devices" path="submodules/StructGRIS/submodules/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3"
+                bigIcon="P6dbot">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS2" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/linux/Debug"/>
@@ -337,7 +341,8 @@
         <MODULEPATH id="juce_audio_devices" path="submodules/StructGRIS/submodules/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="flucoma_VERSION_LIB.lib&#10;fmt.lib&#10;foonathan_memory-0.7.3.lib">
+    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="flucoma_VERSION_LIB.lib&#10;fmt.lib&#10;foonathan_memory-0.7.3.lib"
+            bigIcon="P6dbot">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" vst3BinaryLocation="C:\Program Files\Common Files\VST3"
                        enablePluginBinaryCopyStep="1" headerPath="..\..\Source\libs\include&#10;..\..\Source\libs\include\flucoma&#10;..\..\Source\libs\include\Eigen&#10;..\..\Source\libs\include\hisstools&#10;..\..\Source\libs\include\Spectra&#10;..\..\Source\libs\include\tl&#10;..\..\Source\libs\include\nlohmann&#10;..\..\Source\libs\include\fmt&#10;..\..\Source\libs\include\foonathan"
