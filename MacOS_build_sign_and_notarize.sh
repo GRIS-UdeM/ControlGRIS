@@ -48,7 +48,7 @@ function build() {
 
 #==============================================================================
 function copy_to_temp() {
-	echo -e "$LINE\nCopying non-aax plugins...\n$LINE"
+	echo -e "$LINE\nCopying non-aax plugins and standalone...\n$LINE"
 	cd "$BIN_PATH" || exit 1
 	rm -fr "$TEMP_PATH"
 	mkdir "$TEMP_PATH"
@@ -58,6 +58,7 @@ function copy_to_temp() {
 	for filename in *.component; do
 		cp -R -H "$filename" "$TEMP_PATH"
 	done
+	cp -R -H "ControlGRIS2.app" "$TEMP_PATH"
 }
 
 #==============================================================================
@@ -106,14 +107,17 @@ function build_tree() {
 	AU_PATH="$BASE_PATH/Components"
 	VST3_PATH="$BASE_PATH/VST3"
 	AAX_PATH="Product/Library/Application Support/Avid/Audio/Plug-Ins"
+	STANDALONE="Product/Applications/GRIS"
 
 	mkdir -p "$AU_PATH" || exit 1
 	mkdir -p "$VST3_PATH" || exit 1
 	mkdir -p "$AAX_PATH" || exit 1
+	mkdir -p "$STANDALONE" || exit 1
 
 	cp -R -H *.component "$AU_PATH" || exit 1
 	cp -R -H *.vst3 "$VST3_PATH" || exit 1
 	cp -R -H *.aaxplugin "$AAX_PATH" || exit 1
+	cp -R -H ControlGRIS2.app "$STANDALONE" || exit 1
 }
 
 #==============================================================================
@@ -125,6 +129,7 @@ function package() {
 	            --install-location "/" \
 	            --identifier "$IDENTIFIER" \
 	            --version "$VERSION" \
+				--component-plist "../ControlGRIS.plist" \
 	            --sign "$INSTALLER_SIGNATURE" \
 	            --timestamp \
 	            "$PKG_PATH" || exit 1
