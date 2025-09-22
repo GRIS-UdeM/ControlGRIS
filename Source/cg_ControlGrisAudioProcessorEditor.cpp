@@ -1,27 +1,30 @@
-/**************************************************************************
- * Copyright 2018 UdeM - GRIS - Olivier Belanger                          *
- *                                                                        *
- * This file is part of ControlGris, a multi-source spatialization plugin *
- *                                                                        *
- * ControlGris is free software: you can redistribute it and/or modify    *
- * it under the terms of the GNU Lesser General Public License as         *
- * published by the Free Software Foundation, either version 3 of the     *
- * License, or (at your option) any later version.                        *
- *                                                                        *
- * ControlGris is distributed in the hope that it will be useful,         *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- * GNU Lesser General Public License for more details.                    *
- *                                                                        *
- * You should have received a copy of the GNU Lesser General Public       *
- * License along with ControlGris.  If not, see                           *
- * <http://www.gnu.org/licenses/>.                                        *
- *************************************************************************/
+/*
+ This file is part of ControlGris.
+
+ Developers: Olivier BELANGER, Gaël LANE LÉPINE
+
+ ControlGris is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+
+ ControlGris is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with ControlGris.  If not, see
+ <http://www.gnu.org/licenses/>.
+*/
+
+//==============================================================================
 
 #include "cg_ControlGrisAudioProcessorEditor.hpp"
 
 #include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_constants.hpp"
+#include <Data/Quaternion.hpp>
 
 namespace gris
 {
@@ -36,14 +39,21 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     , mAudioProcessorValueTreeState(vts)
     , mPositionTrajectoryManager(positionAutomationManager)
     , mElevationTrajectoryManager(elevationAutomationManager)
-    , mPositionField(controlGrisAudioProcessor.getSources(), positionAutomationManager)
+    , mPositionField(controlGrisAudioProcessor.getSources(),
+                     positionAutomationManager,
+                     mProcessor.getPersistentStorage())
     , mElevationField(controlGrisAudioProcessor.getSources(), elevationAutomationManager)
     , mSectionSourceSpan(mGrisLookAndFeel)
-    , mSectionTrajectory(mGrisLookAndFeel)
+    , mSectionAbstractTrajectories(mGrisLookAndFeel, vts)
+    , mSectionSoundReactiveTrajectories(mGrisLookAndFeel, mProcessor)
     , mSectionGeneralSettings(mGrisLookAndFeel)
-    , mSectionSourcePosition(mGrisLookAndFeel, controlGrisAudioProcessor.getSpatMode())
+    , mSectionSourcePosition(mGrisLookAndFeel,
+                             controlGrisAudioProcessor.getSpatMode(),
+                             mSectionSourceSpan,
+                             mAudioProcessorValueTreeState)
     , mSectionOscController(mGrisLookAndFeel)
-    , mPositionPresetComponent(controlGrisAudioProcessor.getPresetsManager())
+    , mPositionPresetComponent(controlGrisAudioProcessor.getPresetsManager(), mPositionPresetInfoComponent)
+    , mPositionPresetInfoComponent(mGrisLookAndFeel)
 {
     setLookAndFeel(&mGrisLookAndFeel);
 
@@ -90,9 +100,9 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
                                   60,
                                   12);
 
-    mTrajectoryBanner.setLookAndFeel(&mGrisLookAndFeel);
-    mTrajectoryBanner.setText("Trajectories", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mTrajectoryBanner);
+    mTrajectoriesBanner.setLookAndFeel(&mGrisLookAndFeel);
+    mTrajectoriesBanner.setText("Trajectories", juce::NotificationType::dontSendNotification);
+    addAndMakeVisible(&mTrajectoriesBanner);
 
     mSettingsBanner.setLookAndFeel(&mGrisLookAndFeel);
     mSettingsBanner.setText("Configuration", juce::NotificationType::dontSendNotification);
@@ -112,36 +122,55 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 
     mSectionSourceSpan.setLookAndFeel(&mGrisLookAndFeel);
     mSectionSourceSpan.addListener(this);
-    addAndMakeVisible(&mSectionSourceSpan);
 
-    mSectionTrajectory.setLookAndFeel(&mGrisLookAndFeel);
-    mSectionTrajectory.addListener(this);
-    addAndMakeVisible(mSectionTrajectory);
-    mSectionTrajectory.setPositionSourceLink(mPositionTrajectoryManager.getSourceLink());
-    mSectionTrajectory.setElevationSourceLink(
-        static_cast<ElevationSourceLink>(mElevationTrajectoryManager.getSourceLink()));
+    mSectionAbstractTrajectories.setLookAndFeel(&mGrisLookAndFeel);
+    mSectionAbstractTrajectories.addListener(this);
 
     mSectionGeneralSettings.setLookAndFeel(&mGrisLookAndFeel);
     mSectionGeneralSettings.addListener(this);
 
     mSectionSourcePosition.setLookAndFeel(&mGrisLookAndFeel);
     mSectionSourcePosition.addListener(this);
+    addAndMakeVisible(&mSectionSourcePosition);
+    mSectionSourcePosition.setPositionSourceLink(mPositionTrajectoryManager.getSourceLink());
+    mSectionSourcePosition.setElevationSourceLink(
+        static_cast<ElevationSourceLink>(mElevationTrajectoryManager.getSourceLink()));
 
     mSectionOscController.setLookAndFeel(&mGrisLookAndFeel);
     mSectionOscController.addListener(this);
 
-    auto const bg{ mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId) };
+    auto const bg{ mGrisLookAndFeel.getGreyColor() };
 
     mConfigurationComponent.setLookAndFeel(&mGrisLookAndFeel);
     mConfigurationComponent.setColour(juce::TabbedComponent::backgroundColourId, bg);
+    mConfigurationComponent.setColour(mConfigurationComponent.outlineColourId, mGrisLookAndFeel.getDarkColor());
+    mConfigurationComponent.setTabBarDepth(24);
     mConfigurationComponent.addTab("Settings", bg, &mSectionGeneralSettings, false);
-    mConfigurationComponent.addTab("Sources", bg, &mSectionSourcePosition, false);
     mConfigurationComponent.addTab("Controllers", bg, &mSectionOscController, false);
     addAndMakeVisible(mConfigurationComponent);
 
+    mTrajectoriesComponent.setLookAndFeel(&mGrisLookAndFeel);
+    mTrajectoriesComponent.setColour(juce::TabbedComponent::backgroundColourId, bg);
+    mTrajectoriesComponent.setColour(mTrajectoriesComponent.outlineColourId, mGrisLookAndFeel.getDarkColor());
+    mTrajectoriesComponent.setTabBarDepth(24);
+    mTrajectoriesComponent.addTab(mSectionSoundReactiveTrajectories.getName(),
+                                  bg,
+                                  &mSectionSoundReactiveTrajectories,
+                                  false);
+    mTrajectoriesComponent.addTab("Abstract Trajectories", bg, &mSectionAbstractTrajectories, false);
+    addAndMakeVisible(mTrajectoriesComponent);
+
     mPositionPresetComponent.setLookAndFeel(&mGrisLookAndFeel);
     mPositionPresetComponent.addListener(this);
-    addAndMakeVisible(&mPositionPresetComponent);
+    // addAndMakeVisible(&mPositionPresetComponent);
+
+    mPositionPresetViewport.setViewedComponent(&mPositionPresetComponent);
+    mPositionPresetViewport.setScrollBarsShown(false, false, true, true);
+    addAndMakeVisible(&mPositionPresetViewport);
+
+    mPositionPresetInfoComponent.setAppVersionLabelText(juce::String("v. ") + JucePlugin_VersionString,
+                                                        juce::NotificationType::dontSendNotification);
+    addAndMakeVisible(&mPositionPresetInfoComponent);
 
     // Add sources to the fields.
     //---------------------------
@@ -175,6 +204,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 ControlGrisAudioProcessorEditor::~ControlGrisAudioProcessorEditor()
 {
     mConfigurationComponent.setLookAndFeel(nullptr);
+    mTrajectoriesComponent.setLookAndFeel(nullptr);
     setLookAndFeel(nullptr);
 }
 
@@ -205,27 +235,31 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
     mSectionOscController.setOscSendOutputPort(
         mAudioProcessorValueTreeState.state.getProperty("oscOutputPortNumber", 8000));
 
-    // Set state for trajectory box persistent values.
+    // Set state for abstraction spatialization box persistent values.
     //------------------------------------------------
-    mSectionTrajectory.setTrajectoryType(mAudioProcessorValueTreeState.state.getProperty("trajectoryType", 1));
-    mSectionTrajectory.setElevationTrajectoryType(
+    mSectionAbstractTrajectories.setTrajectoryType(
+        mAudioProcessorValueTreeState.state.getProperty("trajectoryType", 1));
+    mSectionAbstractTrajectories.setElevationTrajectoryType(
         mAudioProcessorValueTreeState.state.getProperty("trajectoryTypeAlt", 1));
-    mSectionTrajectory.setPositionBackAndForth(mAudioProcessorValueTreeState.state.getProperty("backAndForth", false));
-    mSectionTrajectory.setElevationBackAndForth(
+    mSectionAbstractTrajectories.setPositionBackAndForth(
+        mAudioProcessorValueTreeState.state.getProperty("backAndForth", false));
+    mSectionAbstractTrajectories.setElevationBackAndForth(
         mAudioProcessorValueTreeState.state.getProperty("backAndForthAlt", false));
-    mSectionTrajectory.setPositionDampeningCycles(
+    mSectionAbstractTrajectories.setPositionDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCycles", 0));
     mPositionTrajectoryManager.setPositionDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCycles", 0));
-    mSectionTrajectory.setElevationDampeningCycles(
+    mSectionAbstractTrajectories.setElevationDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCyclesAlt", 0));
     mElevationTrajectoryManager.setPositionDampeningCycles(
         mAudioProcessorValueTreeState.state.getProperty("dampeningCyclesAlt", 0));
-    mSectionTrajectory.setDeviationPerCycle(mAudioProcessorValueTreeState.state.getProperty("deviationPerCycle", 0));
+    mSectionAbstractTrajectories.setDeviationPerCycle(
+        mAudioProcessorValueTreeState.state.getProperty("deviationPerCycle", 0));
     mPositionTrajectoryManager.setDeviationPerCycle(
         Degrees{ mAudioProcessorValueTreeState.state.getProperty("deviationPerCycle", 0) });
-    mSectionTrajectory.setCycleDuration(mAudioProcessorValueTreeState.state.getProperty("cycleDuration", 5.0));
-    mSectionTrajectory.setDurationUnit(mAudioProcessorValueTreeState.state.getProperty("durationUnit", 1));
+    mSectionAbstractTrajectories.setCycleDuration(
+        mAudioProcessorValueTreeState.state.getProperty("cycleDuration", 5.0));
+    mSectionAbstractTrajectories.setDurationUnit(mAudioProcessorValueTreeState.state.getProperty("durationUnit", 1));
 
     // Update the position preset box.
     //--------------------------------
@@ -235,6 +269,10 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
         mPositionPresetComponent.presetSaved(index++, saved);
     }
 
+    // Update the Trajectories Tab
+    mTrajectoriesComponent.setCurrentTabIndex(mAudioProcessorValueTreeState.state.getProperty("soundTrajSelTab", 0));
+    mSectionAbstractTrajectories.actualizeValueTreeState();
+
     // Update the interface.
     //----------------------
     mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
@@ -243,6 +281,7 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
     mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource],
                                                 mSelectedSource,
                                                 mProcessor.getSpatMode());
+    mSectionSourcePosition.actualizeValueTreeState();
 
     auto const preset{ static_cast<int>(static_cast<float>(
         mAudioProcessorValueTreeState.getParameterAsValue(Automation::Ids::POSITION_PRESET).getValue())) };
@@ -262,11 +301,17 @@ void ControlGrisAudioProcessorEditor::updateSpanLinkButton(bool state)
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::updateSpeedLinkButton(bool state)
+{
+    mSectionAbstractTrajectories.setSpeedLinkState(state);
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::updateSourceLinkCombo(PositionSourceLink value)
 {
-    auto action = [=]() {
-        mSectionTrajectory.getPositionSourceLinkCombo().setSelectedId(static_cast<int>(value),
-                                                                      juce::NotificationType::dontSendNotification);
+    auto action = [this, value]() {
+        mSectionSourcePosition.getPositionSourceLinkCombo().setSelectedId(static_cast<int>(value),
+                                                                          juce::NotificationType::dontSendNotification);
     };
     auto const isMessageThread{ juce::MessageManager::getInstance()->isThisTheMessageThread() };
     if (isMessageThread) {
@@ -279,9 +324,10 @@ void ControlGrisAudioProcessorEditor::updateSourceLinkCombo(PositionSourceLink v
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateElevationSourceLinkCombo(ElevationSourceLink value)
 {
-    juce::MessageManager::callAsync([=] {
-        mSectionTrajectory.getElevationSourceLinkCombo().setSelectedId(static_cast<int>(value),
-                                                                       juce::NotificationType::dontSendNotification);
+    juce::MessageManager::callAsync([this, value] {
+        mSectionSourcePosition.getElevationSourceLinkCombo().setSelectedId(
+            static_cast<int>(value),
+            juce::NotificationType::dontSendNotification);
     });
 }
 
@@ -295,7 +341,7 @@ void ControlGrisAudioProcessorEditor::updatePositionPreset(int const presetNumbe
 //==============================================================================
 void ControlGrisAudioProcessorEditor::updateElevationMode(ElevationMode mode)
 {
-    auto const updateElevMode = [=]() {
+    auto const updateElevMode = [this, mode]() {
         mElevationModeCombobox.setSelectedId(static_cast<int>(mode) + 1, juce::dontSendNotification);
         mElevationField.setElevationMode(mode);
     };
@@ -308,6 +354,17 @@ void ControlGrisAudioProcessorEditor::updateElevationMode(ElevationMode mode)
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::setShowTrajectories(bool shouldShowTrajectories)
+{
+    mPositionField.setShowTrajectory(shouldShowTrajectories);
+    mElevationField.setShowTrajectory(shouldShowTrajectories);
+    mPositionTrajectoryManager.setPositionActivateState(shouldShowTrajectories);
+    mElevationTrajectoryManager.setPositionActivateState(shouldShowTrajectories);
+    mPositionField.repaint();
+    mElevationField.repaint();
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::elevationModeChangedStartedCallback()
 {
     mProcessor.getChangeGestureManager().beginGesture(Automation::Ids::ELEVATION_MODE);
@@ -317,6 +374,12 @@ void ControlGrisAudioProcessorEditor::elevationModeChangedStartedCallback()
 void ControlGrisAudioProcessorEditor::elevationModeChangedEndedCallback()
 {
     mProcessor.getChangeGestureManager().endGesture(Automation::Ids::ELEVATION_MODE);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::updateAudioAnalysisNumInputChannels()
+{
+    mSectionSoundReactiveTrajectories.updateChannelMixCombo();
 }
 
 //==============================================================================
@@ -335,7 +398,7 @@ void ControlGrisAudioProcessorEditor::oscFormatChangedCallback(SpatMode mode)
     auto const selectionIsLBAP{ mode == SpatMode::cube };
     mSectionSourceSpan.setDistanceEnabled(selectionIsLBAP);
     mPositionField.setSpatMode(mode);
-    mSectionTrajectory.setSpatMode(mode);
+    mSectionAbstractTrajectories.setSpatMode(mode);
     repaint();
     resized();
 }
@@ -368,7 +431,7 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
         auto const initSourcePlacement{ mProcessor.getSources().size() != numOfSources };
         auto const currentPositionSourceLink{ mPositionTrajectoryManager.getSourceLink() };
         auto const symmetricLinkAllowed{ numOfSources == 2 };
-        mSectionTrajectory.setSymmetricLinkComboState(symmetricLinkAllowed);
+        mSectionSourcePosition.setSymmetricLinkComboState(symmetricLinkAllowed);
         if (!symmetricLinkAllowed) {
             auto const isCurrentPositionSourceLinkSymmetric{ currentPositionSourceLink == PositionSourceLink::symmetricX
                                                              || currentPositionSourceLink
@@ -382,7 +445,6 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
         mSelectedSource = {};
         mProcessor.setNumberOfSources(numOfSources);
         mSectionGeneralSettings.setNumberOfSources(numOfSources);
-        mSectionTrajectory.setNumberOfSources(numOfSources);
         mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
         mPositionField.refreshSources();
         mElevationField.refreshSources();
@@ -391,6 +453,19 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
             sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
         }
     }
+    mSelectedSource = {};
+    mProcessor.setNumberOfSources(numOfSources);
+    mSectionGeneralSettings.setNumberOfSources(numOfSources);
+    // TODO: ???
+    // mSectionTrajectory.setNumberOfSources(numOfSources);
+    mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
+    mPositionField.refreshSources();
+    mElevationField.refreshSources();
+    mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
+    // TODO: ???
+    // if (isNewSourceCount) {
+    // sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
+    // }
 }
 
 //==============================================================================
@@ -426,98 +501,312 @@ void ControlGrisAudioProcessorEditor::sourceSelectionChangedCallback(SourceIndex
 //==============================================================================
 void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlacement const sourcePlacement)
 {
-    auto const numOfSources = mProcessor.getSources().size();
-    constexpr Degrees azims2[2] = { Degrees{ -90.0f }, Degrees{ 90.0f } };
-    constexpr Degrees azims4[4] = { Degrees{ -45.0f }, Degrees{ 45.0f }, Degrees{ -135.0f }, Degrees{ 135.0f } };
-    constexpr Degrees azims6[6] = { Degrees{ -30.0f }, Degrees{ 30.0f },   Degrees{ -90.0f },
-                                    Degrees{ 90.0f },  Degrees{ -150.0f }, Degrees{ 150.0f } };
-    constexpr Degrees azims8[8] = { Degrees{ -22.5f },  Degrees{ 22.5f },  Degrees{ -67.5f },  Degrees{ 67.5f },
-                                    Degrees{ -112.5f }, Degrees{ 112.5f }, Degrees{ -157.5f }, Degrees{ 157.5f } };
-
-    auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-
-    auto const offset{ Degrees{ 360.0f } / static_cast<float>(numOfSources) / 2.0f };
-    auto const distance{ isCubeMode ? 0.7f : 1.0f };
-
-    auto const getAzimuths = [&]() {
-        if (numOfSources <= 2) {
-            return azims2;
-        }
-        if (numOfSources <= 4) {
-            return azims4;
-        }
-        if (numOfSources <= 6) {
-            return azims6;
-        }
-        return azims8;
-    };
-
-    auto const * const azimuths{ getAzimuths() };
-
-    auto const getAzimuthValue = [&](int const sourceIndex) {
-        switch (sourcePlacement) {
-        case SourcePlacement::leftAlternate:
-            return azimuths[sourceIndex];
-        case SourcePlacement::rightAlternate:
-            return -azimuths[sourceIndex];
-        case SourcePlacement::leftClockwise:
-            return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex) - offset;
-        case SourcePlacement::leftCounterClockwise:
-            return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex) - offset;
-        case SourcePlacement::rightClockwise:
-            return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex) + offset;
-        case SourcePlacement::rightCounterClockwise:
-            return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex) + offset;
-        case SourcePlacement::topClockwise:
-            return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(sourceIndex);
-        case SourcePlacement::topCounterClockwise:
-            return Degrees{ 360.0f } / static_cast<float>(numOfSources) * static_cast<float>(-sourceIndex);
-        case SourcePlacement::undefined:
-        default:
-            jassertfalse;
-            break;
-        }
-        return Degrees{};
-    };
-
-    auto const sourceLink{ mPositionTrajectoryManager.getSourceLink() };
+    // cache source link before we position all the sources
+    auto const cachedSourceLink{ mPositionTrajectoryManager.getSourceLink() };
     mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
 
-    auto const setPosition = [&](int const sourceIndex) {
-        auto & source{ mProcessor.getSources()[sourceIndex] };
+    auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
+    auto const distance{ isCubeMode ? 0.7f : 1.0f };
+    auto const numOfSources{ mProcessor.getSources().size() };
+    auto const increment{ 360.0f / numOfSources };
+    auto curOddAzimuth{ 0.0f + increment / 2 };
+    auto curEvenAzimuth{ 360.0f - increment / 2 };
+
+    auto const getAzimuthValue
+        = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth](int const sourceIndex) {
+              switch (sourcePlacement) {
+              case SourcePlacement::leftAlternate:
+                  return (sourceIndex % 2 == 0) ? std::exchange(curEvenAzimuth, curEvenAzimuth - increment)
+                                                : std::exchange(curOddAzimuth, curOddAzimuth + increment);
+              case SourcePlacement::rightAlternate:
+                  return (sourceIndex % 2 == 0) ? std::exchange(curOddAzimuth, curOddAzimuth + increment)
+                                                : std::exchange(curEvenAzimuth, curEvenAzimuth - increment);
+              case SourcePlacement::leftClockwise:
+                  return 360.0f / numOfSources * sourceIndex - increment / 2;
+              case SourcePlacement::leftCounterClockwise:
+                  return 360.0f / numOfSources * -sourceIndex - increment / 2;
+              case SourcePlacement::rightClockwise:
+                  return 360.0f / numOfSources * sourceIndex + increment / 2;
+              case SourcePlacement::rightCounterClockwise:
+                  return 360.0f / numOfSources * -sourceIndex + increment / 2;
+              case SourcePlacement::topClockwise:
+                  return 360.0f / numOfSources * sourceIndex;
+              case SourcePlacement::topCounterClockwise:
+                  return 360.0f / numOfSources * -sourceIndex;
+              case SourcePlacement::undefined:
+              default:
+                  jassertfalse;
+                  return 0.f;
+              }
+          };
+
+    // position all sources
+    for (auto i = 0; i < numOfSources; ++i) {
+        auto & source{ mProcessor.getSources()[i] };
         auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-        source.setCoordinates(getAzimuthValue(sourceIndex),
-                              elevation,
+        auto const azimuth{ Degrees{ getAzimuthValue(i) } };
+        source.setCoordinates(Radians{ azimuth },
+                              Radians{ elevation },
                               distance,
                               Source::OriginOfChange::userAnchorMove);
-    };
-
-    for (auto sourceIndex{ numOfSources - 1 }; sourceIndex >= 0; --sourceIndex) {
-        setPosition(sourceIndex);
     }
 
-    // mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
-
+    // TODO: why are we storing the _normalized_ positions in the processor?
+    // then as a second pass, give the processor the normalized positions
     for (SourceIndex i{}; i < SourceIndex{ numOfSources }; ++i) {
-        mProcessor.setSourceParameterValue(i,
-                                           SourceParameter::azimuth,
-                                           mProcessor.getSources()[i].getNormalizedAzimuth().get());
-        mProcessor.setSourceParameterValue(i,
-                                           SourceParameter::elevation,
-                                           mProcessor.getSources()[i].getNormalizedElevation().get());
-        mProcessor.setSourceParameterValue(i, SourceParameter::distance, mProcessor.getSources()[i].getDistance());
+        auto const & source{ mProcessor.getSources()[i] };
+        mProcessor.setSourceParameterValue(i, SourceParameter::azimuth, source.getNormalizedAzimuth().get());
+        mProcessor.setSourceParameterValue(i, SourceParameter::elevation, source.getNormalizedElevation().get());
+        mProcessor.setSourceParameterValue(i, SourceParameter::distance, source.getDistance());
     }
 
+    // update selected source
     mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource],
                                                 SourceIndex{},
                                                 mProcessor.getSpatMode());
-
     mPositionTrajectoryManager.setTrajectoryType(mPositionTrajectoryManager.getTrajectoryType(),
                                                  mProcessor.getSources().getPrimarySource().getPos());
 
-    mProcessor.setPositionSourceLink(sourceLink, SourceLinkEnforcer::OriginOfChange::automation);
+    // set source link back to its cached value
+    mProcessor.setPositionSourceLink(cachedSourceLink, SourceLinkEnforcer::OriginOfChange::automation);
 
     repaint();
+}
+
+//==============================================================================
+std::pair<Radians, Radians> getAzimuthAndElevationFromDomeXyz(float x, float y, float z)
+{
+    // this first part is the constructor from PolarVector
+    auto const length = std::hypot(x, y, z);
+    if ((x == 0.0f && y == 0.0f) || length == 0.0f)
+        return {};
+
+    auto elevation = HALF_PI - Radians{ std::acos(std::clamp(z / length, -1.0f, 1.0f)) };
+    auto azimuth = Radians{ std::copysign(std::acos(std::clamp(x / std::hypot(x, y), -1.0f, 1.0f)), y) };
+
+    // then inverse and translate by pi/2
+    azimuth = HALF_PI - azimuth;
+    elevation = HALF_PI - elevation;
+
+    // and at this point we have the azimuth and elevation sent to SpatGRIS
+    return { azimuth, elevation };
+}
+
+juce::Point<float> getXyFromDomeAzimuthAndElevation(Radians azimuth, Radians elevation)
+{
+    // some of this logic is from Source::computeXY()
+    auto const radius{ elevation / Radians{ MAX_ELEVATION } };
+    auto const position = Source::getPositionFromAngle(Radians{ azimuth }, radius);
+
+    // these other manipulations are from ControlGrisAudioProcessor::parameterChanged() and
+    // Source::computeAzimuthElevation()
+    return { (position.x + 1) / 2, 1 - ((position.y + 1) / 2) };
+}
+
+class GetDomeAzimuthAndElevationFromPositionTest : public juce::UnitTest
+{
+public:
+    GetDomeAzimuthAndElevationFromPositionTest() : juce::UnitTest("GetAzimuthAndElevationFromPosition Test") {}
+
+    void runTest() override
+    {
+        beginTest("Test with (0, 0.640747, 0.767752)");
+        {
+            auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(0.f, 0.640747f, 0.767752f);
+            expectWithinAbsoluteError(azim.get(), 0.f, 0.001f);
+            expectWithinAbsoluteError(elev.get(), 0.69547f, 0.001f);
+
+            auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
+            expectWithinAbsoluteError(cartesianPosition.x, .5f, 0.001f);
+            expectWithinAbsoluteError(cartesianPosition.y, 0.721375f, 0.001f);
+        }
+    }
+};
+
+static GetDomeAzimuthAndElevationFromPositionTest getAzimuthAndElevationFromPositionTest;
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::File & speakerSetupFile)
+{
+    auto const showError = [](juce::String error) {
+        juce::AlertWindow::showMessageBox(juce::AlertWindow::WarningIcon,
+                                          "Error Loading Speaker Setup File",
+                                          error,
+                                          "OK");
+    };
+
+    // make sure our file exists
+    if (!speakerSetupFile.existsAsFile()) {
+        showError("This file does not exist: " + speakerSetupFile.getFullPathName());
+        return;
+    }
+
+    // and is a valid speaker setup file
+    auto const speakerSetup = juce::ValueTree::fromXml(speakerSetupFile.loadFileAsString());
+    if (!speakerSetup.isValid() || speakerSetup.getType().toString() != SPEAKER_SETUP_XML_TAG
+        || speakerSetup.getNumChildren() < 1) {
+        showError("This file is not a valid Speaker Setup file: " + speakerSetupFile.getFullPathName());
+        return;
+    }
+
+    // now convert the speakerSetupFile to the xml that the preset manager is expecting
+    juce::XmlElement presetXml{ PRESET_XML_TAG };
+    presetXml.setAttribute(PRESET_ID_XML_TAG, -1); // IDs are only used for OG presets
+    presetXml.setAttribute(PRESET_FIRST_SOURCE_ID_XML_TAG, 1);
+
+    // get and use the saved SpatMode
+    auto const savedSpatMode = [savedSpatMode = speakerSetup[PRESET_SPAT_MODE_XML_TAG].toString()]() {
+        if (savedSpatMode == SPAT_MODE_STRINGS[0])
+            return SpatMode::dome;
+        else if (savedSpatMode == SPAT_MODE_STRINGS[1])
+            return SpatMode::cube;
+
+        // unknown/unsuported mode
+        jassertfalse;
+        return SpatMode::dome;
+    }();
+    oscFormatChangedCallback(savedSpatMode);
+
+    int sourceCount = 0;
+
+    if (speakerSetup["SPEAKER_SETUP_VERSION"].toString() == "4.0.0") {
+        auto mainSpeakerGroup = speakerSetup.getChildWithProperty("SPEAKER_GROUP_NAME", "MAIN_SPEAKER_GROUP_NAME");
+        jassert(mainSpeakerGroup.isValid());
+
+        for (const auto & curSpeakerOrGroup : mainSpeakerGroup) {
+            if (curSpeakerOrGroup.getType().toString() == "SPEAKER_GROUP") {
+                for (auto curSpeakerInGroup : curSpeakerOrGroup) {
+                    convertCartesianSpeakerPositionToSourcePosition(curSpeakerInGroup, savedSpatMode, presetXml);
+                    ++sourceCount;
+                }
+            } else {
+                convertCartesianSpeakerPositionToSourcePosition(curSpeakerOrGroup, savedSpatMode, presetXml);
+                ++sourceCount;
+            }
+        }
+    } else {
+        for (auto curSpeaker : speakerSetup) {
+            // skip this speaker if it's direct out only -- might be used later
+            // if (static_cast<int> (curSpeaker["DIRECT_OUT_ONLY"]) == 1)
+            //    continue;
+
+            // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
+            convertSpeakerPositionToSourcePosition(curSpeaker, savedSpatMode, presetXml);
+
+            ++sourceCount;
+        }
+    }
+
+    presetXml.setAttribute("numberOfSources", sourceCount);
+
+    // and finally, load the speaker setup as a preset
+    mProcessor.getPresetsManager().load(presetXml);
+    firstSourceIdChangedCallback(SourceId{ 1 });
+    numberOfSourcesChangedCallback(mProcessor.getSources().size());
+    mProcessor.updatePrimarySourceParameters(Source::ChangeType::position);
+    if (mProcessor.getSpatMode() == SpatMode::cube)
+        mProcessor.updatePrimarySourceParameters(Source::ChangeType::elevation);
+}
+
+void storeXYZSpeakerPositionInPreset(const gris::SpatMode savedSpatMode,
+                                     const float speakerX,
+                                     const float speakerY,
+                                     const float speakerZ,
+                                     juce::XmlElement & presetXml,
+                                     juce::String && speakerNumber)
+{
+    if (savedSpatMode == SpatMode::dome) {
+        auto const [azim, elev] = getAzimuthAndElevationFromDomeXyz(speakerX, speakerY, speakerZ);
+        auto const cartesianPosition = getXyFromDomeAzimuthAndElevation(azim, elev);
+        auto const z = 1.0f - elev / Radians{ MAX_ELEVATION }; // this is taken from CubeControls::updateSliderValues
+
+        presetXml.setAttribute("S" + speakerNumber + "_X", cartesianPosition.x);
+        presetXml.setAttribute("S" + speakerNumber + "_Y", cartesianPosition.y);
+        presetXml.setAttribute("S" + speakerNumber + "_Z", z);
+    } else {
+        auto const x = juce::jmap(speakerX, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+        auto const y = juce::jmap(speakerY, -LBAP_FAR_FIELD, LBAP_FAR_FIELD, 0.f, 1.f);
+
+        // TODO: the speakerZ cube value can be interpreted differently based on the current gris::ElevationMode.
+        //  There's curently no way in the speaker setup to differentiate whether individual speakers use an
+        //  extended elevation mode but when we'll want to revisit that, there's some potentially useful conversion
+        //  logic in ControlGrisAudioProcessor::sendOscMessage()
+        auto const z = speakerZ;
+
+        presetXml.setAttribute("S" + speakerNumber + "_X", x);
+        presetXml.setAttribute("S" + speakerNumber + "_Y", y);
+        presetXml.setAttribute("S" + speakerNumber + "_Z", z);
+    }
+}
+
+void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePosition(
+    const juce::ValueTree & curSpeaker,
+    const gris::SpatMode savedSpatMode,
+    juce::XmlElement & presetXml)
+{
+    // Parse speakerPosition string of the form "(-1, 8.74228e-08, -4.37114e-08)"
+    auto const extractPositionFromString = [](juce::String const & positionStr) -> std::tuple<float, float, float> {
+        auto pos = positionStr.trim().removeCharacters("()"); // Remove '(' and ')'
+
+        juce::StringArray coords;
+        coords.addTokens(pos, ",", "");
+
+        if (coords.size() == 3) {
+            float x = coords[0].trim().getFloatValue();
+            float y = coords[1].trim().getFloatValue();
+            float z = coords[2].trim().getFloatValue();
+            return { x, y, z };
+        }
+
+        return { 0.f, 0.f, 0.f }; // fallback if format is unexpected
+    };
+
+    // Compute group position
+    auto const parent{ curSpeaker.getParent() };
+    auto const [groupX, groupY, groupZ] = parent["SPEAKER_GROUP_NAME"] != "MAIN_SPEAKER_GROUP_NAME"
+                                              ? extractPositionFromString(parent["CARTESIAN_POSITION"])
+                                              : std::tuple{ 0.f, 0.f, 0.f };
+
+    // Compute speaker position (relative to group)
+    auto [speakerX, speakerY, speakerZ] = extractPositionFromString(curSpeaker["CARTESIAN_POSITION"]);
+
+    // compute the parent group's rotation quaternion
+    const float yaw{ parent["YAW"] };
+    const float pitch{ parent["PITCH"] };
+    const float roll{ parent["ROLL"] };
+    if (yaw != 0.0 || pitch != 0.0 || roll != 0.0) {
+        auto const parentQuat = getQuaternionFromEulerAngles(yaw, pitch, roll);
+        auto const rotatedVector = quatRotation({ speakerX, speakerY, speakerZ }, parentQuat);
+        speakerX = groupX + rotatedVector[0];
+        speakerY = groupY + rotatedVector[1];
+        speakerZ = groupZ + rotatedVector[2];
+    }
+
+    storeXYZSpeakerPositionInPreset(savedSpatMode,
+                                    speakerX,
+                                    speakerY,
+                                    speakerZ,
+                                    presetXml,
+                                    curSpeaker["SPEAKER_PATCH_ID"].toString());
+}
+
+void ControlGrisAudioProcessorEditor::convertSpeakerPositionToSourcePosition(juce::ValueTree & curSpeaker,
+                                                                             const gris::SpatMode savedSpatMode,
+                                                                             juce::XmlElement & presetXml)
+{
+    auto const speakerString = curSpeaker.getType().toString();
+    auto const speakerNumber = speakerString.removeCharacters(SPEAKER_SETUP_POS_PREFIX).getIntValue();
+    auto const speakerPosition{ curSpeaker.getChildWithName(SPEAKER_SETUP_POSITION_XML_TAG) };
+    auto const speakerX = static_cast<float>(speakerPosition["X"]);
+    auto const speakerY = static_cast<float>(speakerPosition["Y"]);
+    auto const speakerZ = static_cast<float>(speakerPosition["Z"]);
+
+    storeXYZSpeakerPositionInPreset(savedSpatMode,
+                                    speakerX,
+                                    speakerY,
+                                    speakerZ,
+                                    presetXml,
+                                    juce::String(speakerNumber));
 }
 
 //==============================================================================
@@ -539,7 +828,7 @@ void ControlGrisAudioProcessorEditor::sourcePositionChangedCallback(SourceIndex 
     } else if (y) {
         source.setY(*y, Source::OriginOfChange::userMove);
     } else if (z) {
-        source.setElevation(MAX_ELEVATION * *z, Source::OriginOfChange::userMove);
+        source.setElevation(Radians{ MAX_ELEVATION } * *z, Source::OriginOfChange::userMove);
     } else {
         jassertfalse;
     }
@@ -597,7 +886,7 @@ void ControlGrisAudioProcessorEditor::elevationSpanDragEndedCallback()
 }
 
 //==============================================================================
-// SectionTrajectory::Listener callbacks.
+// SectionAbstractTrajectories::Listener callbacks.
 void ControlGrisAudioProcessorEditor::positionSourceLinkChangedCallback(PositionSourceLink const sourceLink)
 {
     mProcessor.setPositionSourceLink(sourceLink, SourceLinkEnforcer::OriginOfChange::user);
@@ -636,6 +925,12 @@ void ControlGrisAudioProcessorEditor::elevationTrajectoryTypeChangedCallback(Ele
     mAudioProcessorValueTreeState.state.setProperty("trajectoryTypeAlt", static_cast<int>(value), nullptr);
     mElevationTrajectoryManager.setTrajectoryType(value);
     mElevationField.repaint();
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationSourceLinkScaleChangedCallback(double scale)
+{
+    mProcessor.setElevationSourceLinkScale(scale);
 }
 
 //==============================================================================
@@ -701,12 +996,114 @@ void ControlGrisAudioProcessorEditor::trajectoryDurationUnitChangedCallback(doub
 void ControlGrisAudioProcessorEditor::positionTrajectoryStateChangedCallback(bool value)
 {
     mPositionTrajectoryManager.setPositionActivateState(value);
+    if (value) {
+        mProcessor.setAudioAnalysisState(!value);
+    }
 }
 
 //==============================================================================
 void ControlGrisAudioProcessorEditor::elevationTrajectoryStateChangedCallback(bool value)
 {
     mElevationTrajectoryManager.setPositionActivateState(value);
+    if (value) {
+        mProcessor.setAudioAnalysisState(!value);
+    }
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryCurrentSpeedChangedCallback(double value)
+{
+    mPositionTrajectoryManager.setTrajectoryCurrentSpeed(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryCurrentSpeedChangedCallback(double value)
+{
+    mElevationTrajectoryManager.setTrajectoryCurrentSpeed(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomEnableChangedCallback(bool isEnabled)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomEnabled(isEnabled);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomLoopChangedCallback(bool shouldLoop)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomLoop(shouldLoop);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomStartChangedCallback(bool shouldStartInMiddle)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomStart(shouldStartInMiddle);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomType(type);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomProximityChangedCallback(double value)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomProximity(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomTimeMinChangedCallback(double value)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomTimeMin(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::positionTrajectoryRandomTimeMaxChangedCallback(double value)
+{
+    mPositionTrajectoryManager.setTrajectoryRandomTimeMax(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomEnableChangedCallback(bool isEnabled)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomEnabled(isEnabled);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomLoopChangedCallback(bool shouldLoop)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomLoop(shouldLoop);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomStartChangedCallback(bool shouldStartInMiddle)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomStart(shouldStartInMiddle);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomTypeChangedCallback(TrajectoryRandomType type)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomType(type);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomProximityChangedCallback(double value)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomProximity(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomTimeMinChangedCallback(double value)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomTimeMin(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::elevationTrajectoryRandomTimeMaxChangedCallback(double value)
+{
+    mElevationTrajectoryManager.setTrajectoryRandomTimeMax(value);
 }
 
 //==============================================================================
@@ -721,12 +1118,33 @@ void ControlGrisAudioProcessorEditor::refresh()
     mPositionField.setIsPlaying(mProcessor.isPlaying());
     mElevationField.setIsPlaying(mProcessor.isPlaying());
 
-    if (mSectionTrajectory.getPositionActivateState() != mPositionTrajectoryManager.getPositionActivateState()) {
-        mSectionTrajectory.setPositionActivateState(mPositionTrajectoryManager.getPositionActivateState());
+    if (mSectionAbstractTrajectories.getPositionActivateState()
+        != mPositionTrajectoryManager.getPositionActivateState()) {
+        mSectionAbstractTrajectories.setPositionActivateState(mPositionTrajectoryManager.getPositionActivateState());
     }
-    if (mSectionTrajectory.getElevationActivateState() != mElevationTrajectoryManager.getPositionActivateState()) {
-        mSectionTrajectory.setElevationActivateState(mElevationTrajectoryManager.getPositionActivateState());
+    if (mSectionAbstractTrajectories.getElevationActivateState()
+        != mElevationTrajectoryManager.getPositionActivateState()) {
+        mSectionAbstractTrajectories.setElevationActivateState(mElevationTrajectoryManager.getPositionActivateState());
     }
+    if (mSectionSoundReactiveTrajectories.getAudioAnalysisActivateState() != mProcessor.getAudioAnalysisState()) {
+        mSectionSoundReactiveTrajectories.setAudioAnalysisActivateState(mProcessor.getAudioAnalysisState());
+    }
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::refreshActivateButtonsState()
+{
+    mPositionTrajectoryManager.setPositionActivateState(false);
+    mElevationTrajectoryManager.setPositionActivateState(false);
+    mSectionSoundReactiveTrajectories.setAudioAnalysisActivateState(false);
+    mProcessor.setAudioAnalysisState(false);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::addNewParamValueToDataGraph()
+{
+    // called by the audio thread
+    mSectionSoundReactiveTrajectories.addNewParamValueToDataGraph();
 }
 
 //==============================================================================
@@ -748,9 +1166,13 @@ void ControlGrisAudioProcessorEditor::fieldSourcePositionChangedCallback(SourceI
 void ControlGrisAudioProcessorEditor::positionPresetChangedCallback(int const presetNumber)
 {
     mProcessor.getPresetsManager().forceLoad(presetNumber);
+    numberOfSourcesChangedCallback(mProcessor.getSources().size());
+
+    if (auto const presetSourceId{ mProcessor.getPresetsManager().getPresetSourceId(presetNumber) })
+        firstSourceIdChangedCallback(SourceId{ *presetSourceId });
 
     auto * parameter{ mAudioProcessorValueTreeState.getParameter(Automation::Ids::POSITION_PRESET) };
-    auto const newValue{ static_cast<float>(presetNumber) / static_cast<float>(NUMBER_OF_POSITION_PRESETS) };
+    auto const newValue{ static_cast<float>(presetNumber - 1) / static_cast<float>(NUMBER_OF_POSITION_PRESETS - 1) };
 
     auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(Automation::Ids::POSITION_PRESET) };
     parameter->setValueNotifyingHost(newValue);
@@ -806,7 +1228,7 @@ void ControlGrisAudioProcessorEditor::oscOutputConnectionChangedCallback(bool co
 //==============================================================================
 void ControlGrisAudioProcessorEditor::paint(juce::Graphics & g)
 {
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
+    g.fillAll(mGrisLookAndFeel.getGreyColor());
 }
 
 //==============================================================================
@@ -814,28 +1236,41 @@ void ControlGrisAudioProcessorEditor::resized()
 {
     auto const width{ getWidth() - 50 }; // Remove position preset space.
     auto const height{ getHeight() };
-
     auto const fieldSize{ std::max(width / 2, MIN_FIELD_WIDTH) };
+    auto preseHeight{ 645 };
+
+    if (height >= 665) {
+        preseHeight = height - 20;
+    }
 
     mMainBanner.setBounds(0, 0, fieldSize, 20);
     mPositionField.setBounds(0, 20, fieldSize, fieldSize);
+
+    // we only do fieldSize + 20 here because the banner is now built into the section.
+    mSectionSourcePosition.setBounds(0, fieldSize + 20, fieldSize, 150 + 20);
+    mSettingsBanner.setBounds(fieldSize - 1, fieldSize + 20, width, 20);
+    mConfigurationComponent.setBounds(fieldSize - 1, fieldSize + 40, fieldSize, 151);
+
+    mElevationBanner.setBounds(fieldSize, 0, fieldSize, 20);
+    mElevationField.setBounds(fieldSize, 20, fieldSize, fieldSize);
+    mElevationModeCombobox.setBounds(fieldSize + mElevationBanner.getBounds().getWidth() / 2,
+                                     (mElevationBanner.getHeight() - mElevationModeCombobox.getHeight()) / 2,
+                                     (mElevationBanner.getBounds().getWidth() / 2) - 4,
+                                     16);
+    mElevationModeLabel.setBounds(mElevationModeCombobox.getBounds().getX() - 60,
+                                  (mElevationBanner.getHeight() - mElevationModeLabel.getHeight()) / 2,
+                                  60,
+                                  12);
+
+    mTrajectoriesBanner.setBounds(0, fieldSize + 70 + 100 + 20, std::max(width + 1, MIN_FIELD_WIDTH * 2), 20);
+    mTrajectoriesComponent.setBounds(0, fieldSize + 90 + 100 + 20, std::max(width - 1, MIN_FIELD_WIDTH * 2), 190);
 
     if (mProcessor.getSpatMode() == SpatMode::cube) {
         mMainBanner.setText("X - Y", juce::NotificationType::dontSendNotification);
         mElevationBanner.setVisible(true);
         mElevationField.setVisible(true);
         mElevationModeCombobox.setVisible(true);
-        mElevationBanner.setBounds(fieldSize, 0, fieldSize, 20);
         mElevationModeLabel.setVisible(true);
-        mElevationModeCombobox.setBounds(fieldSize + mElevationBanner.getBounds().getWidth() / 2,
-                                         (mElevationBanner.getHeight() - mElevationModeCombobox.getHeight()) / 2,
-                                         (mElevationBanner.getBounds().getWidth() / 2) - 4,
-                                         16);
-        mElevationModeLabel.setBounds(mElevationModeCombobox.getBounds().getX() - 60,
-                                      (mElevationBanner.getHeight() - mElevationModeLabel.getHeight()) / 2,
-                                      60,
-                                      12);
-        mElevationField.setBounds(fieldSize, 20, fieldSize, fieldSize);
     } else {
         mMainBanner.setText("Azimuth - Elevation", juce::NotificationType::dontSendNotification);
         mElevationBanner.setVisible(false);
@@ -844,25 +1279,42 @@ void ControlGrisAudioProcessorEditor::resized()
         mElevationField.setVisible(false);
     }
 
-    mSectionSourceSpan.setBounds(0, fieldSize + 20, width, 50);
-
-    mTrajectoryBanner.setBounds(0, fieldSize + 70, width, 20);
-    mSectionTrajectory.setBounds(0, fieldSize + 90, width, 160);
-
-    mSettingsBanner.setBounds(0, fieldSize + 250, width, 20);
-    mConfigurationComponent.setBounds(0, fieldSize + 270, width, 160);
-
     mLastUiWidth = getWidth();
     mLastUiHeight = getHeight();
 
+    mPositionPresetViewport.setBounds(width, 20, 50, height - 20);
     mPositionPresetBanner.setBounds(width, 0, 50, 20);
-    mPositionPresetComponent.setBounds(width, 20, 50, height - 20);
+    mPositionPresetComponent.setBounds(width, 20, 50, preseHeight);
+    mPositionPresetInfoComponent.setBounds(width, height - 45, 50, 60);
 }
 
 //==============================================================================
 void ControlGrisAudioProcessorEditor::setSpatMode(SpatMode spatMode)
 {
     mSectionSourcePosition.setSpatMode(spatMode);
+    mSectionSoundReactiveTrajectories.setSpatMode(spatMode);
+}
+
+//==============================================================================
+TabbedTrajectoriesComponent::TabbedTrajectoriesComponent(juce::TabbedButtonBar::Orientation orientation,
+                                                         ControlGrisAudioProcessor & audioProcessor)
+    : juce::TabbedComponent(orientation)
+    , mAudioProcessor(audioProcessor)
+{
+}
+
+//==============================================================================
+void TabbedTrajectoriesComponent::currentTabChanged(int newCurrentTabIndex, const juce::String & /*newCurrentTabName*/)
+{
+    mAudioProcessor.setSelectedSoundTrajectoriesTab(newCurrentTabIndex);
+
+    auto * ed{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getParentComponent()) };
+    if (ed != nullptr) {
+        bool showTraj{ newCurrentTabIndex == 1 };
+        ed->setShowTrajectories(showTraj);
+        ed->refreshActivateButtonsState();
+        ed->refresh();
+    }
 }
 
 } // namespace gris

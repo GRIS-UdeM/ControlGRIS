@@ -23,7 +23,7 @@
 #include <JuceHeader.h>
 
 #include "cg_SourceComponent.hpp"
-#include "cg_StrongTypes.hpp"
+#include <Data/StrongTypes/sg_Radians.hpp>
 
 namespace gris
 {

@@ -23,6 +23,7 @@
 #include <JuceHeader.h>
 
 #include "cg_ControlGrisLookAndFeel.hpp"
+#include "cg_NumSlider.h"
 #include "cg_Source.hpp"
 
 namespace gris
@@ -30,7 +31,7 @@ namespace gris
 //==============================================================================
 class SectionSourceSpan final
     : public juce::Component
-    , public juce::Slider::Listener
+    , public NumSlider::Slider::Listener
 {
 public:
     //==============================================================================
@@ -41,7 +42,6 @@ public:
         virtual void azimuthSpanDragEndedCallback() = 0;
         virtual void elevationSpanDragStartedCallback() = 0;
         virtual void elevationSpanDragEndedCallback() = 0;
-        virtual void selectedSourceClickedCallback() = 0;
         virtual void parameterChangedCallback(SourceParameter sourceId, double value) = 0;
     };
 
@@ -58,8 +58,8 @@ private:
 
     juce::Label mAzimuthLabel{};
     juce::Label mElevationLabel{};
-    juce::Slider mAzimuthSpan{};
-    juce::Slider mElevationSpan{};
+    NumSlider mAzimuthSpan;
+    NumSlider mElevationSpan;
 
 public:
     //==============================================================================
@@ -75,7 +75,7 @@ public:
     SectionSourceSpan & operator=(SectionSourceSpan &&) = delete;
     //==============================================================================
     void mouseDown(juce::MouseEvent const & event) override;
-    void sliderValueChanged(juce::Slider * slider) override;
+    void sliderValueChanged(NumSlider::Slider * slider) override;
     void paint(juce::Graphics &) override;
     void resized() override;
 
@@ -83,6 +83,7 @@ public:
     void setDistanceEnabled(bool distanceEnabled);
     void setSpanLinkState(bool spanLinkState);
     bool getSpanLinkState() const { return mSpanLinked; }
+    Source * getSectionSourceSpanSelectedSource() { return mSelectedSource; }
 
     void addListener(Listener * l) { mListeners.add(l); }
     void removeListener(Listener * l) { mListeners.remove(l); }

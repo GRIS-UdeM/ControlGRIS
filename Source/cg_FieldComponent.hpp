@@ -85,6 +85,7 @@ protected:
     std::optional<SourceIndex> mSelectedSource{};
     std::optional<SourceIndex> mOldSelectedSource{};
     bool mDisplayInvalidSourceMoveWarning{};
+    bool mShowTrajectory{};
 
 public:
     //==============================================================================
@@ -125,6 +126,7 @@ protected:
     virtual void notifySourcePositionChanged(SourceIndex sourceIndex) = 0;
     virtual void rebuildSourceComponents(int numberOfSources) = 0;
     virtual void drawSpans(juce::Graphics & g) const = 0;
+    virtual void setShowTrajectory(bool shouldShowTrajectory) = 0;
 
 private:
     //==============================================================================
@@ -140,12 +142,15 @@ class PositionFieldComponent final : public FieldComponent
     std::optional<juce::Point<float>> mLineDrawingStartPosition{ std::nullopt };
     std::optional<juce::Point<float>> mLineDrawingEndPosition{ std::nullopt };
     SourceComponent mDrawingHandleComponent{ juce::Colour::fromRGB(176, 176, 228), "X" };
+    PersistentStorage & mStorage;
     juce::OwnedArray<PositionSourceComponent> mSourceComponents{};
 
 public:
     //==============================================================================
     PositionFieldComponent() = delete;
-    PositionFieldComponent(Sources & sources, PositionTrajectoryManager & positionAutomationManager) noexcept;
+    PositionFieldComponent(Sources & sources,
+                           PositionTrajectoryManager & positionAutomationManager,
+                           PersistentStorage & storage) noexcept;
     ~PositionFieldComponent() noexcept override = default;
 
     PositionFieldComponent(PositionFieldComponent const &) = delete;
@@ -167,6 +172,7 @@ public:
     void rebuildSourceComponents(int numberOfSources) override;
     [[nodiscard]] juce::Rectangle<float> getEffectiveArea() const override;
     void notifySourcePositionChanged(SourceIndex sourceIndex) override;
+    void setShowTrajectory(bool shouldShowTrajectory) override;
 
     [[nodiscard]] juce::Point<float> sourcePositionToComponentPosition(juce::Point<float> const & sourcePosition) const;
     [[nodiscard]] juce::Line<float> sourcePositionToComponentPosition(juce::Line<float> const & sourcePosition) const;
@@ -227,6 +233,7 @@ public:
     void notifySourcePositionChanged(SourceIndex sourceIndex) override;
     void rebuildSourceComponents(int numberOfSources) override;
     [[nodiscard]] juce::Rectangle<float> getEffectiveArea() const override;
+    void setShowTrajectory(bool shouldShowTrajectory) override;
 
 private:
     //==============================================================================

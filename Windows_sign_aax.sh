@@ -47,7 +47,7 @@ fi
 
 #==============================================================================
 # sign the aax plugin
-export PLUGIN_PATH="Builds/VisualStudio2022/x64/Release/AAX/ControlGris.aaxplugin"
+export PLUGIN_PATH="Builds/VisualStudio2022/x64/Release/AAX/ControlGRIS2.aaxplugin"
 wraptool sign \
 		 --verbose \
 		 --account grisresearch \

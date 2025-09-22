@@ -1,0 +1,232 @@
+name: ControlGRIS CI
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: ['*']
+
+jobs:
+  Build-Ubuntu-20-04:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:20.04
+    steps:
+      - name: Install required packages
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          export TZ=Etc/UTC
+          apt-get update
+          apt-get install -y git curl unzip sudo wget lsb-release software-properties-common make build-essential tzdata
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install latest Clang
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          ./llvm.sh 18
+          apt-get install -y clang-18
+
+
+      - name: Install dependencies # taken from https://github.com/juce-framework/JUCE/blob/develop/docs/Linux%20Dependencies.md
+        run: |
+          apt-get install -y ladspa-sdk freeglut3-dev libasound2-dev libcurl4-openssl-dev libfreetype6-dev \
+              libxcomposite-dev libxcursor-dev libxinerama-dev libxrandr-dev mesa-common-dev libjack-jackd2-dev \
+              libfontconfig1-dev libx11-dev libxext-dev libxrender-dev libwebkit2gtk-4.0-dev libglu1-mesa-dev
+
+      - name: Build Projucer
+        run: make -C submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/LinuxMakefile CXX=clang++-18 -j$(nproc)
+
+      - name: Generate makefile (Standalone & VST3 only)
+        run: |
+          submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/LinuxMakefile/build/Projucer --resave ControlGRIS.jucer --set-exporter LinuxMakefile --set-config Release --set-enabled-targets Standalone,VST3
+
+      - name: Compile ControlGRIS (Standalone & VST3 only)
+        run: |
+          cd Builds/LinuxMakefile
+          make CXX=clang++-18 CONFIG=Release -j8 Standalone VST3
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ControlGRIS-Build
+          path: Builds/LinuxMakefile/build/*
+
+  Build-macOS:
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build Projucer
+        env:
+          GLL_APPLE_CODESIGN_APPLICATION: ${{ secrets.GLL_APPLE_CODESIGN_APPLICATION }}
+        run: |
+          cd submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/MacOSX
+          xcodebuild -project Projucer.xcodeproj \
+            -configuration Release \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGNING_ALLOWED=YES
+
+      - name: Generate Xcode project
+        run: |
+          chmod +x submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/MacOSX/build/Release/Projucer.app/Contents/MacOS/Projucer
+          submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/MacOSX/build/Release/Projucer.app/Contents/MacOS/Projucer --resave ControlGRIS.jucer
+
+      - name: Setup certificate files
+      # It would be very nice to have this as part of the external composite actions but it looks like there are limitations around long inputs.
+        env:
+          GLL_APPLE_DEVELOPER_ID_APPLICATION: ${{ secrets.GLL_APPLE_DEVELOPER_ID_APPLICATION }}
+          GLL_APPLE_DEVELOPER_ID_INSTALLER: ${{ secrets.GLL_APPLE_DEVELOPER_ID_INSTALLER }}
+        run: |
+          echo "$GLL_APPLE_DEVELOPER_ID_APPLICATION" | base64 --decode > spatgris-app-cert.p12
+          export CODESIGN_APP_SECUREFILEPATH=$PWD/spatgris-app-cert.p12
+          echo "app_cert_path=$CODESIGN_APP_SECUREFILEPATH" >> $GITHUB_ENV
+
+          echo "$GLL_APPLE_DEVELOPER_ID_INSTALLER" | base64 --decode > spatgris-installer-cert.p12
+          export CODESIGN_INSTALLER_SECUREFILEPATH=$PWD/spatgris-installer-cert.p12
+          echo "installer_cert_path=$CODESIGN_INSTALLER_SECUREFILEPATH" >> $GITHUB_ENV
+
+      - name: Setup codesigning
+        uses: GRIS-UdeM/actions/setup-codesign@main
+        with:
+          apple-application-cert: ${{ env.app_cert_path }}
+          apple-installer-cert: ${{ env.installer_cert_path }}
+          apple-dev-password: ${{ secrets.GLL_APPLE_DEVELOPER_ID_PASSWORD }}
+
+      - name: build all formats (Standalone, VST3, AU) for arm64 and x86_64
+        run: |
+          formats=("Standalone Plugin" "VST3" "AU")
+
+          for format in "${formats[@]}"; do
+            safeFormat=$(echo "$format" | tr ' ' '-')
+            echo "Building universal binary for $format..."
+
+            # the INSTALL_PATH and DSTROOT options are used to avoid installing the AU/VST plugins to the system
+            xcodebuild -project Builds/MacOSX/ControlGRIS.xcodeproj \
+                      -scheme "ControlGRIS - $format" \
+                      -configuration Release \
+                      -destination 'platform=macOS' \
+                      CONFIGURATION_BUILD_DIR=output/${safeFormat}-universal \
+                      MACOSX_DEPLOYMENT_TARGET=10.13 \
+                      ARCHS="arm64 x86_64" \
+                      INSTALL_PATH=/tmp/fakeInstall \
+                      DSTROOT=/tmp/fakeInstallRoot \
+                      CODE_SIGNING_REQUIRED=YES \
+                      CODE_SIGNING_ALLOWED=YES \
+                      build
+          done
+
+      - name: Sign all
+        uses: GRIS-UdeM/actions/sign@main
+        with:
+          apple-dev-identity: "Gael Lane Lepine"
+          # another /* is applied in the action.
+          path-to-sign: 'Builds/MacOSX/output/*'
+
+      - name: Build PKG
+        env:
+          INSTALLER_SIGNATURE: "Developer ID Installer: Gael Lane Lepine (62PMMWH49Z)"
+          IDENTIFIER: "ca.umontreal.musique.gris.controlgris.pkg"
+          VERSION: "2.0.0"
+        run: |
+          PKG_PATH="Builds/MacOSX/pkg/"
+          PKG_NAME="ControlGris_$VERSION"
+          PKG_FILE="$PKG_NAME.pkg"
+          PKG_FILE_PATH="$PKG_PATH/$PKG_FILE"
+          echo "pkg-name=$PKG_NAME" >> $GITHUB_ENV
+          echo "pkg-file=$PKG_FILE" >> $GITHUB_ENV
+          echo "pkg-path=$PKG_PATH" >> $GITHUB_ENV
+          BIN_PATH="Builds/MacOSX/output/"
+          BASE_PATH="$PKG_PATH""Product/Library/Audio/Plug-Ins"
+
+          AU_PATH="AU-universal"
+          VST3_PATH="VST3-universal"
+          STANDALONE_PATH="Standalone-Plugin-universal"
+
+          pwd
+          echo $BASE_PATH
+
+          mkdir -p "$BASE_PATH"
+
+          mkdir -p "$BASE_PATH/$AU_PATH" || exit 1
+          mkdir -p "$BASE_PATH/$VST3_PATH" || exit 1
+          mkdir -p "$BASE_PATH/$STANDALONE_PATH" || exit 1
+
+          cp -R -H "$BIN_PATH/$AU_PATH/ControlGRIS2.component" "$BASE_PATH/$AU_PATH" || exit 1
+          cp -R -H "$BIN_PATH/$VST3_PATH/ControlGRIS2.vst3" "$BASE_PATH/$VST3_PATH" || exit 1
+          cp -R -H "$BIN_PATH/$STANDALONE_PATH/ControlGRIS2.app" "$BASE_PATH/$STANDALONE_PATH" || exit 1
+
+          echo -e "Building package...\n"
+
+          pkgbuild  --root "$PKG_PATH/Product" \
+                    --install-location "/" \
+                    --identifier "$IDENTIFIER" \
+                    --version $VERSION \
+                    --sign "$INSTALLER_SIGNATURE" \
+                    --timestamp \
+                    "$PKG_FILE_PATH" || exit 1
+      - name:
+        id: notarize
+        uses: GRIS-UdeM/actions/notarize@main
+        with:
+          apple-dev-email: "glanelepine@gmail.com"
+          apple-dev-team: "62PMMWH49Z"
+          apple-app-password: ${{ secrets.GLL_APPLE_APP_PASSWORD }}
+          app-path: ${{ env.pkg-path }}
+          app-name: ${{ env.pkg-name }}
+          app-file-suffix: ".pkg"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ControlGRIS-Mac-Signed-and-Notarized
+          path: ${{ steps.notarize.outputs.notarized-app-folder }}
+          if-no-files-found: error
+
+  Build-Windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Projucer
+        run: |
+          cd submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/VisualStudio2022
+          msbuild Projucer.sln /p:Configuration=Release /p:Platform=x64 /p:WarningsAsErrors=False
+
+      - name: Disable plugin binary copy step in .jucer
+        shell: bash
+        run: |
+          sed -i 's/enablePluginBinaryCopyStep="1"/enablePluginBinaryCopyStep="0"/g' ControlGRIS.jucer || true
+
+      - name: Generate Visual Studio project
+        run: |
+          submodules/StructGRIS/submodules/JUCE/extras/Projucer/Builds/VisualStudio2022/x64/Release/App/Projucer.exe --resave ControlGRIS.jucer
+
+      - name: build shared code
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_SharedCode.vcxproj -p:Configuration=Release -p:Platform=x64
+
+      - name: build standalone
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_StandalonePlugin.vcxproj -p:Configuration=Release -p:Platform=x64
+
+      - name: build VST3
+        run: msbuild Builds/VisualStudio2022/ControlGRIS_VST3.vcxproj -p:Configuration=Release -p:Platform=x64
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ControlGRIS-Build-Windows
+          path: |
+            Builds/VisualStudio2022/x64/Release/**/*.vst3
+            Builds/VisualStudio2022/x64/Release/**/*.exe

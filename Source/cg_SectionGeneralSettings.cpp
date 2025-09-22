@@ -19,9 +19,138 @@
  *************************************************************************/
 
 #include "cg_SectionGeneralSettings.hpp"
+#include "cg_Source.hpp"
 
 namespace gris
 {
+//==============================================================================
+
+// TODO: handle negative values when _minValue is negative
+/**
+ * @class NumberRangeInputFilter
+ * @brief A filter to restrict text input to a specified numeric range.
+ */
+class NumberRangeInputFilter : public juce::TextEditor::InputFilter
+{
+public:
+    NumberRangeInputFilter(int _minValue, int _maxValue) : minValue(_minValue), maxValue(_maxValue) {}
+
+    /**
+     * @brief Filters the new text input to ensure it falls within the specified range.
+     * @param editor The text editor where the input is being entered.
+     * @param newInput The new text input.
+     * @return The filtered text input.
+     */
+    juce::String filterNewText(juce::TextEditor & editor, const juce::String & newInput) override
+    {
+        auto const currentText{ editor.getText() };
+        auto const isNewInputDigit{ newInput.containsOnly("0123456789") };
+        auto const validNewInput{ isNewInputDigit ? newInput : "" };
+        auto newText{ currentText + validNewInput };
+        auto const selectedRange{ editor.getHighlightedRegion() };
+
+        if (!selectedRange.isEmpty() && !validNewInput.isEmpty())
+            newText = currentText.replaceSection(selectedRange.getStart(), selectedRange.getLength(), validNewInput);
+
+        if (newText.isEmpty())
+            return newText;
+
+        const auto value{ newText.getIntValue() };
+        if (value >= minValue && value <= maxValue && isNewInputDigit)
+            return validNewInput;
+
+        if (selectedRange.isEmpty())
+            return {};
+        else
+            return currentText.substring(selectedRange.getStart(), selectedRange.getEnd());
+    }
+
+private:
+    int minValue;
+    int maxValue;
+};
+
+// Unit test for NumberRangeInputFilter
+class NumberRangeInputFilterTest : public juce::UnitTest
+{
+public:
+    NumberRangeInputFilterTest() : juce::UnitTest("NumberRangeInputFilterTest") {}
+
+    void runTest() override
+    {
+        beginTest("NumberRangeInputFilter allows valid input");
+
+        {
+            juce::TextEditor editor;
+            editor.setInputFilter(new NumberRangeInputFilter(1, 128), true);
+
+            editor.insertTextAtCaret("12");
+            expectEquals(editor.getText().getIntValue(), 12);
+        }
+
+        beginTest("NumberRangeInputFilter disallows out-of-bound inputs");
+
+        {
+            juce::TextEditor editor;
+            editor.setInputFilter(new NumberRangeInputFilter(1, 8), true);
+
+            editor.insertTextAtCaret("-1");
+            expectEquals(editor.getText().getIntValue(), 0);
+
+            editor.insertTextAtCaret("9");
+            expectEquals(editor.getText().getIntValue(), 0);
+
+            editor.insertTextAtCaret("&");
+            expectEquals(editor.getText().getIntValue(), 0);
+
+            editor.insertTextAtCaret(juce::CharPointer_UTF8("é"));
+            expectEquals(editor.getText().getIntValue(), 0);
+        }
+
+        beginTest("NumberRangeInputFilter handles partial input");
+
+        {
+            juce::TextEditor editor;
+            editor.setInputFilter(new NumberRangeInputFilter(1, 128), true);
+
+            // append 3 to 12 --> should be 123
+            editor.insertTextAtCaret("12");
+            editor.insertTextAtCaret("3");
+            expectEquals(editor.getText().getIntValue(), 123);
+
+            // append 9 to 12 --> should stay at 12
+            editor.clear();
+            editor.insertTextAtCaret("12");
+            editor.insertTextAtCaret("9");
+            expectEquals(editor.getText().getIntValue(), 12);
+
+            // replace the middle 1 in 111 with 2 --> should be 121
+            editor.clear();
+            editor.insertTextAtCaret("111");
+            editor.setHighlightedRegion({ 1, 2 });
+            editor.insertTextAtCaret("2");
+            expectEquals(editor.getText().getIntValue(), 121);
+
+            // replace the middle 1 in 111 with 222 --> should stay 111
+            editor.clear();
+            editor.insertTextAtCaret("111");
+            editor.setHighlightedRegion({ 1, 2 });
+            editor.insertTextAtCaret("222");
+            expectEquals(editor.getText().getIntValue(), 111);
+
+            // replace the 23 in 123 with random garbage --> should stay 111
+            editor.clear();
+            editor.insertTextAtCaret("123");
+            editor.setHighlightedRegion({ 1, 3 });
+            editor.insertTextAtCaret(juce::CharPointer_UTF8("ééé123ööö"));
+            expectEquals(editor.getText().getIntValue(), 123);
+        }
+    }
+};
+
+// This will automatically create an instance of the test class and add it to the list of tests to be run.
+static NumberRangeInputFilterTest numberRangeInputFilterTest;
+
 //==============================================================================
 SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
 {
@@ -42,6 +171,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     addAndMakeVisible(mOscPortLabel);
 
     juce::String defaultPort("18032");
+    mOscPortEditor.setFont(grisLookAndFeel.getFont());
     mOscPortEditor.setExplicitFocusOrder(4);
     mOscPortEditor.setText(defaultPort);
     mOscPortEditor.setInputRestrictions(5, "0123456789");
@@ -62,6 +192,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     addAndMakeVisible(mOscAddressLabel);
 
     juce::String const defaultAddress{ "127.0.0.1" };
+    mOscAddressEditor.setFont(grisLookAndFeel.getFont());
     mOscAddressEditor.setExplicitFocusOrder(5);
     mOscAddressEditor.setText(defaultAddress);
     mOscAddressEditor.setInputRestrictions(15, "0123456789.");
@@ -82,8 +213,9 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     addAndMakeVisible(&mNumOfSourcesLabel);
 
     mNumOfSourcesEditor.setExplicitFocusOrder(2);
+    mNumOfSourcesEditor.setFont(grisLookAndFeel.getFont());
     mNumOfSourcesEditor.setText("2");
-    mNumOfSourcesEditor.setInputRestrictions(1, "12345678");
+    mNumOfSourcesEditor.setInputFilter(new NumberRangeInputFilter(1, Sources::MAX_NUMBER_OF_SOURCES), true);
     mNumOfSourcesEditor.onReturnKey = [this] { mOscFormatCombo.grabKeyboardFocus(); };
     mNumOfSourcesEditor.onFocusLost = [this] {
         if (!mNumOfSourcesEditor.isEmpty()) {
@@ -102,6 +234,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     addAndMakeVisible(&mFirstSourceIdLabel);
 
     mFirstSourceIdEditor.setExplicitFocusOrder(3);
+    mFirstSourceIdEditor.setFont(grisLookAndFeel.getFont());
     mFirstSourceIdEditor.setText("1");
     mFirstSourceIdEditor.setInputRestrictions(3, "0123456789");
     mFirstSourceIdEditor.onReturnKey = [this] { mOscFormatCombo.grabKeyboardFocus(); };
@@ -164,30 +297,24 @@ void SectionGeneralSettings::setActivateButtonState(bool const shouldBeOn)
 }
 
 //==============================================================================
-void SectionGeneralSettings::paint(juce::Graphics & g)
-{
-    g.fillAll(mGrisLookAndFeel.findColour(juce::ResizableWindow::backgroundColourId));
-}
-
-//==============================================================================
 void SectionGeneralSettings::resized()
 {
-    mOscFormatLabel.setBounds(5, 10, 90, 15);
-    mOscFormatCombo.setBounds(95, 10, 150, 20);
+    mOscFormatLabel.setBounds(5, 12, 90, 10);
+    mOscFormatCombo.setBounds(115, 9, 110, 15);
 
-    mOscPortLabel.setBounds(5, 40, 90, 15);
-    mOscPortEditor.setBounds(95, 40, 150, 20);
+    mOscPortLabel.setBounds(5, 34, 90, 10);
+    mOscPortEditor.setBounds(115, 31, 110, 15);
 
-    mOscAddressLabel.setBounds(5, 70, 90, 15);
-    mOscAddressEditor.setBounds(95, 70, 150, 20);
+    mOscAddressLabel.setBounds(5, 56, 90, 10);
+    mOscAddressEditor.setBounds(115, 53, 110, 15);
 
-    mPositionActivateButton.setBounds(5, 100, 150, 20);
+    mNumOfSourcesLabel.setBounds(5, 78, 130, 10);
+    mNumOfSourcesEditor.setBounds(115, 75, 24, 15);
 
-    mNumOfSourcesLabel.setBounds(265, 10, 130, 15);
-    mNumOfSourcesEditor.setBounds(395, 10, 40, 15);
+    mFirstSourceIdLabel.setBounds(5, 100, 130, 10);
+    mFirstSourceIdEditor.setBounds(115, 97, 24, 15);
 
-    mFirstSourceIdLabel.setBounds(265, 40, 130, 15);
-    mFirstSourceIdEditor.setBounds(395, 40, 40, 15);
+    mPositionActivateButton.setBounds(175, 100, 150, 15);
 }
 
 } // namespace gris
