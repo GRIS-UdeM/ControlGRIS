@@ -151,9 +151,11 @@ public:
     void sourcesPlacementChangedCallback(SourcePlacement sourcePlacement) override;
     void speakerSetupSelectedCallback(const juce::File & speakerSetupFile) override;
     void convertSpeakerPositionToSourcePosition(juce::ValueTree & curSpeaker,
+                                                const int sourceNumber,
                                                 const gris::SpatMode savedSpatMode,
                                                 juce::XmlElement & presetXml);
     void convertCartesianSpeakerPositionToSourcePosition(const juce::ValueTree & curSpeaker,
+                                                         const int sourceNumber,
                                                          const gris::SpatMode savedSpatMode,
                                                          juce::XmlElement & presetXml);
     void sourcePositionChangedCallback(SourceIndex sourceIndex,
