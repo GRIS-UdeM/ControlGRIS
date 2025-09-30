@@ -675,13 +675,10 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
 
         for (const auto & curSpeakerOrGroup : mainSpeakerGroup) {
             if (curSpeakerOrGroup.getType().toString() == "SPEAKER_GROUP") {
-                for (auto curSpeakerInGroup : curSpeakerOrGroup) {
-                    convertCartesianSpeakerPositionToSourcePosition(curSpeakerInGroup, savedSpatMode, presetXml);
-                    ++sourceCount;
-                }
+                for (auto curSpeakerInGroup : curSpeakerOrGroup)
+                    convertCartesianSpeakerPositionToSourcePosition(curSpeakerInGroup, ++sourceCount, savedSpatMode, presetXml);
             } else {
-                convertCartesianSpeakerPositionToSourcePosition(curSpeakerOrGroup, savedSpatMode, presetXml);
-                ++sourceCount;
+                convertCartesianSpeakerPositionToSourcePosition(curSpeakerOrGroup, ++sourceCount, savedSpatMode, presetXml);
             }
         }
     } else {
@@ -691,9 +688,7 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
             //    continue;
 
             // speakerPosition has coordinates from -1 to 1, which we need to convert to 0 to 1
-            convertSpeakerPositionToSourcePosition(curSpeaker, savedSpatMode, presetXml);
-
-            ++sourceCount;
+            convertSpeakerPositionToSourcePosition(curSpeaker, ++sourceCount, savedSpatMode, presetXml);
         }
     }
 
@@ -739,10 +734,10 @@ void storeXYZSpeakerPositionInPreset(const gris::SpatMode savedSpatMode,
     }
 }
 
-void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePosition(
-    const juce::ValueTree & curSpeaker,
-    const gris::SpatMode savedSpatMode,
-    juce::XmlElement & presetXml)
+void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePosition(const juce::ValueTree & curSpeaker,
+                                                                                      const int sourceNumber,
+                                                                                      const gris::SpatMode savedSpatMode,
+                                                                                      juce::XmlElement & presetXml)
 {
     // Parse speakerPosition string of the form "(-1, 8.74228e-08, -4.37114e-08)"
     auto const extractPositionFromString = [](juce::String const & positionStr) -> std::tuple<float, float, float> {
@@ -787,15 +782,15 @@ void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePos
                                     speakerY,
                                     speakerZ,
                                     presetXml,
-                                    curSpeaker["SPEAKER_PATCH_ID"].toString());
+                                    juce::String (sourceNumber));
 }
 
 void ControlGrisAudioProcessorEditor::convertSpeakerPositionToSourcePosition(juce::ValueTree & curSpeaker,
+                                                                             const int sourceNumber,
                                                                              const gris::SpatMode savedSpatMode,
                                                                              juce::XmlElement & presetXml)
 {
     auto const speakerString = curSpeaker.getType().toString();
-    auto const speakerNumber = speakerString.removeCharacters(SPEAKER_SETUP_POS_PREFIX).getIntValue();
     auto const speakerPosition{ curSpeaker.getChildWithName(SPEAKER_SETUP_POSITION_XML_TAG) };
     auto const speakerX = static_cast<float>(speakerPosition["X"]);
     auto const speakerY = static_cast<float>(speakerPosition["Y"]);
@@ -806,7 +801,7 @@ void ControlGrisAudioProcessorEditor::convertSpeakerPositionToSourcePosition(juc
                                     speakerY,
                                     speakerZ,
                                     presetXml,
-                                    juce::String(speakerNumber));
+                                    juce::String(sourceNumber));
 }
 
 //==============================================================================
