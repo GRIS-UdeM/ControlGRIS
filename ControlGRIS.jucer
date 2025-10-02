@@ -323,7 +323,7 @@
                        libraryPath="../../Source/libs/lib/flucoma/linux/Release"/>
         <CONFIGURATION isDebug="0" name="RTSan" targetName="ControlGRIS2" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/linux/Release" extraCompilerFlags="-fdiagnostics-color=always -fsanitize=realtime"
-                       extraLinkerFlags="-fsanitize=realtime"/>
+                       extraLinkerFlags="-fsanitize=realtime" userNotes="to build this locally with rtsan enabled (with a version of clang that supports rtsan and has it enabled):&#10;&#10;make -sC Builds/LinuxMakefile/ CONFIG=RTSan -j &#96;nproc&#96; CXX=clang++ CC=clang&#10;&#10;(the vst3 version will _not_ link, you'll have to test the standalone one)&#10;&#10;and then to run it with rtsan enabled, without having rtsan quit the app as soon as it hits an issue:&#10;&#10;RTSAN_OPTIONS=halt_on_error=false ./Builds/LinuxMakefile/build/ControlGRIS2"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="submodules/StructGRIS/submodules/JUCE/modules"/>
