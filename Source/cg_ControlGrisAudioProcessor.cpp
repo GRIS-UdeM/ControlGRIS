@@ -1623,80 +1623,88 @@ void ControlGrisAudioProcessor::sourceChanged(Source & source,
                                               Source::ChangeType changeType,
                                               Source::OriginOfChange origin)
 {
+    /**
+     * There is a try-lock here because when the source position is changed by the user (using the mouse),
+     * the host is notified and sometimes calls parameterChanged() in the audio thread to move the source,
+     * causing a race condition.
+     */
     jassert(changeType == Source::ChangeType::position || changeType == Source::ChangeType::elevation);
 
-    auto & trajectoryManager{ changeType == Source::ChangeType::position
-                                  ? static_cast<TrajectoryManager &>(mPositionTrajectoryManager)
-                                  : static_cast<TrajectoryManager &>(mElevationTrajectoryManager) };
-    auto & sourceLinkEnforcer{ changeType == Source::ChangeType::position ? mPositionSourceLinkEnforcer
-                                                                          : mElevationSourceLinkEnforcer };
-    // auto const isTrajectoryActive{ mPositionTrajectoryManager.getPositionActivateState()
-    //                               || mElevationTrajectoryManager.getPositionActivateState() };
-    auto const isTrajectoryActive{ trajectoryManager.getPositionActivateState() };
-    auto const isPrimarySource{ source.isPrimarySource() };
+    const juce::ScopedTryLock tryLock(mLock);
+    if (tryLock.isLocked()) {
+        auto & trajectoryManager{ changeType == Source::ChangeType::position
+                                      ? static_cast<TrajectoryManager &>(mPositionTrajectoryManager)
+                                      : static_cast<TrajectoryManager &>(mElevationTrajectoryManager) };
+        auto & sourceLinkEnforcer{ changeType == Source::ChangeType::position ? mPositionSourceLinkEnforcer
+                                                                              : mElevationSourceLinkEnforcer };
+        // auto const isTrajectoryActive{ mPositionTrajectoryManager.getPositionActivateState()
+        //                               || mElevationTrajectoryManager.getPositionActivateState() };
+        auto const isTrajectoryActive{ trajectoryManager.getPositionActivateState() };
+        auto const isPrimarySource{ source.isPrimarySource() };
 
-    switch (origin) {
-    case Source::OriginOfChange::none:
-        return;
-    case Source::OriginOfChange::userMove:
-        sourceLinkEnforcer.sourceMoved(source);
-        setSelectedSource(source);
-        if (isPrimarySource) {
+        switch (origin) {
+        case Source::OriginOfChange::none:
+            return;
+        case Source::OriginOfChange::userMove:
+            sourceLinkEnforcer.sourceMoved(source);
+            setSelectedSource(source);
+            if (isPrimarySource) {
+                trajectoryManager.sourceMoved(source);
+                updatePrimarySourceParameters(changeType);
+            } else {
+                getPresetsManager().loadIfPresetChanged(0);
+            }
+            return;
+        case Source::OriginOfChange::userAnchorMove:
+            sourceLinkEnforcer.anchorMoved(source);
+            setSelectedSource(source);
+            if (isPrimarySource) {
+                trajectoryManager.sourceMoved(source);
+                updatePrimarySourceParameters(changeType);
+            }
+            mPresetManager.loadIfPresetChanged(0);
+            return;
+        case Source::OriginOfChange::presetRecall:
+            jassert(isPrimarySource);
+            sourceLinkEnforcer.sourceMoved(source);
             trajectoryManager.sourceMoved(source);
+            return;
+        case Source::OriginOfChange::link:
+            if (isPrimarySource) {
+                sourceLinkEnforcer.sourceMoved(source);
+                trajectoryManager.sourceMoved(source);
+                updatePrimarySourceParameters(changeType);
+            }
+            return;
+        case Source::OriginOfChange::trajectory:
+            jassert(isPrimarySource);
+            sourceLinkEnforcer.sourceMoved(source);
             updatePrimarySourceParameters(changeType);
-        } else {
-            getPresetsManager().loadIfPresetChanged(0);
-        }
-        return;
-    case Source::OriginOfChange::userAnchorMove:
-        sourceLinkEnforcer.anchorMoved(source);
-        setSelectedSource(source);
-        if (isPrimarySource) {
-            trajectoryManager.sourceMoved(source);
-            updatePrimarySourceParameters(changeType);
-        }
-        mPresetManager.loadIfPresetChanged(0);
-        return;
-    case Source::OriginOfChange::presetRecall:
-        jassert(isPrimarySource);
-        sourceLinkEnforcer.sourceMoved(source);
-        trajectoryManager.sourceMoved(source);
-        return;
-    case Source::OriginOfChange::link:
-        if (isPrimarySource) {
+            return;
+        case Source::OriginOfChange::osc:
+            jassert(isPrimarySource);
             sourceLinkEnforcer.sourceMoved(source);
             trajectoryManager.sourceMoved(source);
             updatePrimarySourceParameters(changeType);
+            return;
+        case Source::OriginOfChange::automation:
+            sourceLinkEnforcer.sourceMoved(source);
+            if (!isTrajectoryActive) {
+                trajectoryManager.sourceMoved(source);
+            }
+            return;
+        case Source::OriginOfChange::audioAnalysis:
+            jassert(isPrimarySource);
+            sourceLinkEnforcer.sourceMoved(source);
+            return;
+        case Source::OriginOfChange::audioAnalysisRecAutomation:
+            jassert(isPrimarySource);
+            sourceLinkEnforcer.sourceMoved(source);
+            updatePrimarySourceParameters(changeType);
+            return;
         }
-        return;
-    case Source::OriginOfChange::trajectory:
-        jassert(isPrimarySource);
-        sourceLinkEnforcer.sourceMoved(source);
-        updatePrimarySourceParameters(changeType);
-        return;
-    case Source::OriginOfChange::osc:
-        jassert(isPrimarySource);
-        sourceLinkEnforcer.sourceMoved(source);
-        trajectoryManager.sourceMoved(source);
-        updatePrimarySourceParameters(changeType);
-        return;
-    case Source::OriginOfChange::automation:
-        sourceLinkEnforcer.sourceMoved(source);
-        if (!isTrajectoryActive) {
-            trajectoryManager.sourceMoved(source);
-        }
-        return;
-    case Source::OriginOfChange::audioAnalysis:
-        jassert(isPrimarySource);
-        sourceLinkEnforcer.sourceMoved(source);
-        return;
-    case Source::OriginOfChange::audioAnalysisRecAutomation:
-        jassert(isPrimarySource);
-        sourceLinkEnforcer.sourceMoved(source);
-        updatePrimarySourceParameters(changeType);
-        return;
+        jassertfalse;
     }
-    jassertfalse;
 }
 
 //==============================================================================

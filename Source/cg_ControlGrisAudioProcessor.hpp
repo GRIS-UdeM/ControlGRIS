@@ -92,6 +92,7 @@ class ControlGrisAudioProcessor final
     bool mElevationGestureStarted{};
 
     // juce::Uuid uniqueID{}; // for debugging purposes
+    juce::CriticalSection mLock;
 
     // OSC stuff
     const float IMPOSSIBLE_NUMBER{ std::numeric_limits<float>::min() };
