@@ -203,6 +203,8 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 //==============================================================================
 ControlGrisAudioProcessorEditor::~ControlGrisAudioProcessorEditor()
 {
+    mConfigurationComponent.unfocusAllComponents();
+    mTrajectoriesComponent.unfocusAllComponents();
     mConfigurationComponent.setLookAndFeel(nullptr);
     mTrajectoriesComponent.setLookAndFeel(nullptr);
     setLookAndFeel(nullptr);
