@@ -183,7 +183,6 @@ public:
 
     void setSpatMode(SpatMode spatMode);
 
-    void actualizeValueTreeState();
     //==============================================================================
     void mouseDown(juce::MouseEvent const & event) override;
     void paint(juce::Graphics &) override;
