@@ -283,7 +283,6 @@ void ControlGrisAudioProcessorEditor::reloadUiState()
     mSectionSourcePosition.updateSelectedSource(&mProcessor.getSources()[mSelectedSource],
                                                 mSelectedSource,
                                                 mProcessor.getSpatMode());
-    mSectionSourcePosition.actualizeValueTreeState();
 
     auto const preset{ static_cast<int>(static_cast<float>(
         mAudioProcessorValueTreeState.getParameterAsValue(Automation::Ids::POSITION_PRESET).getValue())) };

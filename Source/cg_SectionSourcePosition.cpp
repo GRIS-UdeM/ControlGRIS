@@ -481,10 +481,4 @@ void SectionSourcePosition::setSpatMode(SpatMode const spatMode)
     resized();
 }
 
-//==============================================================================
-void SectionSourcePosition::actualizeValueTreeState()
-{
-    mZSourceLinkScaleSlider.onValueChange();
-}
-
 } // namespace gris
