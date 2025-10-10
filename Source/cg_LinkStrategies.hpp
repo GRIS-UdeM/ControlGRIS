@@ -146,6 +146,7 @@ class CircularFixedAngle final : public Base
     Radians mPrimarySourceFinalAngle{};
     Radians mRotation{};
     std::vector<float> mSecSourcesLengthRatio{};
+    std::vector<std::pair<Degrees, SourceIndex>> mInitialAngles{ gris::Sources::MAX_NUMBER_OF_SOURCES };
     bool mSecSourcesLengthRatioInitialized{};
     std::vector<int> mOrdering{};
     //==============================================================================
@@ -174,6 +175,7 @@ class CircularFullyFixed final : public Base
     Radians mPrimarySourceFinalAngle{};
     Radians mRotation{};
     float mRadius{};
+    std::vector<std::pair<Degrees, SourceIndex>> mInitialAngles{ gris::Sources::MAX_NUMBER_OF_SOURCES };
     std::vector<int> mOrdering{};
     bool mOrderingInitialized{};
     //==============================================================================

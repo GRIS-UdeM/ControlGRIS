@@ -259,9 +259,6 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
     mRotation = mPrimarySourceFinalAngle - primarySourceInitialAngle;
 
     // copy initialAngles
-    JUCE_ASSERT_MESSAGE_THREAD
-    auto initialAngles = std::vector<std::pair<Degrees, SourceIndex>>(finalStates.MAX_NUMBER_OF_SOURCES);
-
     for (auto const & finalState : finalStates) {
         auto const sourceIndex{ finalState.getIndex() };
 
@@ -269,13 +266,13 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
         auto const initialAngle{ Radians::angleOf(initialState.position) };
         jassert(!std::isnan(initialAngle.getAsRadians()));
 
-        initialAngles[sourceIndex.get()] = std::make_pair(initialAngle, sourceIndex);
+        mInitialAngles[sourceIndex.get()] = std::make_pair(initialAngle, sourceIndex);
     }
     // make all initialAngles bigger than the primary source's
     auto const minAngle{ Radians::angleOf(initialStates.primary.position) };
     auto const maxAngle{ minAngle + TWO_PI };
-    std::for_each(std::begin(initialAngles),
-                  std::begin(initialAngles) + finalStates.size(),
+    std::for_each(std::begin(mInitialAngles),
+                  std::begin(mInitialAngles) + finalStates.size(),
                   [&](std::pair<Degrees, SourceIndex> & data) {
                       while (data.first < minAngle) {
                           data.first += TWO_PI;
@@ -284,12 +281,12 @@ void CircularFixedAngle::computeParameters_implementation(Sources const & finalS
                       jassert(data.first < maxAngle);
                   });
     // sort
-    std::stable_sort(std::begin(initialAngles),
-                     std::begin(initialAngles) + finalStates.size(),
+    std::stable_sort(std::begin(mInitialAngles),
+                     std::begin(mInitialAngles) + finalStates.size(),
                      [](auto const & a, auto const & b) -> bool { return a.first < b.first; });
     // store ordering
     for (int i{}; i < finalStates.size(); ++i) {
-        auto const sourceIndex{ initialAngles[i].second };
+        auto const sourceIndex{ mInitialAngles[i].second };
         mOrdering[sourceIndex.get()] = i;
     }
     jassert(mOrdering[0ull] == 0);
@@ -376,22 +373,19 @@ void CircularFullyFixed::computeParameters_implementation(Sources const & finalS
 
     if (!mOrderingInitialized) {
         // copy initialAngles
-        JUCE_ASSERT_MESSAGE_THREAD
-        auto initialAngles = std::vector<std::pair<Degrees, SourceIndex>>(finalStates.MAX_NUMBER_OF_SOURCES);
-
         for (auto const & finalState : finalStates) {
             auto const sourceIndex{ finalState.getIndex() };
 
             auto const & initialState{ initialStates[sourceIndex] };
             auto const initialAngle{ Radians::angleOf(initialState.position) };
 
-            initialAngles[sourceIndex.get()] = std::make_pair(initialAngle, sourceIndex);
+            mInitialAngles[sourceIndex.get()] = std::make_pair(initialAngle, sourceIndex);
         }
         // make all initialAngles bigger than the primary source's
         auto const minAngle{ Radians::angleOf(initialStates.primary.position) };
         auto const maxAngle{ minAngle + TWO_PI };
-        std::for_each(std::begin(initialAngles),
-                      std::begin(initialAngles) + finalStates.size(),
+        std::for_each(std::begin(mInitialAngles),
+                      std::begin(mInitialAngles) + finalStates.size(),
                       [&](std::pair<Degrees, SourceIndex> & data) {
                           if (data.first < minAngle) {
                               data.first += TWO_PI;
@@ -400,12 +394,12 @@ void CircularFullyFixed::computeParameters_implementation(Sources const & finalS
                           jassert(data.first < maxAngle);
                       });
         // sort
-        std::stable_sort(std::begin(initialAngles),
-                         std::begin(initialAngles) + finalStates.size(),
+        std::stable_sort(std::begin(mInitialAngles),
+                         std::begin(mInitialAngles) + finalStates.size(),
                          [](auto const & a, auto const & b) -> bool { return a.first < b.first; });
         // store ordering
         for (int i{}; i < finalStates.size(); ++i) {
-            auto const sourceIndex{ initialAngles[i].second };
+            auto const sourceIndex{ mInitialAngles[i].second };
             mOrdering[sourceIndex.get()] = i;
         }
         mOrderingInitialized = true;
