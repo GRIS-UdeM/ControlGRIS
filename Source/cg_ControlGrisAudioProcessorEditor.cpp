@@ -444,6 +444,7 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
         }
 
         mSelectedSource = {};
+        mLastNumberOfSources = mProcessor.getSources().size();
         mProcessor.setNumberOfSources(numOfSources);
         mSectionGeneralSettings.setNumberOfSources(numOfSources);
         mSectionSourceSpan.setSelectedSource(&mProcessor.getSources()[mSelectedSource]);
@@ -451,7 +452,7 @@ void ControlGrisAudioProcessorEditor::numberOfSourcesChangedCallback(int const n
         mElevationField.refreshSources();
         mSectionSourcePosition.setNumberOfSources(numOfSources, mProcessor.getFirstSourceId());
         if (initSourcePlacement) {
-            sourcesPlacementChangedCallback(SourcePlacement::leftAlternate);
+            sourcesPlacementChangedCallback(SourcePlacement::random);
         }
     }
     mSelectedSource = {};
@@ -507,14 +508,32 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     mProcessor.setPositionSourceLink(PositionSourceLink::independent, SourceLinkEnforcer::OriginOfChange::automation);
 
     auto const isCubeMode{ mProcessor.getSpatMode() == SpatMode::cube };
-    auto const distance{ isCubeMode ? 0.7f : 1.0f };
     auto const numOfSources{ mProcessor.getSources().size() };
     auto const increment{ 360.0f / numOfSources };
     auto curOddAzimuth{ 0.0f + increment / 2 };
     auto curEvenAzimuth{ 360.0f - increment / 2 };
+    auto & sources{ mProcessor.getSources() };
+
+    auto const newRandomAzi = [&sources] {
+        juce::Random rand;
+        float newAzi{};
+        bool isUnique{};
+        do {
+            newAzi = rand.nextFloat() * 360;
+            isUnique = true;
+            for (const auto & source : sources) {
+                if (source.getAzimuth().getAsDegrees() == newAzi) {
+                    isUnique = false;
+                    break;
+                }
+            }
+        } while (!isUnique);
+        return newAzi;
+    };
 
     auto const getAzimuthValue
-        = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth](int const sourceIndex) {
+        = [sourcePlacement, numOfSources, increment, &curOddAzimuth, &curEvenAzimuth, newRandomAzi](
+              int const sourceIndex) {
               switch (sourcePlacement) {
               case SourcePlacement::leftAlternate:
                   return (sourceIndex % 2 == 0) ? std::exchange(curEvenAzimuth, curEvenAzimuth - increment)
@@ -534,6 +553,8 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
                   return 360.0f / numOfSources * sourceIndex;
               case SourcePlacement::topCounterClockwise:
                   return 360.0f / numOfSources * -sourceIndex;
+              case SourcePlacement::random:
+                  return newRandomAzi();
               case SourcePlacement::undefined:
               default:
                   jassertfalse;
@@ -544,8 +565,27 @@ void ControlGrisAudioProcessorEditor::sourcesPlacementChangedCallback(SourcePlac
     // position all sources
     for (auto i = 0; i < numOfSources; ++i) {
         auto & source{ mProcessor.getSources()[i] };
-        auto const elevation{ isCubeMode ? source.getElevation() : MAX_ELEVATION };
-        auto const azimuth{ Degrees{ getAzimuthValue(i) } };
+        Degrees elevation;
+        Degrees azimuth;
+        float distance;
+
+        if (sourcePlacement == SourcePlacement::random) {
+            if (i < mLastNumberOfSources) {
+                // position for existing sources
+                distance = source.getDistance();
+                elevation = Degrees{ source.getElevation() };
+                azimuth = Degrees{ source.getAzimuth() };
+            } else {
+                // position for new sources
+                distance = isCubeMode ? 0.7f : 1.0f;
+                elevation = MAX_ELEVATION;
+                azimuth = Degrees{ getAzimuthValue(i) };
+            }
+        } else {
+            distance = isCubeMode ? 0.7f : 1.0f;
+            elevation = isCubeMode ? source.getElevation() : MAX_ELEVATION;
+            azimuth = Degrees{ getAzimuthValue(i) };
+        }
         source.setCoordinates(Radians{ azimuth },
                               Radians{ elevation },
                               distance,
