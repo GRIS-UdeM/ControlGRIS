@@ -105,6 +105,7 @@ private:
 
     bool mIsInsideSetPluginState;
     SourceIndex mSelectedSource{};
+    int mLastNumberOfSources{};
 
     juce::Value mLastUiWidth;
     juce::Value mLastUiHeight;

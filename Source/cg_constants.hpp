@@ -62,7 +62,8 @@ enum class SourcePlacement {
     rightClockwise,
     rightCounterClockwise,
     topClockwise,
-    topCounterClockwise
+    topCounterClockwise,
+    random
 };
 
 extern juce::StringArray const SOURCE_PLACEMENT_SKETCH;
