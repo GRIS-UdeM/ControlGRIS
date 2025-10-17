@@ -140,6 +140,7 @@ class ControlGrisAudioProcessor final
     juce::AudioBuffer<float> mDescriptorsBuffer;
     double mAudioAnalysisInputGainMultiplier{};
     int mNumChannelsToAnalyse{};
+    bool mShouldProcessAudioAnalysis{};
     bool mXYParamLinked{};
     bool mAudioAnalysisActivateState{};
     bool mAudioAnalysisAzimuthSpanFlag{};
@@ -379,6 +380,7 @@ public:
     void setAudioAnalysisAzimuthSpanFlag(bool flag) { mAudioAnalysisAzimuthSpanFlag = flag; }
     void setAudioAnalysisElevationSpanFlag(bool flag) { mAudioAnalysisElevationSpanFlag = flag; }
 
+    void setShouldProcessAudioAnalysis();
     bool shouldProcessDomeSpectralAnalysis();
     bool shouldProcessDomeLoudnessAnalysis();
     bool shouldProcessDomePitchAnalysis();

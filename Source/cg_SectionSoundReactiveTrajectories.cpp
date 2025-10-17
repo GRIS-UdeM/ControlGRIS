@@ -570,6 +570,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
 
         refreshDescriptorPanel();
+        mAudioProcessor.setShouldProcessAudioAnalysis();
     };
 
     initParameterDescCombo(mParameterElevationDescriptorCombo);
@@ -632,6 +633,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
 
         refreshDescriptorPanel();
+        mAudioProcessor.setShouldProcessAudioAnalysis();
     };
 
     initParameterDescCombo(mParameterXDescriptorCombo);
@@ -699,6 +701,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
 
         refreshDescriptorPanel();
+        mAudioProcessor.setShouldProcessAudioAnalysis();
     };
 
     initParameterDescCombo(mParameterYDescriptorCombo);
@@ -759,6 +762,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
 
         refreshDescriptorPanel();
+        mAudioProcessor.setShouldProcessAudioAnalysis();
     };
 
     initParameterDescCombo(mParameterZDescriptorCombo);
@@ -819,6 +823,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
 
         refreshDescriptorPanel();
+        mAudioProcessor.setShouldProcessAudioAnalysis();
     };
 
     initParameterDescCombo(mParameterAzimuthOrXYSpanDescriptorCombo);
@@ -903,6 +908,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
 
         mAudioProcessor.setAudioAnalysisAzimuthSpanFlag(mDescriptorIdToUse != DescriptorID::invalid);
         refreshDescriptorPanel();
+        mAudioProcessor.setShouldProcessAudioAnalysis();
     };
 
     initParameterDescCombo(mParameterElevationOrZSpanDescriptorCombo);
@@ -987,6 +993,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
 
         mAudioProcessor.setAudioAnalysisElevationSpanFlag(mDescriptorIdToUse != DescriptorID::invalid);
         refreshDescriptorPanel();
+        mAudioProcessor.setShouldProcessAudioAnalysis();
     };
 
     addAndMakeVisible(&mParameterRangeLabel);
