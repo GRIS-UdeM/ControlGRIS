@@ -1258,7 +1258,7 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
     mLastTime = mCurrentTime;
 
     // Audio Descriptors section
-    if (mSelectedSoundTrajectoriesTabIdx == 0) {
+    if (mShouldProcessAudioAnalysis) {
         mAzimuthDomeValue = 0.0;
         mElevationDomeValue = 0.0;
         mHspanDomeValue = 0.0;
@@ -1765,6 +1765,7 @@ void ControlGrisAudioProcessor::setNumChannelsForAudioAnalysis(int numChannels)
 void ControlGrisAudioProcessor::setSelectedSoundTrajectoriesTab(int newCurrentTabIndex)
 {
     mSelectedSoundTrajectoriesTabIdx = newCurrentTabIndex;
+    setShouldProcessAudioAnalysis();
 }
 
 //==============================================================================
@@ -2151,6 +2152,20 @@ void ControlGrisAudioProcessor::setOnsetDetectionFromClick(ParameterID paramID, 
     default:
         break;
     }
+}
+
+//==============================================================================
+void ControlGrisAudioProcessor::setShouldProcessAudioAnalysis()
+{
+    mShouldProcessAudioAnalysis
+        = mSelectedSoundTrajectoriesTabIdx == 0
+          && (shouldProcessDomeSpectralAnalysis() || shouldProcessDomeLoudnessAnalysis()
+              || shouldProcessDomePitchAnalysis() || shouldProcessDomeCentroidAnalysis()
+              || shouldProcessDomeSpreadAnalysis() || shouldProcessDomeNoiseAnalysis()
+              || shouldProcessDomeOnsetDetectionAnalysis() || shouldProcessCubeSpectralAnalysis()
+              || shouldProcessCubeLoudnessAnalysis() || shouldProcessCubePitchAnalysis()
+              || shouldProcessCubeCentroidAnalysis() || shouldProcessCubeSpreadAnalysis()
+              || shouldProcessCubeNoiseAnalysis() || shouldProcessCubeOnsetDetectionAnalysis());
 }
 
 //==============================================================================
