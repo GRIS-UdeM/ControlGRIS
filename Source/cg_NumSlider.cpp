@@ -144,6 +144,53 @@ void NumSlider::mouseUp(const juce::MouseEvent & event)
 }
 
 //==============================================================================
+void NumSlider::mouseDown(const juce::MouseEvent & event)
+{
+    mMouseDragStartPos = event.getMouseDownPosition();
+    mMouseDiffFromStartY = 0;
+}
+
+//==============================================================================
+void NumSlider::mouseDrag(const juce::MouseEvent & event)
+{
+    const auto isAltDown{ event.mods.isAltDown() };
+    const auto mouseDragCurrentPos{ event.getPosition() };
+    const auto mouseDiffFromStartY{ mMouseDragStartPos.getY() - mouseDragCurrentPos.getY() };
+    const auto mouseDiffDragY{ mouseDiffFromStartY - mMouseDiffFromStartY };
+    const auto range{ getRange() };
+    const auto smallestSliderVal{ std::pow(10, -1 * (getNumDecimalPlacesToDisplay())) };
+    const auto increment{ isAltDown ? smallestSliderVal * 0.1f : range.getLength() / 100 };
+
+    if (mouseDiffDragY > 0) {
+        if (increment < smallestSliderVal && mIncrementBuffer < smallestSliderVal) {
+            mIncrementBuffer += increment;
+            if (mIncrementBuffer >= smallestSliderVal) {
+                double newValue = getValue() + mIncrementBuffer;
+                setValue(juce::jlimit(getMinimum(), getMaximum(), newValue), juce::sendNotificationSync);
+                mIncrementBuffer = 0.0f;
+            }
+        } else {
+            double newValue = getValue() + increment;
+            setValue(juce::jlimit(getMinimum(), getMaximum(), newValue), juce::sendNotificationSync);
+        }
+        mMouseDiffFromStartY = mouseDiffFromStartY;
+    } else if (mouseDiffDragY < 0) {
+        if (increment < smallestSliderVal && mIncrementBuffer < smallestSliderVal) {
+            mIncrementBuffer += increment;
+            if (mIncrementBuffer >= smallestSliderVal) {
+                double newValue = getValue() - mIncrementBuffer;
+                setValue(juce::jlimit(getMinimum(), getMaximum(), newValue), juce::sendNotificationSync);
+                mIncrementBuffer = 0.0f;
+            }
+        } else {
+            double newValue = getValue() - increment;
+            setValue(juce::jlimit(getMinimum(), getMaximum(), newValue), juce::sendNotificationSync);
+        }
+        mMouseDiffFromStartY = mouseDiffFromStartY;
+    }
+}
+
+//==============================================================================
 void NumSlider::setDefaultNumDecimalPlacesToDisplay(int numDec)
 {
     mDefaultNumDecimalToDisplay = numDec;
