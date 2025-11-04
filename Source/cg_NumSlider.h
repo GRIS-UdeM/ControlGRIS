@@ -39,6 +39,8 @@ public:
     void paint(juce::Graphics & g) override;
     void valueChanged() override;
     void mouseUp(const juce::MouseEvent & event) override;
+    void mouseDown(const juce::MouseEvent & event) override;
+    void mouseDrag(const juce::MouseEvent & event) override;
 
     void setDefaultNumDecimalPlacesToDisplay(int numDec);
 
@@ -53,6 +55,9 @@ private:
     juce::Time mLastTime{ 0 };
     double mLastValue{ 0 };
     int mDefaultNumDecimalToDisplay{ 1 };
+    juce::Point<int> mMouseDragStartPos;
+    int mMouseDiffFromStartY{};
+    float mIncrementBuffer{};
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(NumSlider)
