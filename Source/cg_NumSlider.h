@@ -38,16 +38,21 @@ public:
     void mouseWheelMove(const juce::MouseEvent & event, const juce::MouseWheelDetails & wheel) override;
     void paint(juce::Graphics & g) override;
     void valueChanged() override;
-    void mouseUp(const juce::MouseEvent & event) override;
     void mouseDown(const juce::MouseEvent & event) override;
     void mouseDrag(const juce::MouseEvent & event) override;
+    void mouseUp(const juce::MouseEvent & event) override;
+    void mouseDoubleClick(const juce::MouseEvent & event) override;
 
     void setDefaultNumDecimalPlacesToDisplay(int numDec);
+    void setDefaultReturnValue(double value);
 
 private:
     //==============================================================================
     void textEditorReturnKeyPressed(juce::TextEditor & ed) override;
     void textEditorEscapeKeyPressed(juce::TextEditor & ed) override;
+
+    void startFineClickDragging(const juce::MouseEvent & event);
+    void stopFineClickDragging(const juce::MouseEvent & event);
 
     GrisLookAndFeel & mGrisLookAndFeel;
 
@@ -55,7 +60,10 @@ private:
     juce::Time mLastTime{ 0 };
     double mLastValue{ 0 };
     int mDefaultNumDecimalToDisplay{ 1 };
+    double mDefaultReturnValue{};
     juce::Point<int> mMouseDragStartPos;
+    juce::Point<float> mMouseScreenPos;
+    bool mIsFineDragging{};
     int mMouseDiffFromStartY{};
     float mIncrementBuffer{};
 
