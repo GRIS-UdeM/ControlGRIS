@@ -36,7 +36,6 @@ NumSlider::NumSlider(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisL
     setScrollWheelEnabled(true);
     setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, getWidth(), getHeight());
     setTextBoxIsEditable(false);
-    setDoubleClickReturnValue(true, 0.0);
 }
 
 //==============================================================================
@@ -121,29 +120,6 @@ void NumSlider::valueChanged()
 }
 
 //==============================================================================
-void NumSlider::mouseUp(const juce::MouseEvent & event)
-{
-    if (event.mods.isRightButtonDown()) {
-        auto sliderEditor{ std::make_unique<juce::TextEditor>("SliderEditor") };
-        sliderEditor->setLookAndFeel(&mGrisLookAndFeel);
-        sliderEditor->setJustification(juce::Justification::centred);
-        sliderEditor->addListener(this);
-        sliderEditor->setMultiLine(false);
-        sliderEditor->setSize(60, 20);
-        if (getRange().getStart() < 0) {
-            sliderEditor->setInputRestrictions(5, "0123456789,.-");
-        } else {
-            sliderEditor->setInputRestrictions(5, "0123456789,.");
-        }
-
-        auto & box = juce::CallOutBox::launchAsynchronously(std::move(sliderEditor), getScreenBounds(), nullptr);
-        box.setLookAndFeel(&mGrisLookAndFeel);
-    }
-
-    Slider::mouseUp(event);
-}
-
-//==============================================================================
 void NumSlider::mouseDown(const juce::MouseEvent & event)
 {
     mMouseDragStartPos = event.getMouseDownPosition();
@@ -153,13 +129,20 @@ void NumSlider::mouseDown(const juce::MouseEvent & event)
 //==============================================================================
 void NumSlider::mouseDrag(const juce::MouseEvent & event)
 {
-    const auto isAltDown{ event.mods.isAltDown() };
+    const auto isShiftDown{ event.mods.isShiftDown() };
     const auto mouseDragCurrentPos{ event.getPosition() };
     const auto mouseDiffFromStartY{ mMouseDragStartPos.getY() - mouseDragCurrentPos.getY() };
     const auto mouseDiffDragY{ mouseDiffFromStartY - mMouseDiffFromStartY };
     const auto range{ getRange() };
     const auto smallestSliderVal{ std::pow(10, -1 * (getNumDecimalPlacesToDisplay())) };
-    const auto increment{ isAltDown ? smallestSliderVal * 0.1f : range.getLength() / 100 };
+    const auto increment{ isShiftDown ? smallestSliderVal * 0.1f * std::abs(mouseDiffDragY)
+                                    : range.getLength() / 100 * std::abs(mouseDiffDragY) };
+
+    if (!isShiftDown && mIsFineDragging) {
+        stopFineClickDragging(event);
+    } else if (isShiftDown && !mIsFineDragging) {
+        startFineClickDragging(event);
+    }
 
     if (mouseDiffDragY > 0) {
         if (increment < smallestSliderVal && mIncrementBuffer < smallestSliderVal) {
@@ -191,10 +174,48 @@ void NumSlider::mouseDrag(const juce::MouseEvent & event)
 }
 
 //==============================================================================
+void NumSlider::mouseUp(const juce::MouseEvent & event)
+{
+    if (event.mods.isAltDown() && event.mods.isLeftButtonDown()) {
+        setValue(mDefaultReturnValue);
+    }
+
+    if (event.mods.isShiftDown() && mIsFineDragging) {
+        stopFineClickDragging(event);
+    }
+}
+
+//==============================================================================
+void NumSlider::mouseDoubleClick(const juce::MouseEvent & event)
+{
+    auto sliderEditor{ std::make_unique<juce::TextEditor>("SliderEditor") };
+    sliderEditor->setLookAndFeel(&mGrisLookAndFeel);
+    sliderEditor->setJustification(juce::Justification::centred);
+    sliderEditor->addListener(this);
+    sliderEditor->setMultiLine(false);
+    sliderEditor->setSize(60, 20);
+    if (getRange().getStart() < 0) {
+        sliderEditor->setInputRestrictions(5, "0123456789,.-");
+    } else {
+        sliderEditor->setInputRestrictions(5, "0123456789,.");
+    }
+    sliderEditor->setText(juce::String(getValue()), false);
+    sliderEditor->selectAll();
+
+    auto & box = juce::CallOutBox::launchAsynchronously(std::move(sliderEditor), getScreenBounds(), nullptr);
+    box.setLookAndFeel(&mGrisLookAndFeel);
+}
+
+//==============================================================================
 void NumSlider::setDefaultNumDecimalPlacesToDisplay(int numDec)
 {
     mDefaultNumDecimalToDisplay = numDec;
     setNumDecimalPlacesToDisplay(mDefaultNumDecimalToDisplay);
+}
+
+void NumSlider::setDefaultReturnValue(double value)
+{
+    mDefaultReturnValue = value;
 }
 
 //==============================================================================
@@ -221,6 +242,25 @@ void NumSlider::textEditorEscapeKeyPressed(juce::TextEditor & ed)
     if (callOutBox != nullptr) {
         callOutBox->dismiss();
     }
+}
+
+//==============================================================================
+void NumSlider::startFineClickDragging(const juce::MouseEvent & event)
+{
+    setMouseCursor(juce::MouseCursor::NoCursor);
+    event.source.enableUnboundedMouseMovement(true);
+    mMouseScreenPos = event.source.getScreenPosition();
+    mIsFineDragging = true;
+}
+
+//==============================================================================
+void NumSlider::stopFineClickDragging(const juce::MouseEvent & event)
+{
+    juce::MouseInputSource inputSource = juce::MouseInputSource(event.source);
+    inputSource.enableUnboundedMouseMovement(false);
+    inputSource.setScreenPosition(mMouseScreenPos);
+    setMouseCursor(juce::MouseCursor::NormalCursor);
+    mIsFineDragging = false;
 }
 
 } // namespace gris

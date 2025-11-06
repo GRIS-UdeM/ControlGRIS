@@ -156,7 +156,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     addAndMakeVisible(&mGainSlider);
     mGainSlider.setNumDecimalPlacesToDisplay(1);
     mGainSlider.setRange(0.0, 2.0, 0.1);
-    mGainSlider.setDoubleClickReturnValue(true, 1.0);
+    mGainSlider.setDefaultReturnValue(1.0);
     auto gain{ mAPVTS.state.getProperty("audioGainForAnalysis") };
     if (gain.isVoid()) {
         mGainSlider.setValue(1.0);
@@ -170,18 +170,18 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     };
 
     // default values
-    mParameterAzimuthRangeSlider.setDoubleClickReturnValue(true, 100.0);
-    mParameterElevationRangeSlider.setDoubleClickReturnValue(true, 100.0);
-    mParameterXRangeSlider.setDoubleClickReturnValue(true, 100.0);
-    mParameterYRangeSlider.setDoubleClickReturnValue(true, 100.0);
-    mParameterZRangeSlider.setDoubleClickReturnValue(true, 100.0);
-    mParameterAzimuthOrXYSpanRangeSlider.setDoubleClickReturnValue(true, 100.0);
-    mParameterElevationOrZSpanRangeSlider.setDoubleClickReturnValue(true, 100.0);
-    mParameterAzimuthXOffsetSlider.setDoubleClickReturnValue(true, 0.0);
-    mParameterYOffsetSlider.setDoubleClickReturnValue(true, 0.0);
-    mParameterElevationZOffsetSlider.setDoubleClickReturnValue(true, 0.0);
-    mParameterAziXYSpanOffsetSlider.setDoubleClickReturnValue(true, 0.0);
-    mParameterEleZSpanOffsetSlider.setDoubleClickReturnValue(true, 0.0);
+    mParameterAzimuthRangeSlider.setDefaultReturnValue(100.0);
+    mParameterElevationRangeSlider.setDefaultReturnValue(100.0);
+    mParameterXRangeSlider.setDefaultReturnValue(100.0);
+    mParameterYRangeSlider.setDefaultReturnValue(100.0);
+    mParameterZRangeSlider.setDefaultReturnValue(100.0);
+    mParameterAzimuthOrXYSpanRangeSlider.setDefaultReturnValue(100.0);
+    mParameterElevationOrZSpanRangeSlider.setDefaultReturnValue(100.0);
+    mParameterAzimuthXOffsetSlider.setDefaultReturnValue(0.0);
+    mParameterYOffsetSlider.setDefaultReturnValue(0.0);
+    mParameterElevationZOffsetSlider.setDefaultReturnValue(0.0);
+    mParameterAziXYSpanOffsetSlider.setDefaultReturnValue(0.0);
+    mParameterEleZSpanOffsetSlider.setDefaultReturnValue(0.0);
 
     mParameterAzimuthRangeSlider.setNumDecimalPlacesToDisplay(3);
     mParameterElevationRangeSlider.setNumDecimalPlacesToDisplay(3);
@@ -1050,12 +1050,12 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mDescriptorSmoothCoefLabel.setText("Smooth Coef.", juce::dontSendNotification);
 
     // default values
-    mDescriptorExpanderSlider.setDoubleClickReturnValue(true, 100.0);
-    mDescriptorSmoothSlider.setDoubleClickReturnValue(true, 5.0);
-    mDescriptorSmoothCoefSlider.setDoubleClickReturnValue(true, 0.0);
-    mDescriptorThresholdSlider.setDoubleClickReturnValue(true, 0.1);
-    mDescriptorMinTimeSlider.setDoubleClickReturnValue(true, 0.1);
-    mDescriptorMaxTimeSlider.setDoubleClickReturnValue(true, 10.0);
+    mDescriptorExpanderSlider.setDefaultReturnValue(100.0);
+    mDescriptorSmoothSlider.setDefaultReturnValue(5.0);
+    mDescriptorSmoothCoefSlider.setDefaultReturnValue(0.0);
+    mDescriptorThresholdSlider.setDefaultReturnValue(0.1);
+    mDescriptorMinTimeSlider.setDefaultReturnValue(0.1);
+    mDescriptorMaxTimeSlider.setDefaultReturnValue(10.0);
 
     mDescriptorExpanderSlider.setDefaultNumDecimalPlacesToDisplay(1);
     mDescriptorSmoothSlider.setDefaultNumDecimalPlacesToDisplay(2);
@@ -2424,8 +2424,8 @@ void gris::SectionSoundReactiveTrajectories::changeMinMaxSlidersRange(int min, i
 {
     mDescriptorMinFreqSlider.setRange(min, max);
     mDescriptorMaxFreqSlider.setRange(min, max);
-    mDescriptorMinFreqSlider.setDoubleClickReturnValue(true, min);
-    mDescriptorMaxFreqSlider.setDoubleClickReturnValue(true, max);
+    mDescriptorMinFreqSlider.setDefaultReturnValue(min);
+    mDescriptorMaxFreqSlider.setDefaultReturnValue(max);
     mDescriptorMaxFreqSlider.setValue(mDescriptorMaxFreqSlider.getValue());
     mDescriptorMinFreqSlider.setValue(mDescriptorMinFreqSlider.getValue());
 }

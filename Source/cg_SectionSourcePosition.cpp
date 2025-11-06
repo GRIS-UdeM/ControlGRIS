@@ -298,7 +298,7 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
     }
     mZSourceLinkScaleSlider.setValue(eleSourceLinkScale, juce::dontSendNotification);
     mZSourceLinkScaleSlider.setNumDecimalPlacesToDisplay(2);
-    mZSourceLinkScaleSlider.setDoubleClickReturnValue(true, 1.0);
+    mZSourceLinkScaleSlider.setDefaultReturnValue(1.0);
     addAndMakeVisible(&mZSourceLinkScaleSlider);
     mZSourceLinkScaleSlider.onValueChange = [this] {
         auto scaleVal{ mZSourceLinkScaleSlider.getValue() };

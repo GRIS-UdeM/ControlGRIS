@@ -353,8 +353,8 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mRandomStartXYLabel.setText("Begin.", juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomProximityXYSlider);
-    mRandomProximityXYSlider.setNumDecimalPlacesToDisplay(2);
-    mRandomProximityXYSlider.setRange(0.0, 1.0);
+    mRandomProximityXYSlider.setDefaultNumDecimalPlacesToDisplay(2);
+    mRandomProximityXYSlider.setRange(0.0, 1.0, 0.01);
     mRandomProximityXYSlider.onValueChange = [this] {
         auto proxVal{ mRandomProximityXYSlider.getValue() };
         mAPVTS.state.setProperty("posRandomProximity", proxVal, nullptr);
@@ -367,8 +367,8 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mRandomProximityXYSlider.setValue(posRandomProximity);
 
     addAndMakeVisible(&mRandomTimeMinXYSlider);
-    mRandomTimeMinXYSlider.setNumDecimalPlacesToDisplay(2);
-    mRandomTimeMinXYSlider.setRange(0.03, 5.0);
+    mRandomTimeMinXYSlider.setDefaultNumDecimalPlacesToDisplay(2);
+    mRandomTimeMinXYSlider.setRange(0.03, 5.0, 0.01);
     mRandomTimeMinXYSlider.onValueChange = [this] {
         auto const timeMin{ mRandomTimeMinXYSlider.getValue() };
         auto const timeMax{ mRandomTimeMaxXYSlider.getValue() };
@@ -385,8 +385,8 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mRandomTimeMinXYSlider.setValue(posRandomTimeMin, juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomTimeMaxXYSlider);
-    mRandomTimeMaxXYSlider.setNumDecimalPlacesToDisplay(2);
-    mRandomTimeMaxXYSlider.setRange(0.03, 5.0);
+    mRandomTimeMaxXYSlider.setDefaultNumDecimalPlacesToDisplay(2);
+    mRandomTimeMaxXYSlider.setRange(0.03, 5.0, 0.01);
     mRandomTimeMaxXYSlider.onValueChange = [this] {
         auto const timeMin{ mRandomTimeMinXYSlider.getValue() };
         auto const timeMax{ mRandomTimeMaxXYSlider.getValue() };
@@ -501,8 +501,8 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mRandomStartZLabel.setText("Begin.", juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomProximityZSlider);
-    mRandomProximityZSlider.setNumDecimalPlacesToDisplay(2);
-    mRandomProximityZSlider.setRange(0.0, 1.0);
+    mRandomProximityZSlider.setDefaultNumDecimalPlacesToDisplay(2);
+    mRandomProximityZSlider.setRange(0.0, 1.0, 0.01);
     mRandomProximityZSlider.onValueChange = [this] {
         auto proxVal{ mRandomProximityZSlider.getValue() };
         mAPVTS.state.setProperty("eleRandomProximity", proxVal, nullptr);
@@ -515,8 +515,8 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mRandomProximityZSlider.setValue(eleRandomProximity);
 
     addAndMakeVisible(&mRandomTimeMinZSlider);
-    mRandomTimeMinZSlider.setNumDecimalPlacesToDisplay(2);
-    mRandomTimeMinZSlider.setRange(0.03, 5.0);
+    mRandomTimeMinZSlider.setDefaultNumDecimalPlacesToDisplay(2);
+    mRandomTimeMinZSlider.setRange(0.03, 5.0, 0.01);
     mRandomTimeMinZSlider.onValueChange = [this] {
         auto const timeMin{ mRandomTimeMinZSlider.getValue() };
         auto const timeMax{ mRandomTimeMaxZSlider.getValue() };
@@ -533,8 +533,8 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mRandomTimeMinZSlider.setValue(eleRandomTimeMin, juce::dontSendNotification);
 
     addAndMakeVisible(&mRandomTimeMaxZSlider);
-    mRandomTimeMaxZSlider.setNumDecimalPlacesToDisplay(2);
-    mRandomTimeMaxZSlider.setRange(0.03, 5.0);
+    mRandomTimeMaxZSlider.setDefaultNumDecimalPlacesToDisplay(2);
+    mRandomTimeMaxZSlider.setRange(0.03, 5.0, 0.01);
     mRandomTimeMaxZSlider.onValueChange = [this] {
         auto const timeMin{ mRandomTimeMinZSlider.getValue() };
         auto const timeMax{ mRandomTimeMaxZSlider.getValue() };
