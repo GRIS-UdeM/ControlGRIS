@@ -32,7 +32,6 @@ namespace gris
 //==============================================================================
 class SectionAbstractTrajectories final
     : public juce::Component
-    , private juce::TextEditor::Listener
 {
 public:
     //==============================================================================
@@ -158,7 +157,6 @@ public:
     SectionAbstractTrajectories & operator=(SectionAbstractTrajectories &&) = delete;
     //==============================================================================
     void mouseDown(juce::MouseEvent const & event) override;
-    void textEditorFocusLost(juce::TextEditor & textEd) override;
     void paint(juce::Graphics &) override;
     void resized() override;
 
