@@ -719,12 +719,6 @@ void SectionAbstractTrajectories::mouseDown(juce::MouseEvent const & event)
 }
 
 //==============================================================================
-void SectionAbstractTrajectories::textEditorFocusLost(juce::TextEditor & textEd)
-{
-    textEditorReturnKeyPressed(textEd);
-}
-
-//==============================================================================
 void SectionAbstractTrajectories::paint(juce::Graphics & g)
 {
     if (mSpatMode == SpatMode::cube) {

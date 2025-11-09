@@ -24,6 +24,7 @@
 
 #include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_constants.hpp"
+#include "cg_TextEditor.h"
 #include <Data/StrongTypes/sg_SourceIndex.hpp>
 
 namespace gris
@@ -54,16 +55,16 @@ private:
     juce::ComboBox mOscFormatCombo;
 
     juce::Label mOscPortLabel;
-    juce::TextEditor mOscPortEditor;
+    TextEd mOscPortEditor;
 
     juce::Label mOscAddressLabel;
-    juce::TextEditor mOscAddressEditor;
+    TextEd mOscAddressEditor;
 
     juce::Label mNumOfSourcesLabel;
-    juce::TextEditor mNumOfSourcesEditor;
+    TextEd mNumOfSourcesEditor;
 
     juce::Label mFirstSourceIdLabel;
-    juce::TextEditor mFirstSourceIdEditor;
+    TextEd mFirstSourceIdEditor;
 
     juce::ToggleButton mPositionActivateButton;
 

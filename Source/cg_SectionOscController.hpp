@@ -23,13 +23,13 @@
 #include <JuceHeader.h>
 
 #include "cg_ControlGrisLookAndFeel.hpp"
+#include "cg_TextEditor.h"
 
 namespace gris
 {
 //==============================================================================
 class SectionOscController final
     : public juce::Component
-    , public juce::TextEditor::Listener
 {
 public:
     struct Listener {
@@ -50,12 +50,12 @@ private:
     juce::ToggleButton mOscSendToggle{};
 
     juce::Label mOscOutputPluginIdLabel{};
-    juce::TextEditor mOscOutputPluginIdEditor{};
+    TextEd mOscOutputPluginIdEditor{};
 
-    juce::TextEditor mOscReceiveIpEditor{};
-    juce::TextEditor mOscReceivePortEditor{};
-    juce::TextEditor mOscSendIpEditor{};
-    juce::TextEditor mOscSendPortEditor{};
+    TextEd mOscReceiveIpEditor{};
+    TextEd mOscReceivePortEditor{};
+    TextEd mOscSendIpEditor{};
+    TextEd mOscSendPortEditor{};
 
     int mLastOscReceivePort{ 9000 };
     int mLastOscSendPort{ 8000 };
@@ -74,7 +74,6 @@ public:
     SectionOscController & operator=(SectionOscController const &) = delete;
     SectionOscController & operator=(SectionOscController &&) = delete;
     //==============================================================================
-    void textEditorReturnKeyPressed([[maybe_unused]] juce::TextEditor & editor) override { unfocusAllComponents(); }
     void resized() override;
 
     void setOscOutputPluginId(int const id) { mOscOutputPluginIdEditor.setText(juce::String(id)); }

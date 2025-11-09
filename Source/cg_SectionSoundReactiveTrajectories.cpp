@@ -303,11 +303,15 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
 
     // lap textEditor
     addAndMakeVisible(&mParameterLapEditor);
+    mParameterLapEditor.setLookAndFeel(&mGrisLookAndFeel);
     mParameterLapEditor.setFont(grisLookAndFeel.getFont());
     mParameterLapEditor.setInputRestrictions(2, "1234567890");
     mParameterLapEditor.setText("1");
     mParameterLapEditor.setJustification(juce::Justification::centred);
+    mParameterLapEditor.onEscapeKey = [this] { mParameterLapEditor.resetCurrentText(); };
     mParameterLapEditor.onFocusLost = [this] {
+        mParameterLapEditor.stopEditing();
+        mParameterLapEditor.moveCaretToEnd();
         auto descriptor = DescriptorID::invalid;
         std::optional<std::reference_wrapper<SpatialParameter>> usedParam;
 
@@ -349,10 +353,10 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         default:
             break;
         }
+        unfocusAllComponents();
     };
     mParameterLapEditor.onReturnKey = [this] {
-        mSpatMode == SpatMode::dome ? mParameterAzimuthButton.grabKeyboardFocus()
-                                    : mParameterXButton.grabKeyboardFocus();
+        mParameterLapEditor.onFocusLost();
     };
 
     addAndMakeVisible(&mParameterAzimuthButton);
