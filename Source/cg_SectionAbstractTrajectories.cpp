@@ -80,17 +80,21 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     addAndMakeVisible(&mDurationLabel);
 
     addAndMakeVisible(&mDurationEditor);
+    mDurationEditor.setLookAndFeel(&mGrisLookAndFeel);
     mDurationEditor.setFont(mGrisLookAndFeel.getFont());
     mDurationEditor.setTextToShowWhenEmpty("1", juce::Colours::white);
     mDurationEditor.setText("5", false);
     mDurationEditor.setInputRestrictions(10, "0123456789.");
-    mDurationEditor.onReturnKey = [this] { mDurationUnitCombo.grabKeyboardFocus(); };
+    mDurationEditor.onReturnKey = [this] { mDurationEditor.onFocusLost(); };
+    mDurationEditor.onEscapeKey = [this] { mDurationEditor.resetCurrentText(); };
     mDurationEditor.onFocusLost = [this] {
+        mDurationEditor.stopEditing();
+        mDurationEditor.moveCaretToEnd();
         mListeners.call([&](Listener & l) {
             l.trajectoryCycleDurationChangedCallback(mDurationEditor.getText().getDoubleValue(),
                                                      mDurationUnitCombo.getSelectedId());
         });
-        mDurationUnitCombo.grabKeyboardFocus();
+        unfocusAllComponents();
     };
 
     addAndMakeVisible(&mDurationUnitCombo);
@@ -188,16 +192,20 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     addAndMakeVisible(&mDampeningLabel2ndLine);
 
     addAndMakeVisible(&mPositionDampeningEditor);
+    mPositionDampeningEditor.setLookAndFeel(&mGrisLookAndFeel);
     mPositionDampeningEditor.setFont(mGrisLookAndFeel.getFont());
     mPositionDampeningEditor.setTextToShowWhenEmpty("0", juce::Colours::white);
     mPositionDampeningEditor.setText("0", false);
     mPositionDampeningEditor.setInputRestrictions(10, "0123456789");
-    mPositionDampeningEditor.onReturnKey = [this] { mDurationUnitCombo.grabKeyboardFocus(); };
+    mPositionDampeningEditor.onReturnKey = [this] { mPositionDampeningEditor.onFocusLost(); };
+    mPositionDampeningEditor.onEscapeKey = [this] { mPositionDampeningEditor.resetCurrentText(); };
     mPositionDampeningEditor.onFocusLost = [this] {
+        mPositionDampeningEditor.stopEditing();
+        mPositionDampeningEditor.moveCaretToEnd();
         mListeners.call([&](Listener & l) {
             l.positionTrajectoryDampeningCyclesChangedCallback(mPositionDampeningEditor.getText().getIntValue());
         });
-        mDurationUnitCombo.grabKeyboardFocus();
+        unfocusAllComponents();
     };
 
     mDeviationLabel.setText("Deviation degrees", juce::NotificationType::dontSendNotification);
@@ -206,17 +214,21 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     addAndMakeVisible(&mDeviationLabel2ndLine);
 
     addAndMakeVisible(&mDeviationEditor);
+    mDeviationEditor.setLookAndFeel(&mGrisLookAndFeel);
     mDeviationEditor.setFont(mGrisLookAndFeel.getFont());
     mDeviationEditor.setTextToShowWhenEmpty("0", juce::Colours::white);
     mDeviationEditor.setText("0", false);
     mDeviationEditor.setInputRestrictions(10, "-0123456789.");
-    mDeviationEditor.onReturnKey = [this] { mDurationUnitCombo.grabKeyboardFocus(); };
+    mDeviationEditor.onReturnKey = [this] { mDeviationEditor.onFocusLost(); };
+    mDeviationEditor.onEscapeKey = [this] { mDeviationEditor.resetCurrentText(); };
     mDeviationEditor.onFocusLost = [this] {
+        mDeviationEditor.stopEditing();
+        mDeviationEditor.moveCaretToEnd();
         mListeners.call([&](Listener & l) {
             l.trajectoryDeviationPerCycleChangedCallback(std::fmod(mDeviationEditor.getText().getFloatValue(), 360.0f));
         });
         mDeviationEditor.setText(juce::String(std::fmod(mDeviationEditor.getText().getFloatValue(), 360.0)));
-        mDurationUnitCombo.grabKeyboardFocus();
+        unfocusAllComponents();
     };
 
     mElevationActivateButton.addShortcut(juce::KeyPress('a', juce::ModifierKeys::shiftModifier, 0));
@@ -242,16 +254,20 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     addAndMakeVisible(&mElevationBackAndForthToggle);
 
     addAndMakeVisible(&mElevationDampeningEditor);
+    mElevationDampeningEditor.setLookAndFeel(&mGrisLookAndFeel);
     mElevationDampeningEditor.setFont(mGrisLookAndFeel.getFont());
     mElevationDampeningEditor.setTextToShowWhenEmpty("0", juce::Colours::white);
     mElevationDampeningEditor.setText("0", false);
     mElevationDampeningEditor.setInputRestrictions(10, "0123456789");
-    mElevationDampeningEditor.onReturnKey = [this] { mDurationUnitCombo.grabKeyboardFocus(); };
+    mElevationDampeningEditor.onReturnKey = [this] { mElevationDampeningEditor.onFocusLost(); };
+    mElevationDampeningEditor.onEscapeKey = [this] { mElevationDampeningEditor.resetCurrentText(); };
     mElevationDampeningEditor.onFocusLost = [this] {
+        mElevationDampeningEditor.stopEditing();
+        mElevationDampeningEditor.moveCaretToEnd();
         mListeners.call([&](Listener & l) {
             l.elevationTrajectoryDampeningCyclesChangedCallback(mElevationDampeningEditor.getText().getIntValue());
         });
-        mDurationUnitCombo.grabKeyboardFocus();
+        unfocusAllComponents();
     };
 
     mRandomXYLabel.setText("Random", juce::dontSendNotification);

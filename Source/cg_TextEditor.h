@@ -34,16 +34,23 @@ public:
     //==============================================================================
     TextEd() = default;
     ~TextEd() override = default;
+    //==============================================================================
+    TextEd(TextEd const &) = delete;
+    TextEd(TextEd &&) = delete;
+    TextEd & operator=(TextEd const &) = delete;
+    TextEd & operator=(TextEd &&) = delete;
 
     void mouseDown(const juce::MouseEvent & event) override;
     void mouseDrag(const juce::MouseEvent & event) override;
     void mouseDoubleClick(const juce::MouseEvent & event) override;
 
     void stopEditing();
+    void resetCurrentText();
 
 private:
     //==============================================================================
     bool mIsCurrentlyEditing{};
+    juce::String mCurrentText;
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(TextEd)
