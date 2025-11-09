@@ -65,7 +65,7 @@ private:
     juce::Point<float> mMouseScreenPos;
     bool mIsFineDragging{};
     int mMouseDiffFromStartY{};
-    float mIncrementBuffer{};
+    double mIncrementBuffer{};
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(NumSlider)

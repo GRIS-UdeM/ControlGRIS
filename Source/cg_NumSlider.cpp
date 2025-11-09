@@ -186,7 +186,7 @@ void NumSlider::mouseUp(const juce::MouseEvent & event)
 }
 
 //==============================================================================
-void NumSlider::mouseDoubleClick(const juce::MouseEvent & event)
+void NumSlider::mouseDoubleClick(const juce::MouseEvent & /*event*/)
 {
     auto sliderEditor{ std::make_unique<juce::TextEditor>("SliderEditor") };
     sliderEditor->setLookAndFeel(&mGrisLookAndFeel);
