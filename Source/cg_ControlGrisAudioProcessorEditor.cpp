@@ -717,9 +717,15 @@ void ControlGrisAudioProcessorEditor::speakerSetupSelectedCallback(const juce::F
         for (const auto & curSpeakerOrGroup : mainSpeakerGroup) {
             if (curSpeakerOrGroup.getType().toString() == "SPEAKER_GROUP") {
                 for (auto curSpeakerInGroup : curSpeakerOrGroup)
-                    convertCartesianSpeakerPositionToSourcePosition(curSpeakerInGroup, ++sourceCount, savedSpatMode, presetXml);
+                    convertCartesianSpeakerPositionToSourcePosition(curSpeakerInGroup,
+                                                                    ++sourceCount,
+                                                                    savedSpatMode,
+                                                                    presetXml);
             } else {
-                convertCartesianSpeakerPositionToSourcePosition(curSpeakerOrGroup, ++sourceCount, savedSpatMode, presetXml);
+                convertCartesianSpeakerPositionToSourcePosition(curSpeakerOrGroup,
+                                                                ++sourceCount,
+                                                                savedSpatMode,
+                                                                presetXml);
             }
         }
     } else {
@@ -775,10 +781,11 @@ void storeXYZSpeakerPositionInPreset(const gris::SpatMode savedSpatMode,
     }
 }
 
-void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePosition(const juce::ValueTree & curSpeaker,
-                                                                                      const int sourceNumber,
-                                                                                      const gris::SpatMode savedSpatMode,
-                                                                                      juce::XmlElement & presetXml)
+void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePosition(
+    const juce::ValueTree & curSpeaker,
+    const int sourceNumber,
+    const gris::SpatMode savedSpatMode,
+    juce::XmlElement & presetXml)
 {
     // Parse speakerPosition string of the form "(-1, 8.74228e-08, -4.37114e-08)"
     auto const extractPositionFromString = [](juce::String const & positionStr) -> std::tuple<float, float, float> {
@@ -818,12 +825,7 @@ void ControlGrisAudioProcessorEditor::convertCartesianSpeakerPositionToSourcePos
         speakerZ = groupZ + rotatedVector[2];
     }
 
-    storeXYZSpeakerPositionInPreset(savedSpatMode,
-                                    speakerX,
-                                    speakerY,
-                                    speakerZ,
-                                    presetXml,
-                                    juce::String (sourceNumber));
+    storeXYZSpeakerPositionInPreset(savedSpatMode, speakerX, speakerY, speakerZ, presetXml, juce::String(sourceNumber));
 }
 
 void ControlGrisAudioProcessorEditor::convertSpeakerPositionToSourcePosition(juce::ValueTree & curSpeaker,
@@ -837,12 +839,7 @@ void ControlGrisAudioProcessorEditor::convertSpeakerPositionToSourcePosition(juc
     auto const speakerY = static_cast<float>(speakerPosition["Y"]);
     auto const speakerZ = static_cast<float>(speakerPosition["Z"]);
 
-    storeXYZSpeakerPositionInPreset(savedSpatMode,
-                                    speakerX,
-                                    speakerY,
-                                    speakerZ,
-                                    presetXml,
-                                    juce::String(sourceNumber));
+    storeXYZSpeakerPositionInPreset(savedSpatMode, speakerX, speakerY, speakerZ, presetXml, juce::String(sourceNumber));
 }
 
 //==============================================================================

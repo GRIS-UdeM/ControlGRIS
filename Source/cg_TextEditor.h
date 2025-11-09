@@ -27,8 +27,7 @@ namespace gris
 class GrisLookAndFeel;
 
 //==============================================================================
-class TextEd
-    : public juce::TextEditor
+class TextEd : public juce::TextEditor
 {
 public:
     //==============================================================================
