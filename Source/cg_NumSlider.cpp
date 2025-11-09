@@ -136,7 +136,7 @@ void NumSlider::mouseDrag(const juce::MouseEvent & event)
     const auto range{ getRange() };
     const auto smallestSliderVal{ std::pow(10, -1 * (getNumDecimalPlacesToDisplay())) };
     const auto increment{ isShiftDown ? smallestSliderVal * 0.1f * std::abs(mouseDiffDragY)
-                                    : range.getLength() / 100 * std::abs(mouseDiffDragY) };
+                                      : range.getLength() / 100 * std::abs(mouseDiffDragY) };
 
     if (!isShiftDown && mIsFineDragging) {
         stopFineClickDragging(event);

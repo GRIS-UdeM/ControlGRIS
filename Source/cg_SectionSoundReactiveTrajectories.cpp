@@ -355,9 +355,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
         unfocusAllComponents();
     };
-    mParameterLapEditor.onReturnKey = [this] {
-        mParameterLapEditor.onFocusLost();
-    };
+    mParameterLapEditor.onReturnKey = [this] { mParameterLapEditor.onFocusLost(); };
 
     addAndMakeVisible(&mParameterAzimuthButton);
     mParameterAzimuthButton.setButtonText("Azimuth");

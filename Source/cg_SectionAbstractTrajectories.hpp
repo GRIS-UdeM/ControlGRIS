@@ -30,8 +30,7 @@
 namespace gris
 {
 //==============================================================================
-class SectionAbstractTrajectories final
-    : public juce::Component
+class SectionAbstractTrajectories final : public juce::Component
 {
 public:
     //==============================================================================
