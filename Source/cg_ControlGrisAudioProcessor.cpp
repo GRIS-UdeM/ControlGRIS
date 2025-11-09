@@ -344,7 +344,7 @@ void ControlGrisAudioProcessor::setSpatMode(SpatMode const spatMode)
         // remove cube-specific gadgets
         mElevationSourceLinkEnforcer.setSourceLink(ElevationSourceLink::independent,
                                                    SourceLinkEnforcer::OriginOfChange::automation);
-        for (auto& source : mSources) {
+        for (auto & source : mSources) {
             // make sure source position is clipped to Dome limits when switching from Cube to Dome
             source.setPosition(source.getPos(), Source::OriginOfChange::userAnchorMove);
         }

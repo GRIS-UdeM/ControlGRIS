@@ -28,8 +28,7 @@
 namespace gris
 {
 //==============================================================================
-class SectionOscController final
-    : public juce::Component
+class SectionOscController final : public juce::Component
 {
 public:
     struct Listener {

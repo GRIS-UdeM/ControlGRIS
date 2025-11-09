@@ -52,7 +52,6 @@ void TextEd::mouseDoubleClick(const juce::MouseEvent & event)
     selectAll();
 }
 
-
 //==============================================================================
 void TextEd::stopEditing()
 {
