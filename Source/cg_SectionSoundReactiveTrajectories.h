@@ -28,6 +28,7 @@
 #include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_NumSlider.h"
+#include "cg_TextEditor.h"
 #include "cg_constants.hpp"
 
 namespace gris
@@ -128,7 +129,7 @@ private:
     NumSlider mParameterEleZSpanOffsetSlider;
 
     juce::Label mParameterLapLabel;
-    juce::TextEditor mParameterLapEditor;
+    TextEd mParameterLapEditor;
 
     juce::TextButton mAudioAnalysisActivateButton;
 

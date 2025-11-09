@@ -28,12 +28,15 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
     mOscOutputPluginIdLabel.setText("OSC plugin ID:", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&mOscOutputPluginIdLabel);
 
+    mOscOutputPluginIdEditor.setLookAndFeel(&mGrisLookAndFeel);
     mOscOutputPluginIdEditor.setFont(grisLookAndFeel.getFont());
     mOscOutputPluginIdEditor.setText(juce::String(1));
     mOscOutputPluginIdEditor.setInputRestrictions(3, "0123456789");
-    mOscOutputPluginIdEditor.addListener(this);
-    mOscOutputPluginIdEditor.onReturnKey = [this] { this->grabKeyboardFocus(); };
+    mOscOutputPluginIdEditor.onReturnKey = [this] { mOscOutputPluginIdEditor.onFocusLost(); };
+    mOscOutputPluginIdEditor.onEscapeKey = [this] { mOscOutputPluginIdEditor.resetCurrentText(); };
     mOscOutputPluginIdEditor.onFocusLost = [this] {
+        mOscOutputPluginIdEditor.stopEditing();
+        mOscOutputPluginIdEditor.moveCaretToEnd();
         if (!mOscOutputPluginIdEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {
                 l.oscOutputPluginIdChangedCallback(mOscOutputPluginIdEditor.getText().getIntValue());
@@ -44,6 +47,7 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
                 mOscOutputPluginIdEditor.setText(juce::String(1));
             });
         }
+        unfocusAllComponents();
     };
 
     addAndMakeVisible(&mOscOutputPluginIdEditor);
@@ -68,18 +72,22 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
         });
     };
 
+    mOscReceiveIpEditor.setLookAndFeel(&mGrisLookAndFeel);
     mOscReceiveIpEditor.setFont(grisLookAndFeel.getFont());
     mOscReceiveIpEditor.setText(juce::IPAddress::getLocalAddress().toString());
     // mOscReceiveIpEditor.setText("127.0.0.1");
     mOscReceiveIpEditor.setReadOnly(true);
     addAndMakeVisible(&mOscReceiveIpEditor);
 
+    mOscReceivePortEditor.setLookAndFeel(&mGrisLookAndFeel);
     mOscReceivePortEditor.setFont(grisLookAndFeel.getFont());
     mOscReceivePortEditor.setText(juce::String(mLastOscReceivePort));
     mOscReceivePortEditor.setInputRestrictions(5, "0123456789");
-    mOscReceivePortEditor.addListener(this);
-    mOscReceivePortEditor.onReturnKey = [this] { this->grabKeyboardFocus(); };
+    mOscReceivePortEditor.onReturnKey = [this] { mOscReceivePortEditor.onFocusLost(); };
+    mOscReceivePortEditor.onEscapeKey = [this] { mOscReceivePortEditor.resetCurrentText(); };
     mOscReceivePortEditor.onFocusLost = [this] {
+        mOscReceivePortEditor.stopEditing();
+        mOscReceivePortEditor.moveCaretToEnd();
         if (!mOscReceivePortEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {
                 l.oscInputConnectionChangedCallback(mOscReceiveToggle.getToggleState(),
@@ -91,17 +99,21 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
                 mOscReceivePortEditor.setText(juce::String(mLastOscReceivePort));
             });
         }
+        unfocusAllComponents();
     };
 
     addAndMakeVisible(&mOscReceivePortEditor);
 
     mLastOscSendAddress = juce::String("192.168.1.100");
+    mOscSendIpEditor.setLookAndFeel(&mGrisLookAndFeel);
     mOscSendIpEditor.setFont(grisLookAndFeel.getFont());
     mOscSendIpEditor.setText(mLastOscSendAddress);
     mOscSendIpEditor.setInputRestrictions(16, ".0123456789");
-    mOscSendIpEditor.addListener(this);
-    mOscSendIpEditor.onReturnKey = [this] { this->grabKeyboardFocus(); };
+    mOscSendIpEditor.onReturnKey = [this] { mOscSendIpEditor.onFocusLost(); };
+    mOscSendIpEditor.onEscapeKey = [this] { mOscSendIpEditor.resetCurrentText(); };
     mOscSendIpEditor.onFocusLost = [this] {
+        mOscSendIpEditor.stopEditing();
+        mOscSendIpEditor.moveCaretToEnd();
         if (!mOscSendIpEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {
                 l.oscOutputConnectionChangedCallback(mOscSendToggle.getToggleState(),
@@ -116,16 +128,20 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
                 mOscSendIpEditor.setText(juce::String(mLastOscSendAddress));
             });
         }
+        unfocusAllComponents();
     };
 
     addAndMakeVisible(&mOscSendIpEditor);
 
+    mOscSendPortEditor.setLookAndFeel(&mGrisLookAndFeel);
     mOscSendPortEditor.setFont(grisLookAndFeel.getFont());
     mOscSendPortEditor.setText(juce::String(mLastOscSendPort));
     mOscSendPortEditor.setInputRestrictions(5, "0123456789");
-    mOscSendPortEditor.addListener(this);
-    mOscSendPortEditor.onReturnKey = [this] { this->grabKeyboardFocus(); };
+    mOscSendPortEditor.onReturnKey = [this] { mOscSendPortEditor.onFocusLost(); };
+    mOscSendPortEditor.onEscapeKey = [this] { mOscSendPortEditor.resetCurrentText(); };
     mOscSendPortEditor.onFocusLost = [this] {
+        mOscSendPortEditor.stopEditing();
+        mOscSendPortEditor.moveCaretToEnd();
         if (!mOscSendPortEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {
                 l.oscOutputConnectionChangedCallback(mOscSendToggle.getToggleState(),
@@ -140,6 +156,7 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
                 mOscSendPortEditor.setText(juce::String(mLastOscSendPort));
             });
         }
+        unfocusAllComponents();
     };
 
     addAndMakeVisible(&mOscSendPortEditor);
