@@ -26,13 +26,14 @@ namespace gris
 void TextEd::mouseDown(const juce::MouseEvent & event)
 {
     // Prevent simple clicks from starting edit mode
-    if (event.getNumberOfClicks() == 1 && !mIsCurrentlyEditing) {
+    if ((event.getNumberOfClicks() == 1 && !mIsCurrentlyEditing) || isReadOnly()) {
         unfocusAllComponents();
         return;
     }
 
     // double-click
     mIsCurrentlyEditing = true;
+    mCurrentText = getText();
     juce::TextEditor::mouseDown(event);
 }
 
@@ -43,8 +44,6 @@ void TextEd::mouseDrag(const juce::MouseEvent & event)
         juce::TextEditor::mouseDrag(event);
         return;
     }
-
-    unfocusAllComponents();
 }
 
 //==============================================================================
@@ -58,6 +57,15 @@ void TextEd::mouseDoubleClick(const juce::MouseEvent & event)
 void TextEd::stopEditing()
 {
     mIsCurrentlyEditing = false;
+}
+
+//==============================================================================
+void TextEd::resetCurrentText()
+{
+    setText(mCurrentText);
+    mCurrentText.clear();
+    stopEditing();
+    unfocusAllComponents();
 }
 
 } // namespace gris

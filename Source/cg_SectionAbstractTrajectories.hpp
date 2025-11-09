@@ -24,6 +24,7 @@
 
 #include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_NumSlider.h"
+#include "cg_TextEditor.h"
 #include "cg_constants.hpp"
 
 namespace gris
@@ -95,15 +96,15 @@ private:
 
     juce::Label mDampeningLabel;
     juce::Label mDampeningLabel2ndLine;
-    juce::TextEditor mPositionDampeningEditor;
-    juce::TextEditor mElevationDampeningEditor;
+    TextEd mPositionDampeningEditor;
+    TextEd mElevationDampeningEditor;
 
     juce::Label mDeviationLabel;
     juce::Label mDeviationLabel2ndLine;
-    juce::TextEditor mDeviationEditor;
+    TextEd mDeviationEditor;
 
     juce::Label mDurationLabel;
-    juce::TextEditor mDurationEditor;
+    TextEd mDurationEditor;
     juce::ComboBox mDurationUnitCombo;
 
     juce::Label mCycleSpeedLabel;
