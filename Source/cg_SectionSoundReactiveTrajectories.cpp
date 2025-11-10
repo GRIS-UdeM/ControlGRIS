@@ -127,7 +127,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
               }
           };
 
-    setName("Sound Reactive Trajectories");
+    setName("Sound Reactive");
 
     mXYParamLinked = mAudioProcessor.getXYParamLink();
 
