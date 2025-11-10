@@ -119,6 +119,10 @@
         <FILE id="XbxMpG" name="cg_NumSlider.cpp" compile="1" resource="0"
               file="Source/cg_NumSlider.cpp"/>
         <FILE id="Q07Drf" name="cg_NumSlider.h" compile="0" resource="0" file="Source/cg_NumSlider.h"/>
+        <FILE id="ea4JnT" name="cg_TextEditor.cpp" compile="1" resource="0"
+              file="Source/cg_TextEditor.cpp"/>
+        <FILE id="pWr7bJ" name="cg_TextEditor.hpp" compile="0" resource="0"
+              file="Source/cg_TextEditor.hpp"/>
         <FILE id="HI1dem" name="cg_SectionGeneralSettings.cpp" compile="1"
               resource="0" file="Source/cg_SectionGeneralSettings.cpp"/>
         <FILE id="qBqct9" name="cg_SectionGeneralSettings.hpp" compile="0"

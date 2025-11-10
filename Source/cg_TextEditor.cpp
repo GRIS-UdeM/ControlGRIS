@@ -18,7 +18,7 @@
  * <https://www.gnu.org/licenses/>.                                       *
  *************************************************************************/
 
-#include "cg_TextEditor.h"
+#include "cg_TextEditor.hpp"
 
 namespace gris
 {
