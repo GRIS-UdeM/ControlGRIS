@@ -23,7 +23,7 @@
 #include <JuceHeader.h>
 
 #include "cg_ControlGrisLookAndFeel.hpp"
-#include "cg_TextEditor.h"
+#include "cg_TextEditor.hpp"
 #include "cg_constants.hpp"
 #include <Data/StrongTypes/sg_SourceIndex.hpp>
 

@@ -24,7 +24,7 @@
 
 #include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_NumSlider.h"
-#include "cg_TextEditor.h"
+#include "cg_TextEditor.hpp"
 #include "cg_constants.hpp"
 
 namespace gris
