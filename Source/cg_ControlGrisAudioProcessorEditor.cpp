@@ -157,7 +157,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
                                   bg,
                                   &mSectionSoundReactiveTrajectories,
                                   false);
-    mTrajectoriesComponent.addTab("Abstract Trajectories", bg, &mSectionAbstractTrajectories, false);
+    mTrajectoriesComponent.addTab("Abstract", bg, &mSectionAbstractTrajectories, false);
     addAndMakeVisible(mTrajectoriesComponent);
 
     mPositionPresetComponent.setLookAndFeel(&mGrisLookAndFeel);
