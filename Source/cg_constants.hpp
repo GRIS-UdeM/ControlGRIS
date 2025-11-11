@@ -27,6 +27,9 @@ namespace gris
 //==============================================================================
 // Global variables.
 constexpr int MIN_FIELD_WIDTH = 300;
+constexpr int MIN_MAIN_COMPONENT_HEIGHT = 700;
+constexpr int PRESET_VIEWPORT_WIDTH = 50;
+constexpr int SCROLLBAR_WIDTH = 10;
 
 constexpr int NUMBER_OF_POSITION_PRESETS = 50;
 constexpr float SOURCE_FIELD_COMPONENT_RADIUS = 12.0f;

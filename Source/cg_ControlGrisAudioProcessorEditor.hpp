@@ -57,6 +57,7 @@ public:
 class ControlGrisAudioProcessorEditor final
     : public juce::AudioProcessorEditor
     , private juce::Value::Listener
+    , private juce::ScrollBar::Listener
     , public FieldComponent::Listener
     , public SectionSourceSpan::Listener
     , public SectionGeneralSettings::Listener
@@ -75,6 +76,9 @@ private:
 
     PositionTrajectoryManager & mPositionTrajectoryManager;
     ElevationTrajectoryManager & mElevationTrajectoryManager;
+
+    juce::Viewport mMainWindowViewport;
+    juce::Component mMainAudioProcessorEditorComponent;
 
     BannerComponent mMainBanner;
     BannerComponent mElevationBanner;
@@ -128,6 +132,7 @@ public:
     void paint(juce::Graphics &) override;
     void resized() override;
     void valueChanged(juce::Value &) override;
+    void scrollBarMoved(juce::ScrollBar * scrollBarThatHasMoved, double newRangeStart) override;
 
     // FieldComponent::Listeners
     void fieldSourcePositionChangedCallback(SourceIndex sourceIndex, int whichField) override;

@@ -65,6 +65,9 @@ GrisLookAndFeel::GrisLookAndFeel()
     setColour(juce::AlertWindow::textColourId, this->mLightColor);
     setColour(juce::ToggleButton::textColourId, this->mLightColor);
     setColour(juce::Label::textColourId, this->mLightColor);
+    setColour(juce::ScrollBar::thumbColourId, mWinBackgroundAndFieldColor);
+    setColour(juce::ScrollBar::backgroundColourId, this->mDarkColor);
+    setColour(juce::ScrollBar::trackColourId, this->mDarkColor);
 
 #if JUCE_WINDOWS
     mFontSize = 11.0f;
