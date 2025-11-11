@@ -1800,6 +1800,12 @@ void ControlGrisAudioProcessor::processParameterValues()
             pSource.setDistance(juce::jmin(1.0f, pSource.getDistance()), originOfChange);
             pSource.setAzimuth(Radians{ Degrees{ aziDeg - static_cast<float>(mXCubeValue) } }, originOfChange);
         } else {
+            if (mShouldResetXCubeValue) {
+                // Needed in Cube mode when unlinking XY parameters and resetting the offset slider value to 0
+                mXCubeValue = 0.0;
+                mShouldResetXCubeValue = false;
+            }
+
             // X, Y
             auto descX = static_cast<float>(mXCubeValue);
             auto descY = static_cast<float>(-1.0 * mYCubeValue); // Y is inverted in GUI
@@ -1920,6 +1926,7 @@ void ControlGrisAudioProcessor::setXYParamLink(bool isXYParamLinked)
     mXYParamLinked = isXYParamLinked;
     mXCube.setActingLikeAzimuth(mXYParamLinked);
     mAudioProcessorValueTreeState.state.setProperty("XYParamLinked", mXYParamLinked, nullptr);
+    mShouldResetXCubeValue = true;
 }
 
 //==============================================================================
