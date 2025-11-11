@@ -1017,19 +1017,19 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mParameterAzimuthXOffsetSlider.setValue(0.0, juce::dontSendNotification);
 
     addAndMakeVisible(&mParameterElevationZOffsetSlider);
-    mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+    mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
     mParameterElevationZOffsetSlider.setValue(0.0, juce::dontSendNotification);
 
     addAndMakeVisible(&mParameterYOffsetSlider);
-    mParameterYOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+    mParameterYOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
     mParameterYOffsetSlider.setValue(0.0, juce::dontSendNotification);
 
     addAndMakeVisible(&mParameterAziXYSpanOffsetSlider);
-    mParameterAziXYSpanOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+    mParameterAziXYSpanOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
     mParameterAziXYSpanOffsetSlider.setValue(0.0, juce::dontSendNotification);
 
     addAndMakeVisible(&mParameterEleZSpanOffsetSlider);
-    mParameterEleZSpanOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+    mParameterEleZSpanOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
     mParameterEleZSpanOffsetSlider.setValue(0.0, juce::dontSendNotification);
 
     addAndMakeVisible(&mAudioAnalysisActivateButton);
@@ -1723,7 +1723,7 @@ void gris::SectionSoundReactiveTrajectories::mouseDown(juce::MouseEvent const & 
         if (mXYParamLinked) {
             mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
         } else {
-            mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+            mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
             mParameterAzimuthXOffsetSlider.setValue(0.0);
         }
         mParameterAzimuthXOffsetSlider.onValueChange();
@@ -1937,7 +1937,7 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
     if (mSpatMode == SpatMode::dome) {
         mParameterAzimuthOrXYSpanButton.setButtonText("Azimuth Span");
         mParameterElevationOrZSpanButton.setButtonText("Elevation Span");
-        mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+        mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
         mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
         mParameterYOffsetSlider.setVisible(false);
 
@@ -1994,12 +1994,12 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
     } else {
         mParameterAzimuthOrXYSpanButton.setButtonText("X-Y Span");
         mParameterElevationOrZSpanButton.setButtonText("Z Span");
-        mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+        mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
         mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
         mXYParamLinked
             ? mParameterAzimuthXOffsetSlider.setNormalisableRange(
                   juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 })
-            : mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+            : mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
 
         updateParameterCombo(mParameterXDescriptorCombo, "LastUsedXDescriptor");
         updateParameterCombo(mParameterYDescriptorCombo, "LastUsedYDescriptor");
