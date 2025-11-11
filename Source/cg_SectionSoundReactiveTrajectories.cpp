@@ -1257,7 +1257,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
 
     addAndMakeVisible(&mDescriptorExpanderSlider);
     addAndMakeVisible(&mDescriptorSmoothSlider);
-    addAndMakeVisible(&mDescriptorSmoothCoefSlider);
+    //addAndMakeVisible(&mDescriptorSmoothCoefSlider);
     addAndMakeVisible(&mDescriptorMinFreqSlider);
     addAndMakeVisible(&mDescriptorMaxFreqSlider);
     addAndMakeVisible(&mDescriptorThresholdSlider);
@@ -1272,7 +1272,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     addAndMakeVisible(&mDescriptorMinTimeLabel);
     addAndMakeVisible(&mDescriptorMaxTimeLabel);
     addAndMakeVisible(&mDescriptorSmoothLabel);
-    addAndMakeVisible(&mDescriptorSmoothCoefLabel);
+    //addAndMakeVisible(&mDescriptorSmoothCoefLabel);
 
     addAndMakeVisible(&mDescriptorMetricCombo);
     mDescriptorMetricCombo.addItemList(ONSET_DETECTION_METRIC_TYPES, 1);

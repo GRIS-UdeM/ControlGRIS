@@ -27,12 +27,13 @@
 
 namespace gris
 {
+constexpr double SMOOTH_COEFFICIENT{ 0.5 };
 //==============================================================================
 class Smooth
 {
 public:
     //==============================================================================
-    double doSmoothing(double targetValue, double smooth, double smoothCoef)
+    double doSmoothing(double targetValue, double smooth, double /*smoothCoef*/)
     {
         smooth = juce::jmap(smooth, 0.0, 100.0, 0.0, 200.0);
         smooth = std::max(1.0, std::min(smooth, 200.0));
@@ -42,14 +43,14 @@ public:
             mStartHistory = false;
             mSmoothHistory = smooth;
         } else {
-            smoothCoef *= 0.01;
-            smoothCoef = 1 - smoothCoef;
-            if (smoothCoef == 0) {
-                smoothCoef = ALMOST_ZERO;
-            }
+            //smoothCoef *= 0.01;
+            //smoothCoef = 1 - smoothCoef;
+            //if (smoothCoef == 0) {
+            //    smoothCoef = ALMOST_ZERO;
+            //}
             double logsmooth = std::log(smooth);
             double normalizedsmooth = 1.0 / logsmooth;
-            double adjustment = (targetValue - mCurrentValue) * (normalizedsmooth * smoothCoef);
+            double adjustment = (targetValue - mCurrentValue) * (normalizedsmooth * SMOOTH_COEFFICIENT);
 
             mCurrentValue += adjustment;
         }
