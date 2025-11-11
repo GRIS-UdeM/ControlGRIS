@@ -1013,7 +1013,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mParameterOffsetLabel.setText("Offset", juce::dontSendNotification);
 
     addAndMakeVisible(&mParameterAzimuthXOffsetSlider);
-    mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+    mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
     mParameterAzimuthXOffsetSlider.setValue(0.0, juce::dontSendNotification);
 
     addAndMakeVisible(&mParameterElevationZOffsetSlider);
@@ -1716,9 +1716,17 @@ void gris::SectionSoundReactiveTrajectories::mouseDown(juce::MouseEvent const & 
 {
     // Area where the XYLinked line is shown.
     juce::Rectangle<float> const xyLinkedLineArea{ 1.0f, 41.0f, 15.0f, 22.0f };
-    if (xyLinkedLineArea.contains(event.getMouseDownPosition().toFloat())) {
+    if (xyLinkedLineArea.contains(event.getMouseDownPosition().toFloat()) && mSpatMode == SpatMode::cube) {
         mXYParamLinked = !mXYParamLinked;
         mAudioProcessor.setXYParamLink(mXYParamLinked);
+
+        if (mXYParamLinked) {
+            mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
+        } else {
+            mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+            mParameterAzimuthXOffsetSlider.setValue(0.0);
+        }
+        mParameterAzimuthXOffsetSlider.onValueChange();
 
         if (mLastUsedParameterCubeButton) {
             auto & param = mLastUsedParameterCubeButton->get();
@@ -1930,6 +1938,7 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
         mParameterAzimuthOrXYSpanButton.setButtonText("Azimuth Span");
         mParameterElevationOrZSpanButton.setButtonText("Elevation Span");
         mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+        mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
         mParameterYOffsetSlider.setVisible(false);
 
         updateParameterCombo(mParameterAzimuthDescriptorCombo, "LastUsedAzimuthDescriptor");
@@ -1986,6 +1995,11 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
         mParameterAzimuthOrXYSpanButton.setButtonText("X-Y Span");
         mParameterElevationOrZSpanButton.setButtonText("Z Span");
         mParameterElevationZOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
+        mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
+        mXYParamLinked
+            ? mParameterAzimuthXOffsetSlider.setNormalisableRange(
+                  juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 })
+            : mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -4.0, 4.0, 0.01 });
 
         updateParameterCombo(mParameterXDescriptorCombo, "LastUsedXDescriptor");
         updateParameterCombo(mParameterYDescriptorCombo, "LastUsedYDescriptor");

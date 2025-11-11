@@ -145,6 +145,7 @@ class ControlGrisAudioProcessor final
     bool mAudioAnalysisActivateState{};
     bool mAudioAnalysisAzimuthSpanFlag{};
     bool mAudioAnalysisElevationSpanFlag{};
+    bool mShouldResetXCubeValue{};
 
     float mSpatParamElevationBuffer{};
     float mSpatParamHSpanBuffer{};
