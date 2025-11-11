@@ -62,18 +62,30 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 
     // Set up the interface.
     //----------------------
+    addAndMakeVisible(&mMainAudioProcessorEditorComponent);
+    mMainAudioProcessorEditorComponent.setLookAndFeel(&mGrisLookAndFeel);
+
+    mMainWindowViewport.setViewedComponent(&mMainAudioProcessorEditorComponent);
+    mMainWindowViewport.setLookAndFeel(&mGrisLookAndFeel);
+    mMainWindowViewport.setScrollBarsShown(true, true, false, false);
+    mMainWindowViewport.setScrollBarPosition(true, true);
+    mMainWindowViewport.getVerticalScrollBar().addListener(this);
+    mMainWindowViewport.getHorizontalScrollBar().addListener(this);
+    mMainWindowViewport.setScrollBarThickness(10);
+    addAndMakeVisible(&mMainWindowViewport);
+
     mMainBanner.setLookAndFeel(&mGrisLookAndFeel);
     mMainBanner.setText("Azimuth - Elevation", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mMainBanner);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mMainBanner);
 
     mElevationBanner.setLookAndFeel(&mGrisLookAndFeel);
     mElevationBanner.setText("Z", juce::dontSendNotification);
-    addAndMakeVisible(&mElevationBanner);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mElevationBanner);
 
     mElevationModeLabel.setEditable(false, false);
     mElevationModeLabel.setText("Mode", juce::dontSendNotification);
     mElevationModeLabel.setJustificationType(juce::Justification::centredRight);
-    addAndMakeVisible(&mElevationModeLabel);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mElevationModeLabel);
 
     mElevationModeCombobox.setLookAndFeel(&mGrisLookAndFeel);
     mElevationModeCombobox.addItemList(ELEVATION_MODE_TYPES, 1);
@@ -86,7 +98,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
         parameter->setValueNotifyingHost(value);
         elevationModeChangedEndedCallback();
     };
-    addAndMakeVisible(&mElevationModeCombobox);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mElevationModeCombobox);
 
     auto const width{ getWidth() - 50 }; // Remove position preset space.
     auto const fieldSize{ std::max(width / 2, MIN_FIELD_WIDTH) };
@@ -102,23 +114,23 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 
     mTrajectoriesBanner.setLookAndFeel(&mGrisLookAndFeel);
     mTrajectoriesBanner.setText("Trajectories", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mTrajectoriesBanner);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mTrajectoriesBanner);
 
     mSettingsBanner.setLookAndFeel(&mGrisLookAndFeel);
     mSettingsBanner.setText("Configuration", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mSettingsBanner);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mSettingsBanner);
 
     mPositionPresetBanner.setLookAndFeel(&mGrisLookAndFeel);
     mPositionPresetBanner.setText("Preset", juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mPositionPresetBanner);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mPositionPresetBanner);
 
     mPositionField.setLookAndFeel(&mGrisLookAndFeel);
     mPositionField.addListener(this);
-    addAndMakeVisible(&mPositionField);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mPositionField);
 
     mElevationField.setLookAndFeel(&mGrisLookAndFeel);
     mElevationField.addListener(this);
-    addAndMakeVisible(&mElevationField);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mElevationField);
 
     mSectionSourceSpan.setLookAndFeel(&mGrisLookAndFeel);
     mSectionSourceSpan.addListener(this);
@@ -131,7 +143,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 
     mSectionSourcePosition.setLookAndFeel(&mGrisLookAndFeel);
     mSectionSourcePosition.addListener(this);
-    addAndMakeVisible(&mSectionSourcePosition);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mSectionSourcePosition);
     mSectionSourcePosition.setPositionSourceLink(mPositionTrajectoryManager.getSourceLink());
     mSectionSourcePosition.setElevationSourceLink(
         static_cast<ElevationSourceLink>(mElevationTrajectoryManager.getSourceLink()));
@@ -147,7 +159,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     mConfigurationComponent.setTabBarDepth(24);
     mConfigurationComponent.addTab("Settings", bg, &mSectionGeneralSettings, false);
     mConfigurationComponent.addTab("Controllers", bg, &mSectionOscController, false);
-    addAndMakeVisible(mConfigurationComponent);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(mConfigurationComponent);
 
     mTrajectoriesComponent.setLookAndFeel(&mGrisLookAndFeel);
     mTrajectoriesComponent.setColour(juce::TabbedComponent::backgroundColourId, bg);
@@ -158,7 +170,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
                                   &mSectionSoundReactiveTrajectories,
                                   false);
     mTrajectoriesComponent.addTab("Abstract", bg, &mSectionAbstractTrajectories, false);
-    addAndMakeVisible(mTrajectoriesComponent);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(mTrajectoriesComponent);
 
     mPositionPresetComponent.setLookAndFeel(&mGrisLookAndFeel);
     mPositionPresetComponent.addListener(this);
@@ -166,11 +178,11 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
 
     mPositionPresetViewport.setViewedComponent(&mPositionPresetComponent);
     mPositionPresetViewport.setScrollBarsShown(false, false, true, true);
-    addAndMakeVisible(&mPositionPresetViewport);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mPositionPresetViewport);
 
     mPositionPresetInfoComponent.setAppVersionLabelText(juce::String("v. ") + JucePlugin_VersionString,
                                                         juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(&mPositionPresetInfoComponent);
+    mMainAudioProcessorEditorComponent.addAndMakeVisible(&mPositionPresetInfoComponent);
 
     // Add sources to the fields.
     //---------------------------
@@ -388,6 +400,27 @@ void ControlGrisAudioProcessorEditor::updateAudioAnalysisNumInputChannels()
 void ControlGrisAudioProcessorEditor::valueChanged(juce::Value &)
 {
     setSize(mLastUiWidth.getValue(), mLastUiHeight.getValue());
+}
+
+void ControlGrisAudioProcessorEditor::scrollBarMoved(juce::ScrollBar * scrollBarThatHasMoved, double newRangeStart)
+{
+    auto horizScrollPos{ mMainWindowViewport.getHorizontalScrollBar().getCurrentRangeStart() };
+    auto vertScrollPos{ mMainWindowViewport.getVerticalScrollBar().getCurrentRangeStart() };
+
+    auto const isVerticalScrollBar{ scrollBarThatHasMoved->isVertical() };
+
+    auto const width{ isVerticalScrollBar ? getWidth() + horizScrollPos - PRESET_VIEWPORT_WIDTH - SCROLLBAR_WIDTH
+                                          : getWidth() - PRESET_VIEWPORT_WIDTH + newRangeStart - SCROLLBAR_WIDTH };
+    auto const height{ isVerticalScrollBar ? getHeight() + newRangeStart : getHeight() + vertScrollPos };
+
+    mPositionPresetViewport.setBounds(width, 20, PRESET_VIEWPORT_WIDTH, height - 20);
+    mPositionPresetBanner.setBounds(width, 0, PRESET_VIEWPORT_WIDTH, 20);
+    mPositionPresetComponent.setBounds(width, 20, PRESET_VIEWPORT_WIDTH, MIN_MAIN_COMPONENT_HEIGHT);
+    mPositionPresetInfoComponent.setBounds(
+        width,
+        juce::jmin(static_cast<double>(MIN_MAIN_COMPONENT_HEIGHT) - 45, height - 45 - SCROLLBAR_WIDTH),
+        PRESET_VIEWPORT_WIDTH,
+        60);
 }
 
 //==============================================================================
@@ -1267,14 +1300,15 @@ void ControlGrisAudioProcessorEditor::paint(juce::Graphics & g)
 //==============================================================================
 void ControlGrisAudioProcessorEditor::resized()
 {
-    auto const width{ getWidth() - 50 }; // Remove position preset space.
-    auto const height{ getHeight() };
-    auto const fieldSize{ std::max(width / 2, MIN_FIELD_WIDTH) };
-    auto preseHeight{ 645 };
+    auto const isVerticalScrollBarVisible{ mMainWindowViewport.getVerticalScrollBar().isVisible() };
+    auto const isHorinzontalScrollBarVisible{ mMainWindowViewport.getHorizontalScrollBar().isVisible() };
 
-    if (height >= 665) {
-        preseHeight = height - 20;
-    }
+    auto const width{ isVerticalScrollBarVisible ? getWidth() - PRESET_VIEWPORT_WIDTH - SCROLLBAR_WIDTH
+                                                 : getWidth() - PRESET_VIEWPORT_WIDTH };
+    auto const height{ isHorinzontalScrollBarVisible ? getHeight() - SCROLLBAR_WIDTH : getHeight() };
+    auto const fieldSize{ std::max(width / 2, MIN_FIELD_WIDTH) };
+    auto const maxHeight{ fieldSize > MIN_FIELD_WIDTH ? MIN_MAIN_COMPONENT_HEIGHT + fieldSize - MIN_FIELD_WIDTH
+                                                      : MIN_MAIN_COMPONENT_HEIGHT };
 
     mMainBanner.setBounds(0, 0, fieldSize, 20);
     mPositionField.setBounds(0, 20, fieldSize, fieldSize);
@@ -1315,10 +1349,18 @@ void ControlGrisAudioProcessorEditor::resized()
     mLastUiWidth = getWidth();
     mLastUiHeight = getHeight();
 
-    mPositionPresetViewport.setBounds(width, 20, 50, height - 20);
-    mPositionPresetBanner.setBounds(width, 0, 50, 20);
-    mPositionPresetComponent.setBounds(width, 20, 50, preseHeight);
-    mPositionPresetInfoComponent.setBounds(width, height - 45, 50, 60);
+    mMainAudioProcessorEditorComponent.setBounds(0, 0, fieldSize * 2 + PRESET_VIEWPORT_WIDTH, maxHeight);
+    mMainWindowViewport.setBounds(0,
+                                  0,
+                                  std::max(getWidth(), MIN_FIELD_WIDTH + 50),
+                                  std::max(getHeight(), MIN_FIELD_WIDTH + 20));
+    mPositionPresetViewport.setBounds(width, 20, PRESET_VIEWPORT_WIDTH, height - 20);
+    mPositionPresetBanner.setBounds(width, 0, PRESET_VIEWPORT_WIDTH, 20);
+    mPositionPresetComponent.setBounds(width, 20, PRESET_VIEWPORT_WIDTH, MIN_MAIN_COMPONENT_HEIGHT);
+    mPositionPresetInfoComponent.setBounds(width,
+                                           std::min(MIN_MAIN_COMPONENT_HEIGHT - 45, height - 45),
+                                           PRESET_VIEWPORT_WIDTH,
+                                           60);
 }
 
 //==============================================================================
