@@ -91,7 +91,7 @@ public:
             const double clip = juce::jlimit(0.0, clipMax, smooth);
             const double inputRange = range * 0.01;
             res = clip * inputRange * multiplier * lap;
-            res += offset * multiplier;
+            res += (offset / 360) * multiplier;
         } else {
             constexpr double clipMax = 1.0;
 
