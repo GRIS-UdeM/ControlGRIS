@@ -298,11 +298,11 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
     };
 
-    addAndMakeVisible(&mParameterLapLabel);
+    //addAndMakeVisible(&mParameterLapLabel);
     mParameterLapLabel.setText("Lap", juce::dontSendNotification);
 
     // lap textEditor
-    addAndMakeVisible(&mParameterLapEditor);
+    //addAndMakeVisible(&mParameterLapEditor);
     mParameterLapEditor.setLookAndFeel(&mGrisLookAndFeel);
     mParameterLapEditor.setFont(grisLookAndFeel.getFont());
     mParameterLapEditor.setInputRestrictions(2, "1234567890");
