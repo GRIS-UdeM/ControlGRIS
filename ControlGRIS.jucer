@@ -62,6 +62,10 @@
         <FILE id="P6dbot" name="ControlGRIS2_Logo.png" compile="0" resource="1"
               file="Imgs/ControlGRIS2_Logo.png"/>
         <FILE id="uU1CAr" name="folder_icon.png" compile="0" resource="1" file="Imgs/folder_icon.png"/>
+        <FILE id="u9ozSd" name="padlock-silhouette.png" compile="0" resource="1"
+              file="Imgs/padlock-silhouette.png"/>
+        <FILE id="guVeHd" name="padlock-unlocked-silhou-01.png" compile="0"
+              resource="1" file="Imgs/padlock-unlocked-silhou-01.png"/>
         <FILE id="JVPA2I" name="SinkinSans-400Regular.otf" compile="0" resource="1"
               file="Source/SinkinSans-400Regular.otf"/>
       </GROUP>
