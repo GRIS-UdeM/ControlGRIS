@@ -80,6 +80,7 @@ private:
     //==============================================================================
     // Spatial parameters section
     bool mXYParamLinked{};
+    juce::ImageButton mPadLockButton;
 
     juce::Label mSpatialParameterLabel;
 
@@ -192,7 +193,6 @@ public:
     // overrides
     void paint(juce::Graphics & g) override;
     void resized() override;
-    void mouseDown(juce::MouseEvent const & event) override;
     void timerCallback(int timerID) override;
 
     //==============================================================================

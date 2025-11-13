@@ -169,6 +169,72 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         mAudioProcessor.setGainMultiplierForAudioAnalysis(gainSliderVal);
     };
 
+    auto lockedPadlockImage
+        = juce::ImageCache::getFromMemory(BinaryData::padlocksilhouette_png, BinaryData::padlocksilhouette_pngSize);
+    auto openPadlockImage = juce::ImageCache::getFromMemory(BinaryData::padlockunlockedsilhou01_png,
+                                                            BinaryData::padlockunlockedsilhou01_pngSize);
+    auto padlockToUseOnLoad{ mXYParamLinked ? lockedPadlockImage : openPadlockImage };
+    mPadLockButton.setImages(false,
+                             true,
+                             true,
+                             padlockToUseOnLoad,
+                             1.0f,
+                             juce::Colours::transparentWhite,
+                             padlockToUseOnLoad,
+                             0.7f,
+                             juce::Colours::transparentWhite,
+                             padlockToUseOnLoad,
+                             0.7f,
+                             juce::Colours::transparentWhite);
+    mPadLockButton.setTooltip("Link X and Y spatial parameters so they act like Azimuth");
+    addAndMakeVisible(&mPadLockButton);
+    mPadLockButton.onClick = [this, lockedPadlockImage, openPadlockImage] {
+        mXYParamLinked = !mXYParamLinked;
+        mAudioProcessor.setXYParamLink(mXYParamLinked);
+        if (mXYParamLinked) {
+            mPadLockButton.setImages(false,
+                                     true,
+                                     true,
+                                     lockedPadlockImage,
+                                     1.0f,
+                                     juce::Colours::transparentWhite,
+                                     lockedPadlockImage,
+                                     0.7f,
+                                     juce::Colours::transparentWhite,
+                                     lockedPadlockImage,
+                                     0.7f,
+                                     juce::Colours::transparentWhite);
+        } else {
+            mPadLockButton.setImages(false,
+                                     true,
+                                     true,
+                                     openPadlockImage,
+                                     1.0f,
+                                     juce::Colours::transparentWhite,
+                                     openPadlockImage,
+                                     0.7f,
+                                     juce::Colours::transparentWhite,
+                                     openPadlockImage,
+                                     0.7f,
+                                     juce::Colours::transparentWhite);
+        }
+        if (mXYParamLinked) {
+            mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
+        } else {
+            mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
+            mParameterAzimuthXOffsetSlider.setValue(0.0);
+        }
+
+        if (mLastUsedParameterCubeButton) {
+            auto & param = mLastUsedParameterCubeButton->get();
+            if (&param == &mParameterYButton && mParameterYButton.getToggleState()) {
+                mParameterXButton.triggerClick();
+            }
+        }
+        resized();
+        repaint();
+    };
+
     // default values
     mParameterAzimuthRangeSlider.setDefaultReturnValue(100.0);
     mParameterElevationRangeSlider.setDefaultReturnValue(100.0);
@@ -1368,14 +1434,14 @@ void gris::SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
     if (mSpatMode == SpatMode::cube) {
         if (mXYParamLinked) {
             g.setColour(juce::Colours::orange);
-            g.drawLine(juce::Line<float>(5.0f, 42.0f, 17.0f, 42.0f), 2.0f);
-            g.drawLine(juce::Line<float>(5.0f, 62.0f, 17.0f, 62.0f), 2.0f);
+            g.drawLine(juce::Line<float>(5.0f, 42.0f, 30.0f, 42.0f), 2.0f);
+            g.drawLine(juce::Line<float>(5.0f, 62.0f, 30.0f, 62.0f), 2.0f);
             g.drawLine(juce::Line<float>(5.0f, 42.0f, 5.0f, 62.0f), 2.0f);
         } else {
             g.setColour(juce::Colours::black);
             float dashLengths[4] = { 2.0f, 2.0f, 2.0f, 2.0f };
-            g.drawDashedLine(juce::Line<float>(5.0f, 42.0f, 17.0f, 42.0f), dashLengths, 4, 2.0f);
-            g.drawDashedLine(juce::Line<float>(5.0f, 62.0f, 17.0f, 62.0f), dashLengths, 4, 2.0f);
+            g.drawDashedLine(juce::Line<float>(5.0f, 42.0f, 30.0f, 42.0f), dashLengths, 4, 2.0f);
+            g.drawDashedLine(juce::Line<float>(5.0f, 62.0f, 30.0f, 62.0f), dashLengths, 4, 2.0f);
             g.drawDashedLine(juce::Line<float>(6.0f, 41.0f, 6.0f, 61.0f), dashLengths, 4, 2.0f);
         }
     }
@@ -1445,6 +1511,7 @@ void gris::SectionSoundReactiveTrajectories::resized()
         auto const showLapEd{ Descriptor::fromInt(mParameterAzimuthDescriptorCombo.getSelectedId())
                               != DescriptorID::invalid };
 
+        mPadLockButton.setVisible(false);
         mParameterXButton.setVisible(false);
         mParameterYButton.setVisible(false);
         mParameterZButton.setVisible(false);
@@ -1463,7 +1530,7 @@ void gris::SectionSoundReactiveTrajectories::resized()
         mParameterLapLabel.setVisible(true);
         mParameterLapEditor.setVisible(showLapEd);
 
-        mParameterAzimuthButton.setBounds(areaSpatParams.getTopLeft().getX() + 17,
+        mParameterAzimuthButton.setBounds(areaSpatParams.getTopLeft().getX() + 30,
                                           areaSpatParams.getTopLeft().getY() + 15,
                                           80,
                                           15);
@@ -1567,6 +1634,7 @@ void gris::SectionSoundReactiveTrajectories::resized()
         auto const showZRangeSlider{ Descriptor::fromInt(mParameterZDescriptorCombo.getSelectedId())
                                      != DescriptorID::invalid };
 
+        mPadLockButton.setVisible(true);
         mParameterXButton.setVisible(true);
         mParameterYButton.setVisible(true);
         mParameterZButton.setVisible(true);
@@ -1585,7 +1653,9 @@ void gris::SectionSoundReactiveTrajectories::resized()
         mParameterLapLabel.setVisible(false);
         mParameterLapEditor.setVisible(false);
 
-        mParameterXButton.setBounds(areaSpatParams.getTopLeft().getX() + 17,
+        mPadLockButton.setBounds(areaSpatParams.getTopLeft().getX() + 11, 44, 15, 15);
+
+        mParameterXButton.setBounds(areaSpatParams.getTopLeft().getX() + 30,
                                     areaSpatParams.getTopLeft().getY() + 15,
                                     80,
                                     15);
@@ -1708,35 +1778,6 @@ void gris::SectionSoundReactiveTrajectories::resized()
             mParameterYRangeSlider.setEnabled(false);
             mParameterYOffsetSlider.setEnabled(false);
         }
-    }
-}
-
-//==============================================================================
-void gris::SectionSoundReactiveTrajectories::mouseDown(juce::MouseEvent const & event)
-{
-    // Area where the XYLinked line is shown.
-    juce::Rectangle<float> const xyLinkedLineArea{ 1.0f, 41.0f, 15.0f, 22.0f };
-    if (xyLinkedLineArea.contains(event.getMouseDownPosition().toFloat()) && mSpatMode == SpatMode::cube) {
-        mXYParamLinked = !mXYParamLinked;
-        mAudioProcessor.setXYParamLink(mXYParamLinked);
-
-        if (mXYParamLinked) {
-            mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
-        } else {
-            mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
-            mParameterAzimuthXOffsetSlider.setValue(0.0);
-        }
-        mParameterAzimuthXOffsetSlider.onValueChange();
-
-        if (mLastUsedParameterCubeButton) {
-            auto & param = mLastUsedParameterCubeButton->get();
-            if (&param == &mParameterYButton && mParameterYButton.getToggleState()) {
-                mParameterXButton.triggerClick();
-            }
-        }
-
-        resized();
-        repaint();
     }
 }
 
