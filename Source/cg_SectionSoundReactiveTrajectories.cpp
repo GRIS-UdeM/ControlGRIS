@@ -1446,29 +1446,27 @@ void gris::SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
         }
     }
 
-    // draw arrow for selected parameter
+    // draw lines for selected parameter
     g.setColour(juce::Colours::orange);
     if (mSpatMode == SpatMode::dome) {
         if (mLastUsedParameterDomeButton) {
             auto & button = mLastUsedParameterDomeButton->get();
-            g.drawArrow(juce::Line<float>(static_cast<float>(button.getBounds().getRight()),
-                                          static_cast<float>(button.getBounds().getCentreY() + 1.0f),
-                                          355.0f,
-                                          static_cast<float>(button.getBounds().getCentreY() + 1.0f)),
-                        2.0f,
-                        7.0f,
-                        7.0f);
+            g.drawLine(juce::Line<float>(static_cast<float>(button.getBounds().getRight()),
+                                         static_cast<float>(button.getBounds().getCentreY() + 1.0f),
+                                         350.0f,
+                                         static_cast<float>(button.getBounds().getCentreY() + 1.0f)),
+                       2.0f);
+            g.drawLine(juce::Line<float>(350.0f, 21.0f, 350.0f, getHeight()), 2.0f);
         }
     } else {
         if (mLastUsedParameterCubeButton) {
             auto & button = mLastUsedParameterCubeButton->get();
-            g.drawArrow(juce::Line<float>(static_cast<float>(button.getBounds().getRight()),
-                                          static_cast<float>(button.getBounds().getCentreY() + 1),
-                                          355.0f,
-                                          static_cast<float>(button.getBounds().getCentreY() + 1)),
-                        2.0f,
-                        7.0f,
-                        7.0f);
+            g.drawLine(juce::Line<float>(static_cast<float>(button.getBounds().getRight()),
+                                         static_cast<float>(button.getBounds().getCentreY() + 1.0f),
+                                         350.0f,
+                                         static_cast<float>(button.getBounds().getCentreY() + 1.0f)),
+                       2.0f);
+            g.drawLine(juce::Line<float>(350.0f, 21.0f, 350.0f, getHeight()), 2.0f);
         }
     }
 }
