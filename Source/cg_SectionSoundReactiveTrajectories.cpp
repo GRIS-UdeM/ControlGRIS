@@ -135,6 +135,10 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mSpatialParameterLabel.setText("Spatial Parameters", juce::dontSendNotification);
     addAndMakeVisible(&mAudioAnalysisLabel);
     mAudioAnalysisLabel.setText("Audio Analysis", juce::dontSendNotification);
+    addAndMakeVisible(&mAudioAnalysisSelectedDescriptor);
+    mAudioAnalysisSelectedDescriptor.setColour(juce::Label::backgroundColourId, mGrisLookAndFeel.getOnColor());
+    mAudioAnalysisSelectedDescriptor.setColour(juce::Label::textColourId, mGrisLookAndFeel.getDarkColor());
+    mAudioAnalysisSelectedDescriptor.setJustificationType(juce::Justification::centred);
 
     //==============================================================================
     // Spatial Parameters
@@ -1500,7 +1504,8 @@ void gris::SectionSoundReactiveTrajectories::resized()
                                         != DescriptorID::invalid };
 
     mSpatialParameterLabel.setBounds(5, 3, 140, 15);
-    mAudioAnalysisLabel.setBounds(bannerAudioAnalysis.getTopLeft().getX() + 5, 3, 140, 15);
+    mAudioAnalysisLabel.setBounds(bannerAudioAnalysis.getTopLeft().getX() + 5, 3, 80, 15);
+    mAudioAnalysisSelectedDescriptor.setBounds(mAudioAnalysisLabel.getRight() + 5, 3, 80, 15);
 
     mChannelMixLabel.setBounds(mSpatialParameterLabel.getRight() + 55, 3, 50, 15);
     mChannelMixCombo.setBounds(mChannelMixLabel.getRight() - 5, 2, 35, 15);
@@ -2246,6 +2251,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothLoudness());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefLoudness());
             }
+            mAudioAnalysisSelectedDescriptor.setText("Loudness", juce::dontSendNotification);
             loudnessSpreadNoiseDescriptorLayout();
             break;
         case DescriptorID::spread:
@@ -2255,6 +2261,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothSpread());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefSpread());
             }
+            mAudioAnalysisSelectedDescriptor.setText("Spread", juce::dontSendNotification);
             loudnessSpreadNoiseDescriptorLayout();
             break;
         case DescriptorID::noise:
@@ -2264,6 +2271,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothNoise());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefNoise());
             }
+            mAudioAnalysisSelectedDescriptor.setText("Noise", juce::dontSendNotification);
             loudnessSpreadNoiseDescriptorLayout();
             break;
         case DescriptorID::pitch:
@@ -2274,6 +2282,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothPitch());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefPitch());
             }
+            mAudioAnalysisSelectedDescriptor.setText("Pitch", juce::dontSendNotification);
             pitchCentroidDescriptorLayout();
             break;
         case DescriptorID::centroid:
@@ -2284,6 +2293,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothCentroid());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefCentroid());
             }
+            mAudioAnalysisSelectedDescriptor.setText("Centroid", juce::dontSendNotification);
             pitchCentroidDescriptorLayout();
             break;
         case DescriptorID::iterationsSpeed:
@@ -2296,6 +2306,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
                 mDescriptorSmoothSlider.setValue(param.getParamSmoothOnsetDetection());
                 mDescriptorSmoothCoefSlider.setValue(param.getParamSmoothCoefOnsetDetection());
             }
+            mAudioAnalysisSelectedDescriptor.setText("Iterations Speed", juce::dontSendNotification);
             iterSpeedDescriptorLayout();
             break;
         case DescriptorID::invalid:
@@ -2314,6 +2325,8 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
 void gris::SectionSoundReactiveTrajectories::loudnessSpreadNoiseDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
+
+    mAudioAnalysisSelectedDescriptor.setVisible(true);
 
     mDescriptorExpanderLabel.setVisible(true);
     mDescriptorSmoothLabel.setVisible(true);
@@ -2356,6 +2369,8 @@ void gris::SectionSoundReactiveTrajectories::loudnessSpreadNoiseDescriptorLayout
 void gris::SectionSoundReactiveTrajectories::pitchCentroidDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
+
+    mAudioAnalysisSelectedDescriptor.setVisible(true);
 
     mDescriptorMinFreqLabel.setVisible(true);
     mDescriptorMaxFreqLabel.setVisible(true);
@@ -2408,6 +2423,8 @@ void gris::SectionSoundReactiveTrajectories::pitchCentroidDescriptorLayout()
 void gris::SectionSoundReactiveTrajectories::iterSpeedDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
+
+    mAudioAnalysisSelectedDescriptor.setVisible(true);
 
     mDescriptorMetricLabel.setVisible(true);
     mDescriptorThresholdLabel.setVisible(true);
@@ -2481,6 +2498,8 @@ void gris::SectionSoundReactiveTrajectories::iterSpeedDescriptorLayout()
 //==============================================================================
 void gris::SectionSoundReactiveTrajectories::setAudioAnalysisComponentsInvisible()
 {
+    mAudioAnalysisSelectedDescriptor.setVisible(false);
+
     mDescriptorMetricLabel.setVisible(false);
     mDescriptorExpanderLabel.setVisible(false);
     mDescriptorThresholdLabel.setVisible(false);
