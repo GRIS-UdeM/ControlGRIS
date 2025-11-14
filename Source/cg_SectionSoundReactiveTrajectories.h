@@ -207,6 +207,8 @@ public:
 private:
     //==============================================================================
     void unselectAllParamButtons();
+    void setSelectedComboBoxColorON(juce::ComboBox & box);
+    void setAllComboBoxesColorOFF();
     void refreshDescriptorPanel();
     void loudnessSpreadNoiseDescriptorLayout();
     void pitchCentroidDescriptorLayout();

@@ -93,6 +93,8 @@ void GrisLookAndFeel::drawComboBox(juce::Graphics & g,
                                    int const buttonH,
                                    juce::ComboBox & box)
 {
+    auto const comboBoxName{ box.getName() };
+
     box.setColour(juce::ColourSelector::backgroundColourId, mOnColor);
 
     auto cornerSize = box.findParentComponentOfClass<juce::ChoicePropertyComponent>() != nullptr ? 0.0f : 2.0f;
@@ -100,9 +102,15 @@ void GrisLookAndFeel::drawComboBox(juce::Graphics & g,
 
     g.setColour(this->mEditBackgroundColor);
     g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
-
-    g.setColour(this->mEditBackgroundColor);
     g.drawRoundedRectangle(boxBounds.toFloat().reduced(0.5f, 0.5f), cornerSize, 1.0f);
+
+    if (comboBoxName.contains("AudioDescriptor")) {
+        if (comboBoxName.contains("ON")) {
+            g.setColour(this->mOnColor);
+            g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
+            g.drawRoundedRectangle(boxBounds.toFloat().reduced(0.5f, 0.5f), cornerSize, 1.0f);
+        }
+    }
 
     auto const arrowX{ 0.3f };
     auto const arrowH{ 0.2f };
