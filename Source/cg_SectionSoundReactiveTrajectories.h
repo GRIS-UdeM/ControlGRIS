@@ -215,6 +215,7 @@ private:
     void iterSpeedDescriptorLayout();
     void setAudioAnalysisComponentsInvisible();
     void changeMinMaxSlidersRange(int min, int max);
+    bool isAtLeastOneAudioDescriptorSelected();
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(SectionSoundReactiveTrajectories)

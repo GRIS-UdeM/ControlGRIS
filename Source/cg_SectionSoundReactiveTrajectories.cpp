@@ -1463,7 +1463,7 @@ void gris::SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
     // draw lines for selected parameter
     g.setColour(juce::Colours::orange);
     if (mSpatMode == SpatMode::dome) {
-        if (mLastUsedParameterDomeButton) {
+        if (mLastUsedParameterDomeButton && isAtLeastOneAudioDescriptorSelected()) {
             auto & button = mLastUsedParameterDomeButton->get();
             g.drawLine(juce::Line<float>(static_cast<float>(button.getBounds().getRight()),
                                          static_cast<float>(button.getBounds().getCentreY() + 1.0f),
@@ -1473,7 +1473,7 @@ void gris::SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
             g.drawLine(juce::Line<float>(350.0f, 21.0f, 350.0f, getHeight()), 2.0f);
         }
     } else {
-        if (mLastUsedParameterCubeButton) {
+        if (mLastUsedParameterCubeButton && isAtLeastOneAudioDescriptorSelected()) {
             auto & button = mLastUsedParameterCubeButton->get();
             g.drawLine(juce::Line<float>(static_cast<float>(button.getBounds().getRight()),
                                          static_cast<float>(button.getBounds().getCentreY() + 1.0f),
@@ -2515,6 +2515,21 @@ void gris::SectionSoundReactiveTrajectories::changeMinMaxSlidersRange(int min, i
     mDescriptorMaxFreqSlider.setDefaultReturnValue(max);
     mDescriptorMaxFreqSlider.setValue(mDescriptorMaxFreqSlider.getValue());
     mDescriptorMinFreqSlider.setValue(mDescriptorMinFreqSlider.getValue());
+}
+
+//==============================================================================
+bool gris::SectionSoundReactiveTrajectories::isAtLeastOneAudioDescriptorSelected()
+{
+    if (mParameterAzimuthDescriptorCombo.getName().contains("ON")
+        || mParameterElevationDescriptorCombo.getName().contains("ON")
+        || mParameterXDescriptorCombo.getName().contains("ON")
+        || mParameterYDescriptorCombo.getName().contains("ON")
+        || mParameterZDescriptorCombo.getName().contains("ON")
+        || mParameterAzimuthOrXYSpanDescriptorCombo.getName().contains("ON")
+        || mParameterElevationOrZSpanDescriptorCombo.getName().contains("ON")) {
+        return true;
+    }
+    return false;
 }
 
 //==============================================================================
