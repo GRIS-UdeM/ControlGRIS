@@ -137,6 +137,7 @@ private:
     //==============================================================================
     // Audio anaylysis section
     juce::Label mAudioAnalysisLabel;
+    juce::Label mAudioAnalysisSelectedDescriptor;
     std::optional<std::reference_wrapper<SpatialParameter>> mParameterToShow;
     DescriptorID mDescriptorIdToUse{ DescriptorID::invalid };
     DataGraph mDataGraph;
