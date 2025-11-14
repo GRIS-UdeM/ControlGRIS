@@ -572,6 +572,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     initParameterDescCombo(mParameterAzimuthDescriptorCombo);
     mParameterAzimuthDescriptorCombo.onChange = [this] {
         unselectAllParamButtons();
+        setAllComboBoxesColorOFF();
         if (mParameterAzimuthDescriptorCombo.getSelectedId() == 1) {
             mParameterToShow.reset();
             mDescriptorIdToUse = DescriptorID::invalid;
@@ -579,6 +580,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             mParameterToShow = mAudioProcessor.getAzimuthDome();
             mDescriptorIdToUse = Descriptor::fromInt(mParameterAzimuthDescriptorCombo.getSelectedId());
             mLastUsedParameterDomeButton = mParameterAzimuthButton;
+            setSelectedComboBoxColorON(mParameterAzimuthDescriptorCombo);
         }
         if (mLastUsedParameterDomeButton != std::nullopt) {
             mParameterAzimuthButton.setToggleState(true, juce::dontSendNotification);
@@ -644,6 +646,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     initParameterDescCombo(mParameterElevationDescriptorCombo);
     mParameterElevationDescriptorCombo.onChange = [this] {
         unselectAllParamButtons();
+        setAllComboBoxesColorOFF();
         if (mParameterElevationDescriptorCombo.getSelectedId() == 1) {
             mParameterToShow.reset();
             mDescriptorIdToUse = DescriptorID::invalid;
@@ -651,6 +654,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             mParameterToShow = mAudioProcessor.getElevationDome();
             mDescriptorIdToUse = Descriptor::fromInt(mParameterElevationDescriptorCombo.getSelectedId());
             mLastUsedParameterDomeButton = mParameterElevationButton;
+            setSelectedComboBoxColorON(mParameterElevationDescriptorCombo);
         }
         if (mLastUsedParameterDomeButton != std::nullopt) {
             mParameterElevationButton.setToggleState(true, juce::dontSendNotification);
@@ -707,6 +711,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     initParameterDescCombo(mParameterXDescriptorCombo);
     mParameterXDescriptorCombo.onChange = [this] {
         unselectAllParamButtons();
+        setAllComboBoxesColorOFF();
         if (mParameterXDescriptorCombo.getSelectedId() == 1) {
             mParameterToShow.reset();
             mDescriptorIdToUse = DescriptorID::invalid;
@@ -714,6 +719,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             mParameterToShow = mAudioProcessor.getXCube();
             mDescriptorIdToUse = Descriptor::fromInt(mParameterXDescriptorCombo.getSelectedId());
             mLastUsedParameterCubeButton = mParameterXButton;
+            setSelectedComboBoxColorON(mParameterXDescriptorCombo);
         }
         if (mLastUsedParameterCubeButton != std::nullopt) {
             mParameterXButton.setToggleState(true, juce::dontSendNotification);
@@ -775,6 +781,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     initParameterDescCombo(mParameterYDescriptorCombo);
     mParameterYDescriptorCombo.onChange = [this] {
         unselectAllParamButtons();
+        setAllComboBoxesColorOFF();
         if (mParameterYDescriptorCombo.getSelectedId() == 1) {
             mParameterToShow.reset();
             mDescriptorIdToUse = DescriptorID::invalid;
@@ -782,6 +789,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             mParameterToShow = mAudioProcessor.getYCube();
             mDescriptorIdToUse = Descriptor::fromInt(mParameterYDescriptorCombo.getSelectedId());
             mLastUsedParameterCubeButton = mParameterYButton;
+            setSelectedComboBoxColorON(mParameterYDescriptorCombo);
         }
         if (mLastUsedParameterCubeButton != std::nullopt) {
             mParameterYButton.setToggleState(true, juce::dontSendNotification);
@@ -836,6 +844,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     initParameterDescCombo(mParameterZDescriptorCombo);
     mParameterZDescriptorCombo.onChange = [this] {
         unselectAllParamButtons();
+        setAllComboBoxesColorOFF();
         if (mParameterZDescriptorCombo.getSelectedId() == 1) {
             mParameterToShow.reset();
             mDescriptorIdToUse = DescriptorID::invalid;
@@ -843,6 +852,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             mParameterToShow = mAudioProcessor.getZCube();
             mDescriptorIdToUse = Descriptor::fromInt(mParameterZDescriptorCombo.getSelectedId());
             mLastUsedParameterCubeButton = mParameterZButton;
+            setSelectedComboBoxColorON(mParameterZDescriptorCombo);
         }
         if (mLastUsedParameterCubeButton != std::nullopt) {
             mParameterZButton.setToggleState(true, juce::dontSendNotification);
@@ -897,6 +907,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     initParameterDescCombo(mParameterAzimuthOrXYSpanDescriptorCombo);
     mParameterAzimuthOrXYSpanDescriptorCombo.onChange = [this] {
         unselectAllParamButtons();
+        setAllComboBoxesColorOFF();
         mDescriptorIdToUse = Descriptor::fromInt(mParameterAzimuthOrXYSpanDescriptorCombo.getSelectedId());
         if (mDescriptorIdToUse == DescriptorID::invalid) {
             mParameterToShow.reset();
@@ -909,6 +920,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
                 mParameterToShow = mAudioProcessor.getHSpanCube();
                 mLastUsedParameterCubeButton = mParameterAzimuthOrXYSpanButton;
             }
+            setSelectedComboBoxColorON(mParameterAzimuthOrXYSpanDescriptorCombo);
         }
         if (mSpatMode == SpatMode::dome) {
             if (mLastUsedParameterDomeButton != std::nullopt) {
@@ -982,6 +994,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     initParameterDescCombo(mParameterElevationOrZSpanDescriptorCombo);
     mParameterElevationOrZSpanDescriptorCombo.onChange = [this] {
         unselectAllParamButtons();
+        setAllComboBoxesColorOFF();
         mDescriptorIdToUse = Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId());
         if (mDescriptorIdToUse == DescriptorID::invalid) {
             mParameterToShow.reset();
@@ -994,6 +1007,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
                 mParameterToShow = mAudioProcessor.getVSpanCube();
                 mLastUsedParameterCubeButton = mParameterElevationOrZSpanButton;
             }
+            setSelectedComboBoxColorON(mParameterElevationOrZSpanDescriptorCombo);
         }
         if (mSpatMode == SpatMode::dome) {
             if (mLastUsedParameterDomeButton != std::nullopt) {
@@ -2191,6 +2205,24 @@ void gris::SectionSoundReactiveTrajectories::unselectAllParamButtons()
     mParameterZButton.setToggleState(false, juce::dontSendNotification);
     mParameterAzimuthOrXYSpanButton.setToggleState(false, juce::dontSendNotification);
     mParameterElevationOrZSpanButton.setToggleState(false, juce::dontSendNotification);
+}
+
+//==============================================================================
+void gris::SectionSoundReactiveTrajectories::setSelectedComboBoxColorON(juce::ComboBox & box)
+{
+    box.setName("AudioDescriptor_ON");
+}
+
+//==============================================================================
+void gris::SectionSoundReactiveTrajectories::setAllComboBoxesColorOFF()
+{
+    mParameterAzimuthDescriptorCombo.setName("");
+    mParameterElevationDescriptorCombo.setName("");
+    mParameterXDescriptorCombo.setName("");
+    mParameterYDescriptorCombo.setName("");
+    mParameterZDescriptorCombo.setName("");
+    mParameterAzimuthOrXYSpanDescriptorCombo.setName("");
+    mParameterElevationOrZSpanDescriptorCombo.setName("");
 }
 
 //==============================================================================
