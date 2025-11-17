@@ -61,7 +61,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     , mDescriptorSmoothCoefSlider(grisLookAndFeel)
 {
     auto const initRangeSlider = [&](NumSlider & slider) {
-        slider.setNormalisableRange(juce::NormalisableRange<double>{ -500.0, 500.0, 0.1 });
+        slider.setNormalisableRange(juce::NormalisableRange<double>{ -10000.0, 10000.0, 0.1 });
         // slider.setValue(100.0, juce::dontSendNotification);
         slider.setNumDecimalPlacesToDisplay(1);
         addAndMakeVisible(slider);
