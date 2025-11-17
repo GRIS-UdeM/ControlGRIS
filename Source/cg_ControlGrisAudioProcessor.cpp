@@ -92,12 +92,12 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     :
 #ifndef JucePlugin_PreferredChannelConfigurations
     AudioProcessor(BusesProperties()
-    #if !JucePlugin_IsMidiEffect
-        #if !JucePlugin_IsSynth
-                       .withInput("Input", AudioChannelSet::stereo(), true)
-        #endif // JucePlugin_IsSynth
-                       .withOutput("Output", AudioChannelSet::stereo(), true)
-    #endif // JucePlugin_IsMidiEffect
+                        #if !JucePlugin_IsMidiEffect
+                            #if !JucePlugin_IsSynth
+                       .withInput("Mono Input", juce::AudioChannelSet::mono(), true)
+                            #endif // JucePlugin_IsSynth
+                       .withOutput("Mono Output", juce::AudioChannelSet::mono(), false)
+                        #endif // JucePlugin_IsMidiEffect
                        )
     ,
 #endif // JucePlugin_PreferredChannelConfigurations
@@ -1182,17 +1182,6 @@ bool ControlGrisAudioProcessor::isBusesLayoutSupported(const BusesLayout & layou
     ignoreUnused(layouts);
     return true;
     #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-        && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
-        return false;
-
-        // This checks if the input layout matches the output layout
-        #if !JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-        #endif
 
     return true;
     #endif
@@ -1278,11 +1267,17 @@ void ControlGrisAudioProcessor::processBlock([[maybe_unused]] juce::AudioBuffer<
             buffer.clear(i, 0, buffer.getNumSamples());
 
         mDescriptorsBuffer.clear();
-        for (int i{}; i < mNumChannelsToAnalyse; ++i) {
-            mDescriptorsBuffer.addFrom(0, 0, buffer, i, 0, buffer.getNumSamples());
+        if (mChannelToAnalyse > totalNumInputChannels) {
+            // Mix all channels
+            for (int i{}; i < totalNumInputChannels; ++i) {
+                mDescriptorsBuffer.addFrom(0, 0, buffer, i, 0, buffer.getNumSamples());
+            }
+            mDescriptorsBuffer.applyGain((1.0f / totalNumInputChannels)
+                                         * static_cast<float>(mAudioAnalysisInputGainMultiplier));
+        } else {
+            mDescriptorsBuffer.addFrom(0, 0, buffer, mChannelToAnalyse - 1, 0, buffer.getNumSamples());
+            mDescriptorsBuffer.applyGain(1.0f * static_cast<float>(mAudioAnalysisInputGainMultiplier));
         }
-        mDescriptorsBuffer.applyGain((1.0f / mNumChannelsToAnalyse)
-                                     * static_cast<float>(mAudioAnalysisInputGainMultiplier));
 
         auto bufferMagnitude = mDescriptorsBuffer.getMagnitude(0, mDescriptorsBuffer.getNumSamples());
         auto * channelData = mDescriptorsBuffer.getReadPointer(0);
@@ -1756,9 +1751,9 @@ void ControlGrisAudioProcessor::setGainMultiplierForAudioAnalysis(double gainMul
 }
 
 //==============================================================================
-void ControlGrisAudioProcessor::setNumChannelsForAudioAnalysis(int numChannels)
+void ControlGrisAudioProcessor::setChannelForAudioAnalysis(int channel)
 {
-    mNumChannelsToAnalyse = numChannels;
+    mChannelToAnalyse = channel;
 }
 
 //==============================================================================

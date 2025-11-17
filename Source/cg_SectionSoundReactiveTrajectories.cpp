@@ -144,14 +144,14 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     // Spatial Parameters
 
     addAndMakeVisible(&mChannelMixLabel);
-    mChannelMixLabel.setText("Ch. Mix", juce::dontSendNotification);
+    mChannelMixLabel.setText("Channel", juce::dontSendNotification);
 
     addAndMakeVisible(&mChannelMixCombo);
     updateChannelMixCombo();
     mChannelMixCombo.onChange = [this] {
-        auto numChannels{ mChannelMixCombo.getSelectedId() };
-        mAPVTS.state.setProperty("numInputChannelsForAnalysis", numChannels, nullptr);
-        mAudioProcessor.setNumChannelsForAudioAnalysis(numChannels);
+        auto channel{ mChannelMixCombo.getSelectedId() };
+        mAPVTS.state.setProperty("channelForAudioAnalysis", channel, nullptr);
+        mAudioProcessor.setChannelForAudioAnalysis(channel);
     };
 
     addAndMakeVisible(&mGainLabel);
@@ -1503,12 +1503,12 @@ void gris::SectionSoundReactiveTrajectories::resized()
     auto const showEleZSpanRangeSlider{ Descriptor::fromInt(mParameterElevationOrZSpanDescriptorCombo.getSelectedId())
                                         != DescriptorID::invalid };
 
-    mSpatialParameterLabel.setBounds(5, 3, 140, 15);
+    mSpatialParameterLabel.setBounds(5, 3, 100, 15);
     mAudioAnalysisLabel.setBounds(bannerAudioAnalysis.getTopLeft().getX() + 5, 3, 80, 15);
     mAudioAnalysisSelectedDescriptor.setBounds(mAudioAnalysisLabel.getRight() + 5, 3, 80, 15);
 
-    mChannelMixLabel.setBounds(mSpatialParameterLabel.getRight() + 55, 3, 50, 15);
-    mChannelMixCombo.setBounds(mChannelMixLabel.getRight() - 5, 2, 35, 15);
+    mChannelMixLabel.setBounds(mSpatialParameterLabel.getRight() + 80, 3, 47, 15);
+    mChannelMixCombo.setBounds(mChannelMixLabel.getRight(), 2, 45, 15);
     mGainLabel.setBounds(350 - 35 - 3 - 30, 3, 33, 15);
     mGainSlider.setBounds(350 - 35 - 3, 4, 35, 12);
 
@@ -2188,16 +2188,17 @@ void gris::SectionSoundReactiveTrajectories::updateChannelMixCombo()
     for (int i{}; i < numInputChannels; ++i) {
         chanArray.add(juce::String(i + 1));
     }
+    chanArray.add("Mix");
     mChannelMixCombo.clear();
     mChannelMixCombo.addItemList(chanArray, 1);
 
-    int selectedId{ mAPVTS.state.getProperty("numInputChannelsForAnalysis") };
+    int selectedId{ mAPVTS.state.getProperty("channelForAudioAnalysis") };
     if (selectedId == 0 || selectedId > numInputChannels) {
         selectedId = numInputChannels;
-        mAPVTS.state.setProperty("numInputChannelsForAnalysis", selectedId, nullptr);
+        mAPVTS.state.setProperty("channelForAudioAnalysis", selectedId, nullptr);
     }
     mChannelMixCombo.setSelectedId(selectedId, juce::dontSendNotification);
-    mAudioProcessor.setNumChannelsForAudioAnalysis(selectedId);
+    mAudioProcessor.setChannelForAudioAnalysis(selectedId);
 }
 
 //==============================================================================
