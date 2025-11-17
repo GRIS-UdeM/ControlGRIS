@@ -170,6 +170,9 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mPositionActivateButton.setButtonText("Activate");
     mPositionActivateButton.setClickingTogglesState(true);
     mPositionActivateButton.onClick = [this] {
+        if (mActivateLinked) {
+            mElevationActivateButton.setToggleState(mPositionActivateButton.getToggleState(), juce::sendNotification);
+        }
         mListeners.call(
             [&](Listener & l) { l.positionTrajectoryStateChangedCallback(mPositionActivateButton.getToggleState()); });
         mDurationUnitCombo.grabKeyboardFocus();
@@ -236,6 +239,9 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mElevationActivateButton.setButtonText("Activate");
     mElevationActivateButton.setClickingTogglesState(true);
     mElevationActivateButton.onClick = [this] {
+        if (mActivateLinked) {
+            mPositionActivateButton.setToggleState(mElevationActivateButton.getToggleState(), juce::sendNotification);
+        }
         mListeners.call([&](Listener & l) {
             l.elevationTrajectoryStateChangedCallback(mElevationActivateButton.getToggleState());
         });
@@ -715,6 +721,16 @@ void SectionAbstractTrajectories::mouseDown(juce::MouseEvent const & event)
             mSpeedLinked = !mSpeedLinked;
             repaint();
         }
+
+        // Area of the Activate arrow
+        juce::Rectangle<float> const activateLinkedArea{ 292.0f,
+                                                         static_cast<float>(mPositionActivateButton.getBounds().getY()),
+                                                         30.0f,
+                                                         17.0f };
+        if (activateLinkedArea.contains(event.getMouseDownPosition().toFloat())) {
+            mActivateLinked = !mActivateLinked;
+            repaint();
+        }
     }
 }
 
@@ -728,6 +744,14 @@ void SectionAbstractTrajectories::paint(juce::Graphics & g)
             g.setColour(juce::Colours::black);
         g.drawArrow(juce::Line<float>(302.0f, 78.0f, 292.0f, 78.0f), 4, 10, 7);
         g.drawArrow(juce::Line<float>(297.0f, 78.0f, 317.0f, 78.0f), 4, 10, 7);
+
+        if (mActivateLinked)
+            g.setColour(juce::Colours::orange);
+        else
+            g.setColour(juce::Colours::black);
+        auto activateArrowY{ mPositionActivateButton.getBounds().getY() + mPositionActivateButton.getHeight() / 2 };
+        g.drawArrow(juce::Line<float>(302.0f, activateArrowY, 292.0f, activateArrowY), 4, 10, 7);
+        g.drawArrow(juce::Line<float>(297.0f, activateArrowY, 317.0f, activateArrowY), 4, 10, 7);
 
         g.setColour(juce::Colours::orange);
         g.setFont(16.0f);

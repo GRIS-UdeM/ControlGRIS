@@ -141,6 +141,7 @@ private:
     juce::TextButton mElevationActivateButton;
 
     bool mSpeedLinked{ false };
+    bool mActivateLinked{ false };
 
 public:
     //==============================================================================
