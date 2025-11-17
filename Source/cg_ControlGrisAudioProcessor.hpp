@@ -139,7 +139,7 @@ class ControlGrisAudioProcessor final
     int mBlockSize{};
     juce::AudioBuffer<float> mDescriptorsBuffer;
     double mAudioAnalysisInputGainMultiplier{};
-    int mNumChannelsToAnalyse{};
+    int mChannelToAnalyse{};
     bool mShouldProcessAudioAnalysis{};
     bool mXYParamLinked{};
     bool mAudioAnalysisActivateState{};
@@ -351,7 +351,7 @@ public:
     void setSelectedSource(Source const & source);
     void updatePrimarySourceParameters(Source::ChangeType changeType);
     void setGainMultiplierForAudioAnalysis(double gainMult);
-    void setNumChannelsForAudioAnalysis(int numChannels);
+    void setChannelForAudioAnalysis(int channel);
     void setSelectedSoundTrajectoriesTab(int newCurrentTabIndex);
     void processParameterValues();
     bool getXYParamLink();
