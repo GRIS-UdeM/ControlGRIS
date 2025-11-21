@@ -2176,7 +2176,7 @@ bool gris::SectionSoundReactiveTrajectories::getAudioAnalysisActivateState()
 //==============================================================================
 void gris::SectionSoundReactiveTrajectories::setAudioAnalysisActivateState(bool state)
 {
-    mAudioAnalysisActivateButton.setToggleState(state, juce::dontSendNotification);
+    mAudioAnalysisActivateButton.setToggleState(state, juce::sendNotification);
 }
 
 //==============================================================================
