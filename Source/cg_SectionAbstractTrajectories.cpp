@@ -312,7 +312,7 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
         mAPVTS.state.setProperty("posRandomToggle", toggleState, nullptr);
         mListeners.call([&](Listener & l) { l.positionTrajectoryRandomEnableChangedCallback(toggleState); });
 
-        setPositionDampeningEnabled(!toggleState);
+        setPositionDampeningEnabled(toggleState ? false : mPositionBackAndForthToggle.getToggleState());
         mRandomXYLoopButton.setEnabled(toggleState);
         mRandomStartXYButton.setEnabled(toggleState);
         mRandomTypeXYCombo.setEnabled(toggleState);
@@ -460,7 +460,7 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
         mAPVTS.state.setProperty("eleRandomToggle", toggleState, nullptr);
         mListeners.call([&](Listener & l) { l.elevationTrajectoryRandomEnableChangedCallback(toggleState); });
 
-        setElevationDampeningEnabled(!toggleState);
+        setElevationDampeningEnabled(toggleState ? false : mElevationBackAndForthToggle.getToggleState());
         mRandomZLoopButton.setEnabled(toggleState);
         mRandomStartZButton.setEnabled(toggleState);
         mRandomTypeZCombo.setEnabled(toggleState);
