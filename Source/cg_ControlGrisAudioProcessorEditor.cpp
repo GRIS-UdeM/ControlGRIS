@@ -44,7 +44,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
                      mProcessor.getPersistentStorage())
     , mElevationField(controlGrisAudioProcessor.getSources(), elevationAutomationManager)
     , mSectionSourceSpan(mGrisLookAndFeel)
-    , mSectionAbstractTrajectories(mGrisLookAndFeel, vts)
+    , mSectionAbstractTrajectories(mGrisLookAndFeel, vts, controlGrisAudioProcessor)
     , mSectionSoundReactiveTrajectories(mGrisLookAndFeel, mProcessor)
     , mSectionGeneralSettings(mGrisLookAndFeel)
     , mSectionSourcePosition(mGrisLookAndFeel,
@@ -1202,6 +1202,8 @@ void ControlGrisAudioProcessorEditor::refreshActivateButtonsState()
 {
     mPositionTrajectoryManager.setPositionActivateState(false);
     mElevationTrajectoryManager.setPositionActivateState(false);
+    mSectionAbstractTrajectories.setPositionActivateState(false);
+    mSectionAbstractTrajectories.setElevationActivateState(false);
     mSectionSoundReactiveTrajectories.setAudioAnalysisActivateState(false);
     mProcessor.setAudioAnalysisState(false);
 }
@@ -1372,9 +1374,11 @@ void ControlGrisAudioProcessorEditor::setSpatMode(SpatMode spatMode)
 
 //==============================================================================
 TabbedTrajectoriesComponent::TabbedTrajectoriesComponent(juce::TabbedButtonBar::Orientation orientation,
-                                                         ControlGrisAudioProcessor & audioProcessor)
+                                                         ControlGrisAudioProcessor & audioProcessor,
+                                                         ControlGrisAudioProcessorEditor & editor)
     : juce::TabbedComponent(orientation)
     , mAudioProcessor(audioProcessor)
+    , mEditorComponent(editor)
 {
 }
 
@@ -1383,13 +1387,10 @@ void TabbedTrajectoriesComponent::currentTabChanged(int newCurrentTabIndex, cons
 {
     mAudioProcessor.setSelectedSoundTrajectoriesTab(newCurrentTabIndex);
 
-    auto * ed{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getParentComponent()) };
-    if (ed != nullptr) {
-        bool showTraj{ newCurrentTabIndex == 1 };
-        ed->setShowTrajectories(showTraj);
-        ed->refreshActivateButtonsState();
-        ed->refresh();
-    }
+    bool showTraj{ newCurrentTabIndex == 1 };
+    mEditorComponent.setShowTrajectories(showTraj);
+    mEditorComponent.refreshActivateButtonsState();
+    mEditorComponent.refresh();
 }
 
 } // namespace gris
