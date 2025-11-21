@@ -32,18 +32,21 @@
 
 namespace gris
 {
+class ControlGrisAudioProcessorEditor;
 //==============================================================================
 class TabbedTrajectoriesComponent final : public juce::TabbedComponent
 {
 private:
     //==============================================================================
     ControlGrisAudioProcessor & mAudioProcessor;
+    ControlGrisAudioProcessorEditor & mEditorComponent;
 
 public:
     //==============================================================================
     TabbedTrajectoriesComponent() = delete;
     TabbedTrajectoriesComponent(juce::TabbedButtonBar::Orientation orientation,
-                                ControlGrisAudioProcessor & audioProcessor);
+                                ControlGrisAudioProcessor & audioProcessor,
+                                ControlGrisAudioProcessorEditor & editor);
     //==============================================================================
     TabbedTrajectoriesComponent(TabbedTrajectoriesComponent const &) = delete;
     TabbedTrajectoriesComponent(TabbedTrajectoriesComponent &&) = delete;
@@ -97,7 +100,7 @@ private:
     SectionSoundReactiveTrajectories mSectionSoundReactiveTrajectories;
 
     juce::TabbedComponent mConfigurationComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop };
-    TabbedTrajectoriesComponent mTrajectoriesComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop, mProcessor };
+    TabbedTrajectoriesComponent mTrajectoriesComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop, mProcessor, *this };
 
     SectionGeneralSettings mSectionGeneralSettings;
     SectionSourcePosition mSectionSourcePosition;

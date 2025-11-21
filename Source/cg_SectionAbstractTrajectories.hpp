@@ -23,6 +23,7 @@
 #include <JuceHeader.h>
 
 #include "cg_ControlGrisLookAndFeel.hpp"
+#include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_NumSlider.h"
 #include "cg_TextEditor.hpp"
 #include "cg_constants.hpp"
@@ -30,7 +31,7 @@
 namespace gris
 {
 //==============================================================================
-class SectionAbstractTrajectories final : public juce::Component
+class SectionAbstractTrajectories final : public juce::Component , juce::Timer
 {
 public:
     //==============================================================================
@@ -79,6 +80,7 @@ private:
     //==============================================================================
     GrisLookAndFeel & mGrisLookAndFeel;
     juce::AudioProcessorValueTreeState & mAPVTS;
+    ControlGrisAudioProcessor & mProcessor;
     juce::ListenerList<Listener> mListeners;
     SpatMode mSpatMode;
 
@@ -145,7 +147,9 @@ private:
 
 public:
     //==============================================================================
-    explicit SectionAbstractTrajectories(GrisLookAndFeel & grisLookAndFeel, juce::AudioProcessorValueTreeState & apvts);
+    explicit SectionAbstractTrajectories(GrisLookAndFeel & grisLookAndFeel,
+                                         juce::AudioProcessorValueTreeState & apvts,
+                                         ControlGrisAudioProcessor & audioProcessor);
     //==============================================================================
     SectionAbstractTrajectories() = delete;
     ~SectionAbstractTrajectories() override = default;
@@ -159,6 +163,7 @@ public:
     void mouseDown(juce::MouseEvent const & event) override;
     void paint(juce::Graphics &) override;
     void resized() override;
+    void timerCallback() override;
 
     void actualizeValueTreeState();
     void setSpatMode(SpatMode spatMode);

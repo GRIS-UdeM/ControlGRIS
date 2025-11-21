@@ -33,9 +33,11 @@ auto constexpr SPEED_SLIDER_MID_VAL{ 1.0 };
 
 //==============================================================================
 SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisLookAndFeel,
-                                                         juce::AudioProcessorValueTreeState & apvts)
+                                                         juce::AudioProcessorValueTreeState & apvts,
+                                                         ControlGrisAudioProcessor & audioProcessor)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAPVTS(apvts)
+    , mProcessor(audioProcessor)
     , mRandomProximityXYSlider(grisLookAndFeel)
     , mRandomTimeMinXYSlider(grisLookAndFeel)
     , mRandomTimeMaxXYSlider(grisLookAndFeel)
@@ -170,6 +172,16 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mPositionActivateButton.setButtonText("Activate");
     mPositionActivateButton.setClickingTogglesState(true);
     mPositionActivateButton.onClick = [this] {
+        auto state{ mPositionActivateButton.getToggleState() };
+        if (juce::ModifierKeys::getCurrentModifiers().isShiftDown() && state) {
+            mAPVTS.state.setProperty("positionActivateButtonAlwaysOn", true, nullptr);
+            mPositionActivateButton.setName("ActivateButton_ON");
+            startTimer(100);
+        } else {
+            mAPVTS.state.setProperty("positionActivateButtonAlwaysOn", false, nullptr);
+            mPositionActivateButton.setName("");
+            stopTimer();
+        }
         if (mActivateLinked) {
             mElevationActivateButton.setToggleState(mPositionActivateButton.getToggleState(), juce::sendNotification);
         }
@@ -239,6 +251,16 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mElevationActivateButton.setButtonText("Activate");
     mElevationActivateButton.setClickingTogglesState(true);
     mElevationActivateButton.onClick = [this] {
+        auto state{ mElevationActivateButton.getToggleState() };
+        if (juce::ModifierKeys::getCurrentModifiers().isShiftDown() && state) {
+            mAPVTS.state.setProperty("elevationActivateButtonAlwaysOn", true, nullptr);
+            mElevationActivateButton.setName("ActivateButton_ON");
+            startTimer(100);
+        } else {
+            mAPVTS.state.setProperty("elevationActivateButtonAlwaysOn", false, nullptr);
+            mElevationActivateButton.setName("");
+            stopTimer();
+        }
         if (mActivateLinked) {
             mPositionActivateButton.setToggleState(mElevationActivateButton.getToggleState(), juce::sendNotification);
         }
@@ -675,13 +697,13 @@ void SectionAbstractTrajectories::setDeviationPerCycle(float const value)
 //==============================================================================
 void SectionAbstractTrajectories::setPositionActivateState(bool const state)
 {
-    mPositionActivateButton.setToggleState(state, juce::NotificationType::dontSendNotification);
+    mPositionActivateButton.setToggleState(state, juce::NotificationType::sendNotification);
 }
 
 //==============================================================================
 void SectionAbstractTrajectories::setElevationActivateState(bool const state)
 {
-    mElevationActivateButton.setToggleState(state, juce::NotificationType::dontSendNotification);
+    mElevationActivateButton.setToggleState(state, juce::NotificationType::sendNotification);
 }
 
 //==============================================================================
@@ -892,6 +914,26 @@ void SectionAbstractTrajectories::resized()
     mDurationLabel.setBounds(495, 5, 90, 20);
     mDurationEditor.setBounds(500, 30, 90, 20);
     mDurationUnitCombo.setBounds(500, 60, 90, 20);
+}
+
+//==============================================================================
+void SectionAbstractTrajectories::timerCallback()
+{
+    if (!(mProcessor.isPlaying())) {
+        bool positionActivateButtonAlwaysOn{ mAPVTS.state.getProperty("positionActivateButtonAlwaysOn") };
+        bool elevationActivateButtonAlwaysOn{ mAPVTS.state.getProperty("elevavtionActivateButtonAlwaysOn") };
+
+        if (positionActivateButtonAlwaysOn) {
+            mListeners.call([&](Listener & l) {
+                l.positionTrajectoryStateChangedCallback(mPositionActivateButton.getToggleState());
+            });
+        }
+        if (elevationActivateButtonAlwaysOn) {
+            mListeners.call([&](Listener & l) {
+                l.elevationTrajectoryStateChangedCallback(mElevationActivateButton.getToggleState());
+            });
+        }
+    }
 }
 
 } // namespace gris

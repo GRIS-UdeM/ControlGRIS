@@ -50,6 +50,7 @@ class GrisLookAndFeel final : public juce::LookAndFeel_V4
     juce::Colour mDisableBackgroundColor;
     juce::Colour mHlBackgroundColor;
     juce::Colour mOnColor;
+    juce::Colour mAlwaysOnColor;
     juce::Colour mOnColorOver;
     juce::Colour mOnColorDown;
     juce::Colour mOffColor;

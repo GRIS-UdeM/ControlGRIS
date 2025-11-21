@@ -939,9 +939,13 @@ void ControlGrisAudioProcessor::timerCallback()
     mLastTimerTime = getCurrentTime();
 
     if (mCanStopActivate && !mIsPlaying) {
-        if (mPositionTrajectoryManager.getPositionActivateState())
+        bool positionActivateAlwaysOn{ mAudioProcessorValueTreeState.state.getProperty(
+            "positionActivateButtonAlwaysOn") };
+        bool elevationActivateAlwaysOn{ mAudioProcessorValueTreeState.state.getProperty(
+            "elevationActivateButtonAlwaysOn") };
+        if (mPositionTrajectoryManager.getPositionActivateState() && !positionActivateAlwaysOn)
             mPositionTrajectoryManager.setPositionActivateState(false);
-        if (mElevationTrajectoryManager.getPositionActivateState())
+        if (mElevationTrajectoryManager.getPositionActivateState() && !elevationActivateAlwaysOn)
             mElevationTrajectoryManager.setPositionActivateState(false);
         mAudioAnalysisActivateState = false;
         mCanStopActivate = false;

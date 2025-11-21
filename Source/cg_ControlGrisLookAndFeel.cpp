@@ -34,6 +34,7 @@ GrisLookAndFeel::GrisLookAndFeel()
     mEditBackgroundColor = juce::Colour::fromRGB(172, 172, 172);
     mHlBackgroundColor = juce::Colour::fromRGB(190, 125, 18);
     mOnColor = juce::Colour::fromRGB(255, 165, 25);
+    mAlwaysOnColor = juce::Colour::fromRGB(255, 100, 100);
     mOnColorOver = juce::Colour::fromRGB(255, 184, 75);
     mOnColorDown = juce::Colour::fromRGB(222, 144, 22);
     mOffColor = juce::Colour::fromRGB(56, 56, 56);
@@ -281,7 +282,11 @@ void GrisLookAndFeel::drawButtonBackground(juce::Graphics & g,
     if (isButtonDown) {
         color = this->mOnColorDown;
     } else if (button.getToggleState()) {
-        color = this->mOnColor;
+        if (button.getName().contains("ActivateButton") && button.getName().contains("ON")) {
+            color = this->mAlwaysOnColor;
+        } else {
+            color = this->mOnColor;
+        }
     } else {
         color = button.findColour(juce::TextButton::buttonColourId);
     }
