@@ -31,7 +31,7 @@
 namespace gris
 {
 //==============================================================================
-enum class DescriptorID { invalid = -1, loudness = 0, pitch, centroid, spread, noise, iterationsSpeed };
+enum class DescriptorID { invalid = -1, loudness = 0, centroid, spread, noise, pitch, iterationsSpeed };
 
 class Descriptor
 {
@@ -54,13 +54,13 @@ public:
         case 2:
             return DescriptorID::loudness;
         case 3:
-            return DescriptorID::pitch;
-        case 4:
             return DescriptorID::centroid;
-        case 5:
+        case 4:
             return DescriptorID::spread;
-        case 6:
+        case 5:
             return DescriptorID::noise;
+        case 6:
+            return DescriptorID::pitch;
         case 7:
             return DescriptorID::iterationsSpeed;
         default:
