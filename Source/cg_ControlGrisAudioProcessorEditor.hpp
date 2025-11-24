@@ -100,7 +100,9 @@ private:
     SectionSoundReactiveTrajectories mSectionSoundReactiveTrajectories;
 
     juce::TabbedComponent mConfigurationComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop };
-    TabbedTrajectoriesComponent mTrajectoriesComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop, mProcessor, *this };
+    TabbedTrajectoriesComponent mTrajectoriesComponent{ juce::TabbedButtonBar::Orientation::TabsAtTop,
+                                                        mProcessor,
+                                                        *this };
 
     SectionGeneralSettings mSectionGeneralSettings;
     SectionSourcePosition mSectionSourcePosition;

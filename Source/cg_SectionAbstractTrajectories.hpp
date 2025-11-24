@@ -22,8 +22,8 @@
 
 #include <JuceHeader.h>
 
-#include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_ControlGrisAudioProcessor.hpp"
+#include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_NumSlider.h"
 #include "cg_TextEditor.hpp"
 #include "cg_constants.hpp"
@@ -31,7 +31,9 @@
 namespace gris
 {
 //==============================================================================
-class SectionAbstractTrajectories final : public juce::Component , juce::Timer
+class SectionAbstractTrajectories final
+    : public juce::Component
+    , juce::Timer
 {
 public:
     //==============================================================================

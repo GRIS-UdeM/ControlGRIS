@@ -368,11 +368,11 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
     };
 
-    //addAndMakeVisible(&mParameterLapLabel);
+    // addAndMakeVisible(&mParameterLapLabel);
     mParameterLapLabel.setText("Lap", juce::dontSendNotification);
 
     // lap textEditor
-    //addAndMakeVisible(&mParameterLapEditor);
+    // addAndMakeVisible(&mParameterLapEditor);
     mParameterLapEditor.setLookAndFeel(&mGrisLookAndFeel);
     mParameterLapEditor.setFont(grisLookAndFeel.getFont());
     mParameterLapEditor.setInputRestrictions(2, "1234567890");
@@ -1341,7 +1341,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
 
     addAndMakeVisible(&mDescriptorExpanderSlider);
     addAndMakeVisible(&mDescriptorSmoothSlider);
-    //addAndMakeVisible(&mDescriptorSmoothCoefSlider);
+    // addAndMakeVisible(&mDescriptorSmoothCoefSlider);
     addAndMakeVisible(&mDescriptorMinFreqSlider);
     addAndMakeVisible(&mDescriptorMaxFreqSlider);
     addAndMakeVisible(&mDescriptorThresholdSlider);
@@ -1356,7 +1356,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     addAndMakeVisible(&mDescriptorMinTimeLabel);
     addAndMakeVisible(&mDescriptorMaxTimeLabel);
     addAndMakeVisible(&mDescriptorSmoothLabel);
-    //addAndMakeVisible(&mDescriptorSmoothCoefLabel);
+    // addAndMakeVisible(&mDescriptorSmoothCoefLabel);
 
     addAndMakeVisible(&mDescriptorMetricCombo);
     mDescriptorMetricCombo.addItemList(ONSET_DETECTION_METRIC_TYPES, 1);
@@ -2542,8 +2542,7 @@ bool gris::SectionSoundReactiveTrajectories::isAtLeastOneAudioDescriptorSelected
 {
     if (mParameterAzimuthDescriptorCombo.getName().contains("ON")
         || mParameterElevationDescriptorCombo.getName().contains("ON")
-        || mParameterXDescriptorCombo.getName().contains("ON")
-        || mParameterYDescriptorCombo.getName().contains("ON")
+        || mParameterXDescriptorCombo.getName().contains("ON") || mParameterYDescriptorCombo.getName().contains("ON")
         || mParameterZDescriptorCombo.getName().contains("ON")
         || mParameterAzimuthOrXYSpanDescriptorCombo.getName().contains("ON")
         || mParameterElevationOrZSpanDescriptorCombo.getName().contains("ON")) {

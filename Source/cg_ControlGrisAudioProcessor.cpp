@@ -92,12 +92,12 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     :
 #ifndef JucePlugin_PreferredChannelConfigurations
     AudioProcessor(BusesProperties()
-                        #if !JucePlugin_IsMidiEffect
-                            #if !JucePlugin_IsSynth
+    #if !JucePlugin_IsMidiEffect
+        #if !JucePlugin_IsSynth
                        .withInput("Mono Input", juce::AudioChannelSet::mono(), true)
-                            #endif // JucePlugin_IsSynth
+        #endif // JucePlugin_IsSynth
                        .withOutput("Mono Output", juce::AudioChannelSet::mono(), false)
-                        #endif // JucePlugin_IsMidiEffect
+    #endif // JucePlugin_IsMidiEffect
                        )
     ,
 #endif // JucePlugin_PreferredChannelConfigurations
