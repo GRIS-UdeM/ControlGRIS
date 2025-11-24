@@ -141,8 +141,8 @@ juce::StringArray const ELEVATION_MODE_TYPES{ juce::String("Normal"),
 juce::String const FIXED_POSITION_DATA_TAG("Fix_Position_Data");
 
 juce::StringArray const AUDIO_DESCRIPTOR_TYPES{
-    juce::String("-"),      juce::String("Loudness"), juce::String("Pitch"),           juce::String("Centroid"),
-    juce::String("Spread"), juce::String("Noise"),    juce::String("Iterations Speed")
+    juce::String("-"),     juce::String("Loudness"), juce::String("Centroid"),        juce::String("Spread"),
+    juce::String("Noise"), juce::String("Pitch"),    juce::String("Iterations Speed")
 };
 
 juce::StringArray const ONSET_DETECTION_METRIC_TYPES{ juce::String("Energy"),
