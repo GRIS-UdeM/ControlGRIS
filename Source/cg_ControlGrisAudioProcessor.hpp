@@ -146,6 +146,7 @@ class ControlGrisAudioProcessor final
     bool mAudioAnalysisAzimuthSpanFlag{};
     bool mAudioAnalysisElevationSpanFlag{};
     bool mShouldResetXCubeValue{};
+    int mAzimuthFlippedAtZenithCounter{};
 
     float mSpatParamElevationBuffer{};
     float mSpatParamHSpanBuffer{};

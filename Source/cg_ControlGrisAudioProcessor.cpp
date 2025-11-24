@@ -1780,15 +1780,30 @@ void ControlGrisAudioProcessor::processParameterValues()
         pSource.setAzimuth(Radians{ Degrees{ aziDeg - static_cast<float>(mAzimuthDomeValue) } }, originOfChange);
         // Elevation
         auto eleDeg{ pSource.getElevation().getAsDegrees() };
+        auto diffElev = mAzimuthFlippedAtZenithCounter != 0 ? static_cast<float>(mElevationDomeValue)
+                                                            : eleDeg + static_cast<float>(mElevationDomeValue);
 
-        auto diffElev = eleDeg + static_cast<float>(mElevationDomeValue);
         if (mSpatParamElevationBuffer + diffElev < 0.0f) {
-            pSource.setElevation(Radians{ Degrees{ 0.0f } }, originOfChange);
+            // 0 degree is zenith
+            pSource.setElevation(Radians{ Degrees{ std::abs(mSpatParamElevationBuffer + diffElev) } }, originOfChange);
+            mAzimuthFlippedAtZenithCounter++;
+            if (mAzimuthFlippedAtZenithCounter == 1) {
+                pSource.setAzimuth(Radians{ Degrees{ aziDeg - 180.0f } }, originOfChange);
+            }
             mSpatParamElevationBuffer += diffElev;
         } else if (mSpatParamElevationBuffer + diffElev > 90.0f) {
+            // 90 degrees is horizon
+            if (mAzimuthFlippedAtZenithCounter != 0) {
+                pSource.setAzimuth(Radians{ Degrees{ aziDeg - 180.0f } }, originOfChange);
+                mAzimuthFlippedAtZenithCounter = 0;
+            }
             pSource.setElevation(Radians{ Degrees{ 90.0f } }, originOfChange);
             mSpatParamElevationBuffer += diffElev - 90.0f;
         } else if (mSpatParamElevationBuffer + diffElev >= 0.0f && mSpatParamElevationBuffer + diffElev <= 90.0f) {
+            if (mAzimuthFlippedAtZenithCounter != 0) {
+                pSource.setAzimuth(Radians{ Degrees{ aziDeg - 180.0f } }, originOfChange);
+                mAzimuthFlippedAtZenithCounter = 0;
+            }
             pSource.setElevation(Radians{ Degrees{ mSpatParamElevationBuffer + diffElev } }, originOfChange);
             mSpatParamElevationBuffer = 0.0f;
         }
