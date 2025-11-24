@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="m50y5Z" name="ControlGRIS" projectType="audioplug" pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3"
-              version="2.0.0" bundleIdentifier="ca.umontreal.musique.gris.controlgris.pkg"
+              version="2.0.1" bundleIdentifier="ca.umontreal.musique.gris.controlgris.pkg"
               companyName="UdeM" aaxIdentifier="com.udem.GRIS.ControlGris"
               pluginManufacturer="UdeM" pluginManufacturerCode="UdeM" pluginCode="Xzz2"
               cppLanguageStandard="latest" projectLineFeed="&#10;" jucerFormatVersion="1"
