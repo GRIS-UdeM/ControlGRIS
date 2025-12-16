@@ -367,8 +367,9 @@ void Sources::setSize(int const size)
 {
     jassert(size >= 1 && size <= MAX_NUMBER_OF_SOURCES);
     if (size < mSize) {
-        // This resets elevation of unused sources when decreasing the total number of sources
-        for (int i{}; i <= mSize - 2; ++i) {
+        // This resets elevation of unused sources when decreasing the total number of sources without changing
+        // elevation of existing sources
+        for (int i{ size }; i <= mSize - 2; ++i) {
             mSecondarySources[i].setElevation(Radians{ MAX_ELEVATION }, Source::OriginOfChange::none);
         }
     }
