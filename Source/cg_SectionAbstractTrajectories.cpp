@@ -134,6 +134,7 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
             speedMultToSend = juce::jmap(sliderVal, 0.5, 1.0, SPEED_SLIDER_MID_VAL, SPEED_SLIDER_MAX_VAL);
         }
         mListeners.call([&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
+        repaint();
     };
 
     mElevationCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
@@ -160,6 +161,7 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
             speedMultToSend = juce::jmap(sliderVal, 0.5, 1.0, SPEED_SLIDER_MID_VAL, SPEED_SLIDER_MAX_VAL);
         }
         mListeners.call([&](Listener & l) { l.elevationTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
+        repaint();
     };
 
     // Removed because this interacted with DAWs
@@ -741,6 +743,27 @@ void SectionAbstractTrajectories::mouseDown(juce::MouseEvent const & event)
             mActivateLinked = !mActivateLinked;
             repaint();
         }
+
+        // resetting elevation cycle speed slider
+        auto eleCycleSpeedSliderBounds{ mElevationCycleSpeedSlider.getBounds() };
+        juce::Path pathEle;
+        pathEle.addRectangle(static_cast<float>(eleCycleSpeedSliderBounds.getCentreX() - 5),
+                             static_cast<float>(eleCycleSpeedSliderBounds.getY() - 7),
+                             10,
+                             7);
+        if (pathEle.contains(event.getMouseDownPosition().toFloat())) {
+            mElevationCycleSpeedSlider.setValue(0.5, juce::sendNotification);
+        }
+    }
+    // resetting position cycle speed slider
+    auto posCycleSpeedSliderBounds{ mPositionCycleSpeedSlider.getBounds() };
+    juce::Path pathPos;
+    pathPos.addRectangle(static_cast<float>(posCycleSpeedSliderBounds.getCentreX() - 5),
+                         static_cast<float>(posCycleSpeedSliderBounds.getY() - 7),
+                         10,
+                         7);
+    if (pathPos.contains(event.getMouseDownPosition().toFloat())) {
+        mPositionCycleSpeedSlider.setValue(0.5, juce::sendNotification);
     }
 }
 
@@ -778,6 +801,20 @@ void SectionAbstractTrajectories::paint(juce::Graphics & g)
                    15,
                    15,
                    juce::Justification::centred);
+
+        juce::Path pathEle;
+        pathEle.addTriangle({ static_cast<float>(eleCycleSpeedSliderBounds.getCentreX() - 3),
+                              static_cast<float>(eleCycleSpeedSliderBounds.getY() - 5) },
+                            { static_cast<float>(eleCycleSpeedSliderBounds.getCentreX() + 3),
+                              static_cast<float>(eleCycleSpeedSliderBounds.getY() - 5) },
+                            { static_cast<float>(eleCycleSpeedSliderBounds.getCentreX()),
+                              static_cast<float>(eleCycleSpeedSliderBounds.getY() - 1) });
+        if (mElevationCycleSpeedSlider.getValue() == mElevationCycleSpeedSlider.getRange().getLength() / 2) {
+            g.setColour(juce::Colours::lightgreen);
+        } else {
+            g.setColour(mGrisLookAndFeel.getDarkColor());
+        }
+        g.fillPath(pathEle);
     }
 
     g.setColour(juce::Colours::orange);
@@ -795,6 +832,20 @@ void SectionAbstractTrajectories::paint(juce::Graphics & g)
                15,
                15,
                juce::Justification::centred);
+
+    juce::Path pathPos;
+    pathPos.addTriangle({ static_cast<float>(posCycleSpeedSliderBounds.getCentreX() - 3),
+                    static_cast<float>(posCycleSpeedSliderBounds.getY() - 5) },
+                  { static_cast<float>(posCycleSpeedSliderBounds.getCentreX() + 3),
+                    static_cast<float>(posCycleSpeedSliderBounds.getY() - 5) },
+                  { static_cast<float>(posCycleSpeedSliderBounds.getCentreX()),
+                    static_cast<float>(posCycleSpeedSliderBounds.getY() - 1) });
+    if (mPositionCycleSpeedSlider.getValue() == mPositionCycleSpeedSlider.getRange().getLength() / 2) {
+        g.setColour(juce::Colours::lightgreen);
+    } else {
+        g.setColour(mGrisLookAndFeel.getDarkColor());
+    }
+    g.fillPath(pathPos);
 }
 
 //==============================================================================
@@ -807,8 +858,8 @@ void SectionAbstractTrajectories::resized()
     mDampeningLabel.setBounds(5, 18, 150, 22);
     mDampeningLabel2ndLine.setBounds(5, 26, 150, 22);
     mPositionDampeningEditor.setBounds(115, 27, 75, 15);
-    mDeviationLabel.setBounds(110, 40, 150, 22);
-    mDeviationLabel2ndLine.setBounds(110, 48, 150, 22);
+    mDeviationLabel.setBounds(110, 40, 90, 22);
+    mDeviationLabel2ndLine.setBounds(110, 48, 90, 22);
     mDeviationEditor.setBounds(211, 49, 78, 15);
     mCycleSpeedLabel.setBounds(5, 71, 100, 22);
     mPositionCycleSpeedSlider.setBounds(113, 72, 180, 16);
