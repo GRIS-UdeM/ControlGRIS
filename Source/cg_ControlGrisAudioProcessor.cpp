@@ -82,7 +82,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
             juce::String("Elevation Mode"),
             juce::NormalisableRange<float>(0.0f, static_cast<float>(ELEVATION_MODE_TYPES.size() - 1), 1.0f),
             0.0f,
-            Attributes().withDiscrete(true).withAutomatable(true)));
+            Attributes().withDiscrete(true).withAutomatable(true)),
+        std::make_unique<Parameter>(juce::ParameterID{ Automation::Ids::POSITION_SPEED_SLIDER, 1 },
+                                    juce::String("Position Speed Slider"),
+                                    juce::NormalisableRange(0.0f, 1.0f, 0.01f),
+                                    0.5f,
+                                    Attributes()),
+        std::make_unique<Parameter>(juce::ParameterID{ Automation::Ids::ELEVATION_SPEED_SLIDER, 1 },
+                                    juce::String("Elevation Speed Slider"),
+                                    juce::NormalisableRange(0.0f, 1.0f, 0.01f),
+                                    0.5f,
+                                    Attributes()));
 
     return layout;
 }
@@ -216,6 +226,8 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::AZIMUTH_SPAN, this);
     mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::ELEVATION_SPAN, this);
     mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::ELEVATION_MODE, this);
+    mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::POSITION_SPEED_SLIDER, this);
+    mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::ELEVATION_SPEED_SLIDER, this);
 
     // The timer's callback send OSC messages periodically.
     //-----------------------------------------------------
@@ -281,10 +293,32 @@ void ControlGrisAudioProcessor::parameterChanged(juce::String const & parameterI
 
     if (parameterId.compare(Automation::Ids::ELEVATION_MODE) == 0) {
         mElevationMode = static_cast<ElevationMode>(newValue);
-        auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-        if (editor != nullptr) {
-            editor->updateElevationMode(mElevationMode);
-        }
+        juce::MessageManager::callAsync([this] {
+            auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
+            if (editor != nullptr) {
+                editor->updateElevationMode(mElevationMode);
+            }
+        });
+    }
+
+    if (parameterId.compare(Automation::Ids::POSITION_SPEED_SLIDER) == 0) {
+        auto const value{ static_cast<float>(newValue) };
+        juce::MessageManager::callAsync([this, newValue] {
+            auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
+            if (editor != nullptr) {
+                editor->updatePositionSpeedSliderVal(newValue);
+            }
+        });
+    }
+
+    if (parameterId.compare(Automation::Ids::ELEVATION_SPEED_SLIDER) == 0) {
+        auto const value{ static_cast<float>(newValue) };
+        juce::MessageManager::callAsync([this, newValue] {
+            auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
+            if (editor != nullptr) {
+                editor->updateElevationSpeedSliderVal(newValue);
+            }
+        });
     }
 }
 

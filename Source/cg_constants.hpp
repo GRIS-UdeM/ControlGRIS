@@ -154,6 +154,8 @@ juce::String extern const AZIMUTH_SPAN;
 juce::String extern const ELEVATION_SPAN;
 juce::String extern const POSITION_PRESET;
 juce::String extern const ELEVATION_MODE;
+juce::String extern const POSITION_SPEED_SLIDER;
+juce::String extern const ELEVATION_SPEED_SLIDER;
 } // namespace Ids
 
 enum class Enum {
@@ -165,7 +167,9 @@ enum class Enum {
     azimuthSpan,
     elevationSpan,
     positionPreset,
-    elevationMode
+    elevationMode,
+    positionSpeedSlider,
+    elevationSpeedSlider
 };
 
 Enum idToEnum(juce::String const & name);

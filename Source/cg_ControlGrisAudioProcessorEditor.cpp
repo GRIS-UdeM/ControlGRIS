@@ -367,6 +367,18 @@ void ControlGrisAudioProcessorEditor::updateElevationMode(ElevationMode mode)
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::updatePositionSpeedSliderVal(float value)
+{
+    mSectionAbstractTrajectories.updatePositionSpeedSliderVal(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::updateElevationSpeedSliderVal(float value)
+{
+    mSectionAbstractTrajectories.updateElevationSpeedSliderVal(value);
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::setShowTrajectories(bool shouldShowTrajectories)
 {
     mPositionField.setShowTrajectory(shouldShowTrajectories);

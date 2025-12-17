@@ -31,6 +31,8 @@ juce::String const Automation::Ids::AZIMUTH_SPAN{ "azimuthSpan" };
 juce::String const Automation::Ids::ELEVATION_SPAN{ "elevationSpan" };
 juce::String const Automation::Ids::POSITION_PRESET{ "positionPreset" };
 juce::String const Automation::Ids::ELEVATION_MODE{ "elevationMode" };
+juce::String const Automation::Ids::POSITION_SPEED_SLIDER{ "positionSpeedSlider" };
+juce::String const Automation::Ids::ELEVATION_SPEED_SLIDER{ "elevationSpeedSlider" };
 
 Automation::Enum Automation::idToEnum(const juce::String & name)
 {
@@ -60,6 +62,12 @@ Automation::Enum Automation::idToEnum(const juce::String & name)
     }
     if (name.compare(Ids::ELEVATION_MODE) == 0) {
         return Enum::elevationMode;
+    }
+    if (name.compare(Ids::ELEVATION_SPEED_SLIDER) == 0) {
+        return Enum::elevationSpeedSlider;
+    }
+    if (name.compare(Ids::POSITION_SPEED_SLIDER) == 0) {
+        return Enum::positionSpeedSlider;
     }
 
     jassertfalse;

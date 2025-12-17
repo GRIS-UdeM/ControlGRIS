@@ -226,6 +226,8 @@ public:
     void updateElevationSourceLinkCombo(ElevationSourceLink value);
     void updatePositionPreset(int presetNumber);
     void updateElevationMode(ElevationMode mode);
+    void updatePositionSpeedSliderVal(float value);
+    void updateElevationSpeedSliderVal(float value);
 
     void setShowTrajectories(bool shouldShowTrajectories);
 
