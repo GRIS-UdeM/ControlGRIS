@@ -32,10 +32,7 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
     mOscOutputPluginIdEditor.setFont(grisLookAndFeel.getFont());
     mOscOutputPluginIdEditor.setText(juce::String(1));
     mOscOutputPluginIdEditor.setInputRestrictions(3, "0123456789");
-    mOscOutputPluginIdEditor.onReturnKey = [this] { mOscOutputPluginIdEditor.onFocusLost(); };
-    mOscOutputPluginIdEditor.onEscapeKey = [this] { mOscOutputPluginIdEditor.resetCurrentText(); };
     mOscOutputPluginIdEditor.onFocusLost = [this] {
-        mOscOutputPluginIdEditor.stopEditing();
         mOscOutputPluginIdEditor.moveCaretToEnd();
         if (!mOscOutputPluginIdEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {
@@ -83,10 +80,7 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
     mOscReceivePortEditor.setFont(grisLookAndFeel.getFont());
     mOscReceivePortEditor.setText(juce::String(mLastOscReceivePort));
     mOscReceivePortEditor.setInputRestrictions(5, "0123456789");
-    mOscReceivePortEditor.onReturnKey = [this] { mOscReceivePortEditor.onFocusLost(); };
-    mOscReceivePortEditor.onEscapeKey = [this] { mOscReceivePortEditor.resetCurrentText(); };
     mOscReceivePortEditor.onFocusLost = [this] {
-        mOscReceivePortEditor.stopEditing();
         mOscReceivePortEditor.moveCaretToEnd();
         if (!mOscReceivePortEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {
@@ -109,10 +103,7 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
     mOscSendIpEditor.setFont(grisLookAndFeel.getFont());
     mOscSendIpEditor.setText(mLastOscSendAddress);
     mOscSendIpEditor.setInputRestrictions(16, ".0123456789");
-    mOscSendIpEditor.onReturnKey = [this] { mOscSendIpEditor.onFocusLost(); };
-    mOscSendIpEditor.onEscapeKey = [this] { mOscSendIpEditor.resetCurrentText(); };
     mOscSendIpEditor.onFocusLost = [this] {
-        mOscSendIpEditor.stopEditing();
         mOscSendIpEditor.moveCaretToEnd();
         if (!mOscSendIpEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {
@@ -137,10 +128,7 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
     mOscSendPortEditor.setFont(grisLookAndFeel.getFont());
     mOscSendPortEditor.setText(juce::String(mLastOscSendPort));
     mOscSendPortEditor.setInputRestrictions(5, "0123456789");
-    mOscSendPortEditor.onReturnKey = [this] { mOscSendPortEditor.onFocusLost(); };
-    mOscSendPortEditor.onEscapeKey = [this] { mOscSendPortEditor.resetCurrentText(); };
     mOscSendPortEditor.onFocusLost = [this] {
-        mOscSendPortEditor.stopEditing();
         mOscSendPortEditor.moveCaretToEnd();
         if (!mOscSendPortEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {

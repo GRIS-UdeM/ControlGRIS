@@ -176,10 +176,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     mOscPortEditor.setExplicitFocusOrder(4);
     mOscPortEditor.setText(defaultPort);
     mOscPortEditor.setInputRestrictions(5, "0123456789");
-    mOscPortEditor.onReturnKey = [this] { mOscPortEditor.onFocusLost(); };
-    mOscPortEditor.onEscapeKey = [this] { mOscPortEditor.resetCurrentText(); };
     mOscPortEditor.onFocusLost = [this, defaultPort] {
-        mOscPortEditor.stopEditing();
         mOscPortEditor.moveCaretToEnd();
         if (!mOscPortEditor.isEmpty()) {
             mListeners.call([&](Listener & l) { l.oscPortChangedCallback(mOscPortEditor.getText().getIntValue()); });
@@ -202,10 +199,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     mOscAddressEditor.setExplicitFocusOrder(5);
     mOscAddressEditor.setText(defaultAddress);
     mOscAddressEditor.setInputRestrictions(15, "0123456789.");
-    mOscAddressEditor.onReturnKey = [this] { mOscAddressEditor.onFocusLost(); };
-    mOscAddressEditor.onEscapeKey = [this] { mOscAddressEditor.resetCurrentText(); };
     mOscAddressEditor.onFocusLost = [this, defaultAddress]() -> void {
-        mOscAddressEditor.stopEditing();
         mOscAddressEditor.moveCaretToEnd();
         if (!mOscAddressEditor.isEmpty()) {
             mListeners.call([&](Listener & l) { l.oscAddressChangedCallback(mOscAddressEditor.getText()); });
@@ -227,10 +221,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     mNumOfSourcesEditor.setFont(grisLookAndFeel.getFont());
     mNumOfSourcesEditor.setText("2");
     mNumOfSourcesEditor.setInputFilter(new NumberRangeInputFilter(1, Sources::MAX_NUMBER_OF_SOURCES), true);
-    mNumOfSourcesEditor.onReturnKey = [this] { mNumOfSourcesEditor.onFocusLost(); };
-    mNumOfSourcesEditor.onEscapeKey = [this] { mNumOfSourcesEditor.resetCurrentText(); };
     mNumOfSourcesEditor.onFocusLost = [this] {
-        mNumOfSourcesEditor.stopEditing();
         mNumOfSourcesEditor.moveCaretToEnd();
         if (!mNumOfSourcesEditor.isEmpty()) {
             mListeners.call(
@@ -253,10 +244,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     mFirstSourceIdEditor.setFont(grisLookAndFeel.getFont());
     mFirstSourceIdEditor.setText("1");
     mFirstSourceIdEditor.setInputRestrictions(3, "0123456789");
-    mFirstSourceIdEditor.onReturnKey = [this] { mFirstSourceIdEditor.onFocusLost(); };
-    mFirstSourceIdEditor.onEscapeKey = [this] { mFirstSourceIdEditor.resetCurrentText(); };
     mFirstSourceIdEditor.onFocusLost = [this] {
-        mFirstSourceIdEditor.stopEditing();
         mFirstSourceIdEditor.moveCaretToEnd();
         if (!mFirstSourceIdEditor.isEmpty()) {
             mListeners.call([&](Listener & l) {

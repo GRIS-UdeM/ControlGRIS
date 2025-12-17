@@ -21,17 +21,20 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "cg_ControlGrisLookAndFeel.hpp"
 
 namespace gris
 {
-class GrisLookAndFeel;
-
 //==============================================================================
-class TextEd : public juce::TextEditor
+class TextEd 
+    : public juce::TextEditor
+    , private juce::TextEditor::Listener
 {
 public:
     //==============================================================================
-    TextEd() = default;
+    TextEd() = delete;
+    explicit TextEd(GrisLookAndFeel & glaf);
+
     ~TextEd() override = default;
     //==============================================================================
     TextEd(TextEd const &) = delete;
@@ -39,15 +42,16 @@ public:
     TextEd & operator=(TextEd const &) = delete;
     TextEd & operator=(TextEd &&) = delete;
 
+    //==============================================================================
     void mouseDown(const juce::MouseEvent & event) override;
-    void mouseDrag(const juce::MouseEvent & event) override;
     void mouseDoubleClick(const juce::MouseEvent & event) override;
 
-    void stopEditing();
-    void resetCurrentText();
+    void textEditorReturnKeyPressed(juce::TextEditor & ed) override;
+    void textEditorEscapeKeyPressed(juce::TextEditor & ed) override;
 
 private:
     //==============================================================================
+    GrisLookAndFeel & mGrisLookAndFeel;
     bool mIsCurrentlyEditing{};
     juce::String mCurrentText;
 

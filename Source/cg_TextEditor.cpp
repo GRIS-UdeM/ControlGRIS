@@ -23,25 +23,18 @@
 namespace gris
 {
 //==============================================================================
-void TextEd::mouseDown(const juce::MouseEvent & event)
+TextEd::TextEd(GrisLookAndFeel & glaf) : mGrisLookAndFeel(glaf)
 {
-    // Prevent simple clicks from starting edit mode
-    if ((event.getNumberOfClicks() == 1 && !mIsCurrentlyEditing) || isReadOnly()) {
-        unfocusAllComponents();
-        return;
-    }
-
-    // double-click
-    mIsCurrentlyEditing = true;
-    mCurrentText = getText();
-    juce::TextEditor::mouseDown(event);
+    setReadOnly(true);
+    setCaretVisible(false);
 }
 
 //==============================================================================
-void TextEd::mouseDrag(const juce::MouseEvent & event)
+void TextEd::mouseDown(const juce::MouseEvent & event)
 {
-    if (mIsCurrentlyEditing) {
-        juce::TextEditor::mouseDrag(event);
+    // Prevent simple clicks from starting edit mode or mouse selection
+    if (event.getNumberOfClicks() == isReadOnly()) {
+        unfocusAllComponents();
         return;
     }
 }
@@ -49,22 +42,47 @@ void TextEd::mouseDrag(const juce::MouseEvent & event)
 //==============================================================================
 void TextEd::mouseDoubleClick(const juce::MouseEvent & event)
 {
-    selectAll();
+    if (!isEnabled())
+        return;
+
+    auto popupEditor{ std::make_unique<juce::TextEditor>("TextEdEditor") };
+    popupEditor->setLookAndFeel(&mGrisLookAndFeel);
+    popupEditor->setJustification(juce::Justification::centred);
+    popupEditor->addListener(this);
+    popupEditor->setMultiLine(false);
+    popupEditor->setSize(getWidth() + 20, 20);
+    popupEditor->setInputRestrictions(12, "0123456789,.");
+    popupEditor->setText(getText(), false);
+    popupEditor->selectAll();
+
+    auto & box = juce::CallOutBox::launchAsynchronously(std::move(popupEditor), getScreenBounds(), nullptr);
+    box.setLookAndFeel(&mGrisLookAndFeel);
 }
 
 //==============================================================================
-void TextEd::stopEditing()
+void TextEd::textEditorReturnKeyPressed(juce::TextEditor & ed)
 {
-    mIsCurrentlyEditing = false;
+    if (!ed.getText().isEmpty()) {
+        auto text = ed.getText().replace(",", ".");
+        setText(text, juce::sendNotification);
+        onFocusLost();
+    }
+
+    auto callOutBox = dynamic_cast<juce::CallOutBox *>(ed.getParentComponent());
+
+    if (callOutBox != nullptr) {
+        callOutBox->dismiss();
+    }
 }
 
 //==============================================================================
-void TextEd::resetCurrentText()
+void TextEd::textEditorEscapeKeyPressed(juce::TextEditor & ed)
 {
-    setText(mCurrentText);
-    mCurrentText.clear();
-    stopEditing();
-    unfocusAllComponents();
+    auto callOutBox = dynamic_cast<juce::CallOutBox *>(ed.getParentComponent());
+
+    if (callOutBox != nullptr) {
+        callOutBox->dismiss();
+    }
 }
 
 } // namespace gris

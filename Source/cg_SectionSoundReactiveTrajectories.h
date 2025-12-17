@@ -130,7 +130,7 @@ private:
     NumSlider mParameterEleZSpanOffsetSlider;
 
     juce::Label mParameterLapLabel;
-    TextEd mParameterLapEditor;
+    TextEd mParameterLapEditor{ mGrisLookAndFeel };
 
     juce::TextButton mAudioAnalysisActivateButton;
 

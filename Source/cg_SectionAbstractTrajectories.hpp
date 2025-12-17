@@ -98,15 +98,15 @@ private:
 
     juce::Label mDampeningLabel;
     juce::Label mDampeningLabel2ndLine;
-    TextEd mPositionDampeningEditor;
-    TextEd mElevationDampeningEditor;
+    TextEd mPositionDampeningEditor{ mGrisLookAndFeel };
+    TextEd mElevationDampeningEditor{ mGrisLookAndFeel };
 
     juce::Label mDeviationLabel;
     juce::Label mDeviationLabel2ndLine;
-    TextEd mDeviationEditor;
+    TextEd mDeviationEditor{ mGrisLookAndFeel };
 
     juce::Label mDurationLabel;
-    TextEd mDurationEditor;
+    TextEd mDurationEditor{ mGrisLookAndFeel };
     juce::ComboBox mDurationUnitCombo;
 
     juce::Label mCycleSpeedLabel;

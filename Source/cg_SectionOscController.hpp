@@ -49,12 +49,12 @@ private:
     juce::ToggleButton mOscSendToggle{};
 
     juce::Label mOscOutputPluginIdLabel{};
-    TextEd mOscOutputPluginIdEditor{};
+    TextEd mOscOutputPluginIdEditor{ mGrisLookAndFeel };
 
-    TextEd mOscReceiveIpEditor{};
-    TextEd mOscReceivePortEditor{};
-    TextEd mOscSendIpEditor{};
-    TextEd mOscSendPortEditor{};
+    TextEd mOscReceiveIpEditor{ mGrisLookAndFeel };
+    TextEd mOscReceivePortEditor{ mGrisLookAndFeel };
+    TextEd mOscSendIpEditor{ mGrisLookAndFeel };
+    TextEd mOscSendPortEditor{ mGrisLookAndFeel };
 
     int mLastOscReceivePort{ 9000 };
     int mLastOscSendPort{ 8000 };
