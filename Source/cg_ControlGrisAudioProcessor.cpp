@@ -943,11 +943,14 @@ void ControlGrisAudioProcessor::timerCallback()
             "positionActivateButtonAlwaysOn") };
         bool elevationActivateAlwaysOn{ mAudioProcessorValueTreeState.state.getProperty(
             "elevationActivateButtonAlwaysOn") };
+        bool audioAnalysisActivateAlwaysOn{ mAudioProcessorValueTreeState.state.getProperty(
+            "audioAnalysisActivateButtonAlwaysOn") };
         if (mPositionTrajectoryManager.getPositionActivateState() && !positionActivateAlwaysOn)
             mPositionTrajectoryManager.setPositionActivateState(false);
         if (mElevationTrajectoryManager.getPositionActivateState() && !elevationActivateAlwaysOn)
             mElevationTrajectoryManager.setPositionActivateState(false);
-        mAudioAnalysisActivateState = false;
+        if (!audioAnalysisActivateAlwaysOn)
+            mAudioAnalysisActivateState = false;
         mCanStopActivate = false;
 
         if (editor != nullptr) {
