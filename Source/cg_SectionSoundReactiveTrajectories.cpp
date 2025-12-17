@@ -378,9 +378,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mParameterLapEditor.setInputRestrictions(2, "1234567890");
     mParameterLapEditor.setText("1");
     mParameterLapEditor.setJustification(juce::Justification::centred);
-    mParameterLapEditor.onEscapeKey = [this] { mParameterLapEditor.resetCurrentText(); };
     mParameterLapEditor.onFocusLost = [this] {
-        mParameterLapEditor.stopEditing();
         mParameterLapEditor.moveCaretToEnd();
         auto descriptor = DescriptorID::invalid;
         std::optional<std::reference_wrapper<SpatialParameter>> usedParam;
@@ -425,7 +423,6 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
         }
         unfocusAllComponents();
     };
-    mParameterLapEditor.onReturnKey = [this] { mParameterLapEditor.onFocusLost(); };
 
     addAndMakeVisible(&mParameterAzimuthButton);
     mParameterAzimuthButton.setButtonText("Azimuth");

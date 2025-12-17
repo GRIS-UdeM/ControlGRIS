@@ -55,16 +55,16 @@ private:
     juce::ComboBox mOscFormatCombo;
 
     juce::Label mOscPortLabel;
-    TextEd mOscPortEditor;
+    TextEd mOscPortEditor{ mGrisLookAndFeel };
 
     juce::Label mOscAddressLabel;
-    TextEd mOscAddressEditor;
+    TextEd mOscAddressEditor{ mGrisLookAndFeel };
 
     juce::Label mNumOfSourcesLabel;
-    TextEd mNumOfSourcesEditor;
+    TextEd mNumOfSourcesEditor{ mGrisLookAndFeel };
 
     juce::Label mFirstSourceIdLabel;
-    TextEd mFirstSourceIdEditor;
+    TextEd mFirstSourceIdEditor{ mGrisLookAndFeel };
 
     juce::ToggleButton mPositionActivateButton;
 
