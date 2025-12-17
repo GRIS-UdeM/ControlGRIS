@@ -187,6 +187,13 @@ public:
     void setElevationActivateState(bool state);
     void setSpeedLinkState(bool state);
 
+    void updatePositionSpeedSliderVal(float value);
+    void updateElevationSpeedSliderVal(float value);
+    void positionSpeedSliderChangedStartedCallback();
+    void positionSpeedSliderChangedEndedCallback();
+    void elevationSpeedSliderChangedStartedCallback();
+    void elevationSpeedSliderChangedEndedCallback();
+
     enum class SymmetricLinkComboState { enabled, disabled };
 
     void addListener(Listener * l) { mListeners.add(l); }

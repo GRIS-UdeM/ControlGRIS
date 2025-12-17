@@ -112,18 +112,18 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
 
     mPositionCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
     mPositionCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
-    auto posCycleSpeed{ mAPVTS.state.getProperty("posCycleSpeed") };
+    auto posCycleSpeed{ mAPVTS.state.getProperty(Automation::Ids::POSITION_SPEED_SLIDER) };
     if (posCycleSpeed.isVoid()) {
         posCycleSpeed = 0.5;
     }
-    mPositionCycleSpeedSlider.setValue(posCycleSpeed);
+    mPositionCycleSpeedSlider.setValue(posCycleSpeed, juce::sendNotification);
     mPositionCycleSpeedSlider.setSliderSnapsToMousePosition(false);
     mPositionCycleSpeedSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 40, 20);
     mPositionCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mPositionCycleSpeedSlider);
     mPositionCycleSpeedSlider.onValueChange = [this] {
+        positionSpeedSliderChangedStartedCallback();
         auto const sliderVal{ mPositionCycleSpeedSlider.getValue() };
-        mAPVTS.state.setProperty("posCycleSpeed", sliderVal, nullptr);
         double speedMultToSend{};
         if (mSpeedLinked) {
             mElevationCycleSpeedSlider.setValue(sliderVal);
@@ -134,23 +134,28 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
             speedMultToSend = juce::jmap(sliderVal, 0.5, 1.0, SPEED_SLIDER_MID_VAL, SPEED_SLIDER_MAX_VAL);
         }
         mListeners.call([&](Listener & l) { l.positionTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
+        auto * parameter{ mAPVTS.getParameter(Automation::Ids::POSITION_SPEED_SLIDER) };
+        auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(
+            Automation::Ids::POSITION_SPEED_SLIDER) };
+        parameter->setValueNotifyingHost(sliderVal);
+        positionSpeedSliderChangedEndedCallback();
         repaint();
     };
 
     mElevationCycleSpeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.0, 1.0, 0.01));
     mElevationCycleSpeedSlider.setDoubleClickReturnValue(true, 0.5);
-    auto eleCycleSpeed{ mAPVTS.state.getProperty("eleCycleSpeed") };
+    auto eleCycleSpeed{ mAPVTS.state.getProperty(Automation::Ids::ELEVATION_SPEED_SLIDER) };
     if (eleCycleSpeed.isVoid()) {
         eleCycleSpeed = 0.5;
     }
-    mElevationCycleSpeedSlider.setValue(eleCycleSpeed);
+    mElevationCycleSpeedSlider.setValue(eleCycleSpeed, juce::sendNotification);
     mElevationCycleSpeedSlider.setSliderSnapsToMousePosition(false);
     mElevationCycleSpeedSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 40, 20);
     mElevationCycleSpeedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(&mElevationCycleSpeedSlider);
     mElevationCycleSpeedSlider.onValueChange = [this] {
+        elevationSpeedSliderChangedStartedCallback();
         auto const sliderVal{ mElevationCycleSpeedSlider.getValue() };
-        mAPVTS.state.setProperty("eleCycleSpeed", sliderVal, nullptr);
         double speedMultToSend{};
         if (mSpeedLinked) {
             mPositionCycleSpeedSlider.setValue(sliderVal);
@@ -161,6 +166,11 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
             speedMultToSend = juce::jmap(sliderVal, 0.5, 1.0, SPEED_SLIDER_MID_VAL, SPEED_SLIDER_MAX_VAL);
         }
         mListeners.call([&](Listener & l) { l.elevationTrajectoryCurrentSpeedChangedCallback(speedMultToSend); });
+        auto * parameter{ mAPVTS.getParameter(Automation::Ids::ELEVATION_SPEED_SLIDER) };
+        auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(
+            Automation::Ids::ELEVATION_SPEED_SLIDER) };
+        parameter->setValueNotifyingHost(sliderVal);
+        elevationSpeedSliderChangedEndedCallback();
         repaint();
     };
 
@@ -701,6 +711,42 @@ void SectionAbstractTrajectories::setSpeedLinkState(bool state)
 {
     mSpeedLinked = state;
     repaint();
+}
+
+//==============================================================================
+void SectionAbstractTrajectories::updatePositionSpeedSliderVal(float value)
+{
+    mPositionCycleSpeedSlider.setValue(value, juce::sendNotification);
+}
+
+//==============================================================================
+void SectionAbstractTrajectories::updateElevationSpeedSliderVal(float value)
+{
+    mElevationCycleSpeedSlider.setValue(value, juce::sendNotification);
+}
+
+//==============================================================================
+void SectionAbstractTrajectories::positionSpeedSliderChangedStartedCallback()
+{
+    mProcessor.getChangeGestureManager().beginGesture(Automation::Ids::POSITION_SPEED_SLIDER);
+}
+
+//==============================================================================
+void SectionAbstractTrajectories::positionSpeedSliderChangedEndedCallback()
+{
+    mProcessor.getChangeGestureManager().endGesture(Automation::Ids::POSITION_SPEED_SLIDER);
+}
+
+//==============================================================================
+void SectionAbstractTrajectories::elevationSpeedSliderChangedStartedCallback()
+{
+    mProcessor.getChangeGestureManager().beginGesture(Automation::Ids::ELEVATION_SPEED_SLIDER);
+}
+
+//==============================================================================
+void SectionAbstractTrajectories::elevationSpeedSliderChangedEndedCallback()
+{
+    mProcessor.getChangeGestureManager().endGesture(Automation::Ids::ELEVATION_SPEED_SLIDER);
 }
 
 //==============================================================================
