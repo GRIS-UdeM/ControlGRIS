@@ -1116,8 +1116,17 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     addAndMakeVisible(&mAudioAnalysisActivateButton);
     mAudioAnalysisActivateButton.setButtonText("Activate");
     mAudioAnalysisActivateButton.setClickingTogglesState(true);
-    mAudioAnalysisActivateButton.onClick
-        = [this] { mAudioProcessor.setAudioAnalysisState(mAudioAnalysisActivateButton.getToggleState()); };
+    mAudioAnalysisActivateButton.onClick = [this] {
+        auto state{ mAudioAnalysisActivateButton.getToggleState() };
+        if (juce::ModifierKeys::getCurrentModifiers().isShiftDown() && state) {
+            mAPVTS.state.setProperty("audioAnalysisActivateButtonAlwaysOn", true, nullptr);
+            mAudioAnalysisActivateButton.setName("ActivateButton_ON");
+        } else {
+            mAPVTS.state.setProperty("audioAnalysisActivateButtonAlwaysOn", false, nullptr);
+            mAudioAnalysisActivateButton.setName("");
+        }
+        mAudioProcessor.setAudioAnalysisState(state);
+    };
 
     //==============================================================================
     // Audio Analysis
