@@ -227,7 +227,8 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
                                       juce::Colours::transparentWhite);
     mLoadSpeakerSetupButton.setTooltip("Load Speaker Setup as source positions");
 
-    addAndMakeVisible(&mLoadSpeakerSetupButton);
+    if (juce::JUCEApplicationBase::isStandaloneApp())
+        addAndMakeVisible(&mLoadSpeakerSetupButton);
     mLoadSpeakerSetupButton.onClick = [this] {
         juce::FileChooser chooser("Select a Speaker Setup file...", {}, "*.xml");
         if (chooser.browseForFileToOpen())
