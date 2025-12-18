@@ -43,11 +43,11 @@ public:
             mStartHistory = false;
             mSmoothHistory = smooth;
         } else {
-            //smoothCoef *= 0.01;
-            //smoothCoef = 1 - smoothCoef;
-            //if (smoothCoef == 0) {
-            //    smoothCoef = ALMOST_ZERO;
-            //}
+            // smoothCoef *= 0.01;
+            // smoothCoef = 1 - smoothCoef;
+            // if (smoothCoef == 0) {
+            //     smoothCoef = ALMOST_ZERO;
+            // }
             double logsmooth = std::log(smooth);
             double normalizedsmooth = 1.0 / logsmooth;
             double adjustment = (targetValue - mCurrentValue) * (normalizedsmooth * SMOOTH_COEFFICIENT);

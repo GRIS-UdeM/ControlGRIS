@@ -209,7 +209,6 @@ public:
     void activateButtonChangedStartedCallback();
     void activateButtonChangedEndedCallback();
 
-
 private:
     //==============================================================================
     void unselectAllParamButtons();

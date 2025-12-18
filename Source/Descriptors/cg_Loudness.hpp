@@ -89,8 +89,6 @@ public:
     static constexpr fluid::index HALF_WINDOW = WINDOW_SIZE / 2;
 
 private:
-
-
     //==============================================================================
     void init() override {}
 

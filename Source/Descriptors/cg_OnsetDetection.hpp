@@ -59,15 +59,12 @@ public:
         // samples in the buffer.
         const auto all_sample_size = block_size + NUM_SAMPLES_TO_PROCESS;
         mAllSamples.reserve(all_sample_size);
-        const auto nOnsetFrames
-          = static_cast<int>((mOnsetPadded.size() - WINDOW_SIZE) / HOP_SIZE);
+        const auto nOnsetFrames = static_cast<int>((mOnsetPadded.size() - WINDOW_SIZE) / HOP_SIZE);
         // reserve the worst case for this.
         mOnsetDectectionVals.reserve(nOnsetFrames * all_sample_size / NUM_SAMPLES_TO_PROCESS);
     }
 
-    void reset() override
-    {
-    }
+    void reset() override {}
 
     double getValue() override { return mDescOnsetDetectionCurrent; }
 
@@ -184,7 +181,8 @@ public:
                     mOnsetDetectionNumSamples = 0;
 
                     if (mTimeSinceLastOnsetDetection.getCurrentSize() == maxTimeDequeSize) {
-                        auto maxValue = mTimeSinceLastOnsetDetection.max(); // Not the median. The longest time appears to give better results
+                        auto maxValue = mTimeSinceLastOnsetDetection
+                                            .max(); // Not the median. The longest time appears to give better results
 
                         if (maxValue < mOnsetDetectionTimeMin || maxValue > mOnsetDetectionTimeMax) {
                             continue;
@@ -211,7 +209,8 @@ public:
             }
         }
 
-        mDescOnsetDetectionCurrent += mOnsetDetectionIncrement * (blockSize / sampleRate * 1000); // happens each processBlock call
+        mDescOnsetDetectionCurrent
+            += mOnsetDetectionIncrement * (blockSize / sampleRate * 1000); // happens each processBlock call
         mDescOnsetDetectionCurrent = std::clamp(mDescOnsetDetectionCurrent, 0.0, 1.0);
         if (mDescOnsetDetectionCurrent > 0) {
             if ((mOnsetDetectionDirection == Direction::up && mDescOnsetDetectionCurrent >= mDescOnsetDetectionTarget)
@@ -256,7 +255,7 @@ private:
     juce::uint64 mOnsetDetectionNumSamples{};
     fluid::RealVector mOnsetDetectionUnusedSamples;
     int mLastUnusedSampleIndex{ 0 };
-    static constexpr int maxTimeDequeSize {3};
+    static constexpr int maxTimeDequeSize{ 3 };
     CircularDeque<double, maxTimeDequeSize> mTimeSinceLastOnsetDetection{};
     Direction mOnsetDetectionDirection{};
     int mSampleCounter{};
