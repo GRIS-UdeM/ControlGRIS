@@ -33,14 +33,14 @@ TextEd::TextEd(GrisLookAndFeel & glaf) : mGrisLookAndFeel(glaf)
 void TextEd::mouseDown(const juce::MouseEvent & event)
 {
     // Prevent simple clicks from starting edit mode or mouse selection
-    if (event.getNumberOfClicks() == isReadOnly()) {
+    if (event.getNumberOfClicks() == 1 || isReadOnly()) {
         unfocusAllComponents();
         return;
     }
 }
 
 //==============================================================================
-void TextEd::mouseDoubleClick(const juce::MouseEvent & event)
+void TextEd::mouseDoubleClick(const juce::MouseEvent & /*event*/)
 {
     if (!isEnabled())
         return;
