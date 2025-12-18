@@ -449,12 +449,12 @@ void ControlGrisAudioProcessorEditor::scrollBarMoved(juce::ScrollBar * scrollBar
                                           : getWidth() - PRESET_VIEWPORT_WIDTH + newRangeStart - SCROLLBAR_WIDTH };
     auto const height{ isVerticalScrollBar ? getHeight() + newRangeStart : getHeight() + vertScrollPos };
 
-    mPositionPresetViewport.setBounds(width, 20, PRESET_VIEWPORT_WIDTH, height - 20);
-    mPositionPresetBanner.setBounds(width, 0, PRESET_VIEWPORT_WIDTH, 20);
-    mPositionPresetComponent.setBounds(width, 20, PRESET_VIEWPORT_WIDTH, MIN_MAIN_COMPONENT_HEIGHT);
+    mPositionPresetViewport.setBounds(static_cast<int>(width), 20, PRESET_VIEWPORT_WIDTH, static_cast<int>(height) - 20);
+    mPositionPresetBanner.setBounds(static_cast<int>(width), 0, PRESET_VIEWPORT_WIDTH, 20);
+    mPositionPresetComponent.setBounds(static_cast<int>(width), 20, PRESET_VIEWPORT_WIDTH, MIN_MAIN_COMPONENT_HEIGHT);
     mPositionPresetInfoComponent.setBounds(
-        width,
-        juce::jmin(static_cast<double>(MIN_MAIN_COMPONENT_HEIGHT) - 45, height - 45 - SCROLLBAR_WIDTH),
+        static_cast<int>(width),
+        juce::jmin(MIN_MAIN_COMPONENT_HEIGHT - 45, static_cast<int>(height) - 45 - SCROLLBAR_WIDTH),
         PRESET_VIEWPORT_WIDTH,
         60);
 }

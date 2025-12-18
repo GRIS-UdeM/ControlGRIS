@@ -1488,7 +1488,7 @@ void SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
                                          350.0f,
                                          static_cast<float>(button.getBounds().getCentreY() + 1.0f)),
                        2.0f);
-            g.drawLine(juce::Line<float>(350.0f, 21.0f, 350.0f, getHeight()), 2.0f);
+            g.drawLine(juce::Line<float>(350.0f, 21.0f, 350.0f, static_cast<float>(getHeight())), 2.0f);
         }
     } else {
         if (mLastUsedParameterCubeButton && isAtLeastOneAudioDescriptorSelected()) {
@@ -1498,7 +1498,7 @@ void SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
                                          350.0f,
                                          static_cast<float>(button.getBounds().getCentreY() + 1.0f)),
                        2.0f);
-            g.drawLine(juce::Line<float>(350.0f, 21.0f, 350.0f, getHeight()), 2.0f);
+            g.drawLine(juce::Line<float>(350.0f, 21.0f, 350.0f, static_cast<float>(getHeight())), 2.0f);
         }
     }
 }

@@ -137,7 +137,7 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
         auto * parameter{ mAPVTS.getParameter(Automation::Ids::POSITION_SPEED_SLIDER) };
         auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(
             Automation::Ids::POSITION_SPEED_SLIDER) };
-        parameter->setValueNotifyingHost(sliderVal);
+        parameter->setValueNotifyingHost(static_cast<float>(sliderVal));
         positionSpeedSliderChangedEndedCallback();
         repaint();
     };
@@ -169,7 +169,7 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
         auto * parameter{ mAPVTS.getParameter(Automation::Ids::ELEVATION_SPEED_SLIDER) };
         auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(
             Automation::Ids::ELEVATION_SPEED_SLIDER) };
-        parameter->setValueNotifyingHost(sliderVal);
+        parameter->setValueNotifyingHost(static_cast<float>(sliderVal));
         elevationSpeedSliderChangedEndedCallback();
         repaint();
     };
@@ -883,8 +883,16 @@ void SectionAbstractTrajectories::paint(juce::Graphics & g)
         else
             g.setColour(juce::Colours::black);
         auto activateArrowY{ mPositionActivateButton.getBounds().getY() + mPositionActivateButton.getHeight() / 2 };
-        g.drawArrow(juce::Line<float>(302.0f, activateArrowY, 292.0f, activateArrowY), 4, 10, 7);
-        g.drawArrow(juce::Line<float>(297.0f, activateArrowY, 317.0f, activateArrowY), 4, 10, 7);
+        g.drawArrow(
+            juce::Line<float>(302.0f, static_cast<float>(activateArrowY), 292.0f, static_cast<float>(activateArrowY)),
+            4.0f,
+            10.0f,
+            7.0f);
+        g.drawArrow(
+            juce::Line<float>(297.0f, static_cast<float>(activateArrowY), 317.0f, static_cast<float>(activateArrowY)),
+            4.0f,
+            10.0f,
+            7.0f);
 
         g.setColour(juce::Colours::orange);
         g.setFont(16.0f);
