@@ -20,13 +20,13 @@
 
 #pragma once
 
-#include <JuceHeader.h>
 #include "cg_ControlGrisLookAndFeel.hpp"
+#include <JuceHeader.h>
 
 namespace gris
 {
 //==============================================================================
-class TextEd 
+class TextEd
     : public juce::TextEditor
     , private juce::TextEditor::Listener
 {

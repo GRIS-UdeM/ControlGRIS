@@ -26,7 +26,7 @@ namespace gris
 {
 //==============================================================================
 SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFeel & grisLookAndFeel,
-                                                                         ControlGrisAudioProcessor & audioProcessor)
+                                                                   ControlGrisAudioProcessor & audioProcessor)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAudioProcessor(audioProcessor)
     , mAPVTS(mAudioProcessor.getValueTreeState())

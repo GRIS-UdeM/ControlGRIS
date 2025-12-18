@@ -943,11 +943,11 @@ void SectionAbstractTrajectories::paint(juce::Graphics & g)
 
     juce::Path pathPos;
     pathPos.addTriangle({ static_cast<float>(posCycleSpeedSliderBounds.getCentreX() - 3),
-                    static_cast<float>(posCycleSpeedSliderBounds.getY() - 5) },
-                  { static_cast<float>(posCycleSpeedSliderBounds.getCentreX() + 3),
-                    static_cast<float>(posCycleSpeedSliderBounds.getY() - 5) },
-                  { static_cast<float>(posCycleSpeedSliderBounds.getCentreX()),
-                    static_cast<float>(posCycleSpeedSliderBounds.getY() - 1) });
+                          static_cast<float>(posCycleSpeedSliderBounds.getY() - 5) },
+                        { static_cast<float>(posCycleSpeedSliderBounds.getCentreX() + 3),
+                          static_cast<float>(posCycleSpeedSliderBounds.getY() - 5) },
+                        { static_cast<float>(posCycleSpeedSliderBounds.getCentreX()),
+                          static_cast<float>(posCycleSpeedSliderBounds.getY() - 1) });
     if (mPositionCycleSpeedSlider.getValue() == mPositionCycleSpeedSlider.getRange().getLength() / 2) {
         g.setColour(juce::Colours::lightgreen);
     } else {

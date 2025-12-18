@@ -102,6 +102,7 @@ public:
 
     static constexpr fluid::index WINDOW_SIZE = 32768;
     static constexpr fluid::index HALF_WINDOW = WINDOW_SIZE / 2;
+
 private:
     //==============================================================================
     std::unique_ptr<fluid::algorithm::RunningStats> mPitchRunningStats;
