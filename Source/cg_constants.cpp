@@ -33,6 +33,10 @@ juce::String const Automation::Ids::POSITION_PRESET{ "positionPreset" };
 juce::String const Automation::Ids::ELEVATION_MODE{ "elevationMode" };
 juce::String const Automation::Ids::POSITION_SPEED_SLIDER{ "positionSpeedSlider" };
 juce::String const Automation::Ids::ELEVATION_SPEED_SLIDER{ "elevationSpeedSlider" };
+juce::String const Automation::Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE{ "abstractPositionActivate" };
+juce::String const Automation::Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE{ "abstractElevationActivate" };
+juce::String const Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE{ "soundReactiveActivate" };
+juce::String const Automation::Ids::OSC_ACTIVATE{ "oscActivate" };
 
 Automation::Enum Automation::idToEnum(const juce::String & name)
 {
@@ -68,6 +72,18 @@ Automation::Enum Automation::idToEnum(const juce::String & name)
     }
     if (name.compare(Ids::POSITION_SPEED_SLIDER) == 0) {
         return Enum::positionSpeedSlider;
+    }
+    if (name.compare(Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE) == 0) {
+        return Enum::abstractTrajectoriesPositionActivate;
+    }
+    if (name.compare(Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE) == 0) {
+        return Enum::abstractTrajectoriesElevationActivate;
+    }
+    if (name.compare(Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE) == 0) {
+        return Enum::soundReactiveTrajectoriesActivate;
+    }
+    if (name.compare(Ids::OSC_ACTIVATE) == 0) {
+        return Enum::oscActivate;
     }
 
     jassertfalse;
