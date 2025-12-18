@@ -46,7 +46,7 @@ ControlGrisAudioProcessorEditor::ControlGrisAudioProcessorEditor(
     , mSectionSourceSpan(mGrisLookAndFeel)
     , mSectionAbstractTrajectories(mGrisLookAndFeel, vts, controlGrisAudioProcessor)
     , mSectionSoundReactiveTrajectories(mGrisLookAndFeel, mProcessor)
-    , mSectionGeneralSettings(mGrisLookAndFeel)
+    , mSectionGeneralSettings(mGrisLookAndFeel, mProcessor)
     , mSectionSourcePosition(mGrisLookAndFeel,
                              controlGrisAudioProcessor.getSpatMode(),
                              mSectionSourceSpan,
@@ -376,6 +376,30 @@ void ControlGrisAudioProcessorEditor::updatePositionSpeedSliderVal(float value)
 void ControlGrisAudioProcessorEditor::updateElevationSpeedSliderVal(float value)
 {
     mSectionAbstractTrajectories.updateElevationSpeedSliderVal(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::updateAbstractTrajectoriesPositionActivate(float value)
+{
+    mSectionAbstractTrajectories.updateAbstractTrajectoriesPositionActivate(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::updateAbstractTrajectoriesElevationActivate(float value)
+{
+    mSectionAbstractTrajectories.updateAbstractTrajectoriesElevationActivate(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::updateSoundReactiveTrajectoriesActivate(float value)
+{
+    mSectionSoundReactiveTrajectories.updateSoundReactiveTrajectoriesActivate(value);
+}
+
+//==============================================================================
+void ControlGrisAudioProcessorEditor::updateOSCActivate(float value)
+{
+    mSectionGeneralSettings.updateOSCActivate(value);
 }
 
 //==============================================================================

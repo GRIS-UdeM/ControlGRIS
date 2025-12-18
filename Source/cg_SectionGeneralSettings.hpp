@@ -22,6 +22,7 @@
 
 #include <JuceHeader.h>
 
+#include "cg_ControlGrisAudioProcessor.hpp"
 #include "cg_ControlGrisLookAndFeel.hpp"
 #include "cg_TextEditor.hpp"
 #include "cg_constants.hpp"
@@ -48,6 +49,7 @@ public:
 private:
     //==============================================================================
     GrisLookAndFeel & mGrisLookAndFeel;
+    ControlGrisAudioProcessor & mProcessor;
 
     juce::ListenerList<Listener> mListeners;
 
@@ -70,7 +72,7 @@ private:
 
 public:
     //==============================================================================
-    explicit SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel);
+    explicit SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel, ControlGrisAudioProcessor & processor);
     //==============================================================================
     SectionGeneralSettings() = delete;
     ~SectionGeneralSettings() override = default;
@@ -90,6 +92,10 @@ public:
     void setOscPortNumber(int oscPortNumber);
     void setOscAddress(juce::String const & address);
     void setActivateButtonState(bool shouldBeOn);
+
+    void updateOSCActivate(float value);
+    void oscActivateToggleChangedStartedCallback();
+    void oscActivateToggleChangedEndedCallback();
 
     void addListener(Listener * l) { mListeners.add(l); }
     void removeListener(Listener * l) { mListeners.remove(l); }

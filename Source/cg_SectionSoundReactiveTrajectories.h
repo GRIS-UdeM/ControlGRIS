@@ -205,6 +205,11 @@ public:
 
     void updateChannelMixCombo();
 
+    void updateSoundReactiveTrajectoriesActivate(float value);
+    void activateButtonChangedStartedCallback();
+    void activateButtonChangedEndedCallback();
+
+
 private:
     //==============================================================================
     void unselectAllParamButtons();

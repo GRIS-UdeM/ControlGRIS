@@ -22,8 +22,10 @@
 
 #include "cg_SectionSoundReactiveTrajectories.h"
 
+namespace gris
+{
 //==============================================================================
-gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFeel & grisLookAndFeel,
+SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFeel & grisLookAndFeel,
                                                                          ControlGrisAudioProcessor & audioProcessor)
     : mGrisLookAndFeel(grisLookAndFeel)
     , mAudioProcessor(audioProcessor)
@@ -1117,6 +1119,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
     mAudioAnalysisActivateButton.setButtonText("Activate");
     mAudioAnalysisActivateButton.setClickingTogglesState(true);
     mAudioAnalysisActivateButton.onClick = [this] {
+        activateButtonChangedStartedCallback();
         auto state{ mAudioAnalysisActivateButton.getToggleState() };
         if (juce::ModifierKeys::getCurrentModifiers().isShiftDown() && state) {
             mAPVTS.state.setProperty("audioAnalysisActivateButtonAlwaysOn", true, nullptr);
@@ -1126,6 +1129,11 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
             mAudioAnalysisActivateButton.setName("");
         }
         mAudioProcessor.setAudioAnalysisState(state);
+        auto * parameter{ mAPVTS.getParameter(Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE) };
+        auto const gestureLock{ mAudioProcessor.getChangeGestureManager().getScopedLock(
+            Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE) };
+        parameter->setValueNotifyingHost(state ? 1.0f : 0.0f);
+        activateButtonChangedEndedCallback();
     };
 
     //==============================================================================
@@ -1446,7 +1454,7 @@ gris::SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLoo
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
+void SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
 {
     // g.setColour(mGrisLookAndFeel.getDarkColor());
     g.setColour(juce::Colour(100, 100, 100));
@@ -1496,7 +1504,7 @@ void gris::SectionSoundReactiveTrajectories::paint(juce::Graphics & g)
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::resized()
+void SectionSoundReactiveTrajectories::resized()
 {
     auto area{ getLocalBounds() };
     auto bannerArea{ area.removeFromTop(20) };
@@ -1805,7 +1813,7 @@ void gris::SectionSoundReactiveTrajectories::resized()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::timerCallback(int timerID)
+void SectionSoundReactiveTrajectories::timerCallback(int timerID)
 {
     if (timerID == timerParamID::datagraphUpdate) {
         addNewParamValueToDataGraph();
@@ -1907,7 +1915,7 @@ void gris::SectionSoundReactiveTrajectories::timerCallback(int timerID)
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
+void SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
 {
     auto const updateParameterCombo = [&](juce::ComboBox & combo, juce::String APVTSProperty) {
         combo.setSelectedId(mAPVTS.state.getProperty(APVTSProperty), juce::dontSendNotification);
@@ -2128,7 +2136,7 @@ void gris::SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::addNewParamValueToDataGraph()
+void SectionSoundReactiveTrajectories::addNewParamValueToDataGraph()
 {
     if (mParameterToShow) {
         auto & param{ mParameterToShow->get() };
@@ -2174,19 +2182,19 @@ void gris::SectionSoundReactiveTrajectories::addNewParamValueToDataGraph()
 }
 
 //==============================================================================
-bool gris::SectionSoundReactiveTrajectories::getAudioAnalysisActivateState()
+bool SectionSoundReactiveTrajectories::getAudioAnalysisActivateState()
 {
     return mAudioAnalysisActivateButton.getToggleState();
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::setAudioAnalysisActivateState(bool state)
+void SectionSoundReactiveTrajectories::setAudioAnalysisActivateState(bool state)
 {
     mAudioAnalysisActivateButton.setToggleState(state, juce::sendNotification);
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::updateChannelMixCombo()
+void SectionSoundReactiveTrajectories::updateChannelMixCombo()
 {
     auto numInputChannels{ mAudioProcessor.getTotalNumInputChannels() };
     juce::StringArray chanArray;
@@ -2208,7 +2216,28 @@ void gris::SectionSoundReactiveTrajectories::updateChannelMixCombo()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::unselectAllParamButtons()
+void SectionSoundReactiveTrajectories::updateSoundReactiveTrajectoriesActivate(float value)
+{
+    auto const state{ value != 0.0f };
+    if (mAudioAnalysisActivateButton.isShowing()) {
+        mAudioAnalysisActivateButton.setToggleState(state, juce::sendNotification);
+    }
+}
+
+//==============================================================================
+void SectionSoundReactiveTrajectories::activateButtonChangedStartedCallback()
+{
+    mAudioProcessor.getChangeGestureManager().beginGesture(Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE);
+}
+
+//==============================================================================
+void SectionSoundReactiveTrajectories::activateButtonChangedEndedCallback()
+{
+    mAudioProcessor.getChangeGestureManager().endGesture(Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE);
+}
+
+//==============================================================================
+void SectionSoundReactiveTrajectories::unselectAllParamButtons()
 {
     mParameterAzimuthButton.setToggleState(false, juce::dontSendNotification);
     mParameterElevationButton.setToggleState(false, juce::dontSendNotification);
@@ -2220,13 +2249,13 @@ void gris::SectionSoundReactiveTrajectories::unselectAllParamButtons()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::setSelectedComboBoxColorON(juce::ComboBox & box)
+void SectionSoundReactiveTrajectories::setSelectedComboBoxColorON(juce::ComboBox & box)
 {
     box.setName("AudioDescriptor_ON");
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::setAllComboBoxesColorOFF()
+void SectionSoundReactiveTrajectories::setAllComboBoxesColorOFF()
 {
     mParameterAzimuthDescriptorCombo.setName("");
     mParameterElevationDescriptorCombo.setName("");
@@ -2238,7 +2267,7 @@ void gris::SectionSoundReactiveTrajectories::setAllComboBoxesColorOFF()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
+void SectionSoundReactiveTrajectories::refreshDescriptorPanel()
 {
     bool shouldShowDescriptorPanel{};
     if (mSpatMode == SpatMode::dome) {
@@ -2329,7 +2358,7 @@ void gris::SectionSoundReactiveTrajectories::refreshDescriptorPanel()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::loudnessSpreadNoiseDescriptorLayout()
+void SectionSoundReactiveTrajectories::loudnessSpreadNoiseDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
 
@@ -2373,7 +2402,7 @@ void gris::SectionSoundReactiveTrajectories::loudnessSpreadNoiseDescriptorLayout
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::pitchCentroidDescriptorLayout()
+void SectionSoundReactiveTrajectories::pitchCentroidDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
 
@@ -2427,7 +2456,7 @@ void gris::SectionSoundReactiveTrajectories::pitchCentroidDescriptorLayout()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::iterSpeedDescriptorLayout()
+void SectionSoundReactiveTrajectories::iterSpeedDescriptorLayout()
 {
     setAudioAnalysisComponentsInvisible();
 
@@ -2503,7 +2532,7 @@ void gris::SectionSoundReactiveTrajectories::iterSpeedDescriptorLayout()
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::setAudioAnalysisComponentsInvisible()
+void SectionSoundReactiveTrajectories::setAudioAnalysisComponentsInvisible()
 {
     mAudioAnalysisSelectedDescriptor.setVisible(false);
 
@@ -2533,7 +2562,7 @@ void gris::SectionSoundReactiveTrajectories::setAudioAnalysisComponentsInvisible
 }
 
 //==============================================================================
-void gris::SectionSoundReactiveTrajectories::changeMinMaxSlidersRange(int min, int max)
+void SectionSoundReactiveTrajectories::changeMinMaxSlidersRange(int min, int max)
 {
     mDescriptorMinFreqSlider.setRange(min, max);
     mDescriptorMaxFreqSlider.setRange(min, max);
@@ -2544,7 +2573,7 @@ void gris::SectionSoundReactiveTrajectories::changeMinMaxSlidersRange(int min, i
 }
 
 //==============================================================================
-bool gris::SectionSoundReactiveTrajectories::isAtLeastOneAudioDescriptorSelected()
+bool SectionSoundReactiveTrajectories::isAtLeastOneAudioDescriptorSelected()
 {
     if (mParameterAzimuthDescriptorCombo.getName().contains("ON")
         || mParameterElevationDescriptorCombo.getName().contains("ON")
@@ -2558,7 +2587,7 @@ bool gris::SectionSoundReactiveTrajectories::isAtLeastOneAudioDescriptorSelected
 }
 
 //==============================================================================
-gris::DataGraph::DataGraph(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
+DataGraph::DataGraph(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel(grisLookAndFeel)
 {
     mGUIBuffer.resize(100);
     std::fill(mGUIBuffer.begin(), mGUIBuffer.end(), 0.0);
@@ -2567,12 +2596,12 @@ gris::DataGraph::DataGraph(GrisLookAndFeel & grisLookAndFeel) : mGrisLookAndFeel
 }
 
 //==============================================================================
-gris::DataGraph::~DataGraph()
+DataGraph::~DataGraph()
 {
 }
 
 //==============================================================================
-void gris::DataGraph::paint(juce::Graphics & g)
+void DataGraph::paint(juce::Graphics & g)
 {
     g.fillAll(mGrisLookAndFeel.getWinBackgroundColor());
 
@@ -2620,12 +2649,12 @@ void gris::DataGraph::paint(juce::Graphics & g)
 }
 
 //==============================================================================
-void gris::DataGraph::resized()
+void DataGraph::resized()
 {
 }
 
 //==============================================================================
-void gris::DataGraph::timerCallback()
+void DataGraph::timerCallback()
 {
     if (isVisible()) {
         mGUIBuffer.push_back(readBufferMean());
@@ -2637,14 +2666,14 @@ void gris::DataGraph::timerCallback()
 }
 
 //==============================================================================
-void gris::DataGraph::addToBuffer(double value)
+void DataGraph::addToBuffer(double value)
 {
     mBuffer = mBuffer.get() + value;
     ++mBufferCount;
 }
 
 //==============================================================================
-double gris::DataGraph::readBufferMean()
+double DataGraph::readBufferMean()
 {
     // this is called by the timer thread.
     double mean{};
@@ -2659,7 +2688,8 @@ double gris::DataGraph::readBufferMean()
 }
 
 //==============================================================================
-void gris::DataGraph::setDescriptor(DescriptorID descId)
+void DataGraph::setDescriptor(DescriptorID descId)
 {
     mDescId = descId;
 }
+} // namespace gris
