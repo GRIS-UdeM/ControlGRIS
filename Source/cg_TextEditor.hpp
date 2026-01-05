@@ -49,11 +49,15 @@ public:
     void textEditorReturnKeyPressed(juce::TextEditor & ed) override;
     void textEditorEscapeKeyPressed(juce::TextEditor & ed) override;
 
+    //==============================================================================
+    void setEditable(bool isEditable);
+
 private:
     //==============================================================================
     GrisLookAndFeel & mGrisLookAndFeel;
     bool mIsCurrentlyEditing{};
     juce::String mCurrentText;
+    bool mIsEditable{ true };
 
     //==============================================================================
     JUCE_LEAK_DETECTOR(TextEd)
