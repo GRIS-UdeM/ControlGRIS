@@ -397,10 +397,12 @@ void ControlGrisAudioProcessor::setPositionSourceLink(PositionSourceLink newSour
 
     mPositionTrajectoryManager.setSourceLink(newSourceLink);
 
-    auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-    if (editor != nullptr) {
-        editor->updateSourceLinkCombo(newSourceLink);
-    }
+    juce::MessageManager::callAsync([this, newSourceLink] {
+        auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
+        if (editor != nullptr) {
+            editor->updateSourceLinkCombo(newSourceLink);
+        }
+    });
 
     mPositionSourceLinkEnforcer.setSourceLink(newSourceLink, originOfChange);
     mPositionSourceLinkEnforcer.enforceSourceLink();
@@ -412,10 +414,12 @@ void ControlGrisAudioProcessor::setElevationSourceLink(ElevationSourceLink const
 {
     mElevationTrajectoryManager.setSourceLink(newSourceLink);
 
-    auto * ed{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-    if (ed != nullptr) {
-        ed->updateElevationSourceLinkCombo(newSourceLink);
-    }
+    juce::MessageManager::callAsync([this, newSourceLink] {
+        auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
+        if (editor != nullptr) {
+            editor->updateElevationSourceLinkCombo(newSourceLink);
+        }
+    });
 
     mElevationSourceLinkEnforcer.setSourceLink(newSourceLink, originOfChange);
     mElevationSourceLinkEnforcer.enforceSourceLink();
@@ -1267,10 +1271,12 @@ void ControlGrisAudioProcessor::prepareToPlay([[maybe_unused]] double const samp
     mShape.setFrame(nFrameSpectral);
     mShape.setMagnitude(mMagnitudeSpectral);
 
-    auto * ed{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-    if (ed != nullptr) {
-        ed->updateAudioAnalysisNumInputChannels();
-    }
+    juce::MessageManager::callAsync([this] {
+        auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
+        if (editor != nullptr) {
+            editor->updateAudioAnalysisNumInputChannels();
+        }
+    });
 
     if (!mIsPlaying) {
         initialize();
