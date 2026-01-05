@@ -318,7 +318,7 @@ void SectionGeneralSettings::updateOSCActivate(float value)
 {
     auto const state{ value != 0.0f };
     if (mPositionActivateButton.isShowing()) {
-        mPositionActivateButton.setToggleState(state, juce::sendNotification);
+        mPositionActivateButton.setToggleState(state, juce::dontSendNotification);
     }
 }
 

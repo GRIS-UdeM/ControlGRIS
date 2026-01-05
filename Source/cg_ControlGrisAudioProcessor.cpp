@@ -379,7 +379,7 @@ void ControlGrisAudioProcessor::parameterChanged(juce::String const & parameterI
         juce::MessageManager::callAsync([this, value] {
             auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
             if (editor != nullptr) {
-                editor->updateOSCActivate(value != 0.0f);
+                editor->updateOSCActivate(value);
             }
         });
     }
