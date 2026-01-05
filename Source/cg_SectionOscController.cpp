@@ -74,6 +74,8 @@ SectionOscController::SectionOscController(GrisLookAndFeel & grisLookAndFeel) : 
     mOscReceiveIpEditor.setText(juce::IPAddress::getLocalAddress().toString());
     // mOscReceiveIpEditor.setText("127.0.0.1");
     mOscReceiveIpEditor.setReadOnly(true);
+    mOscReceiveIpEditor.setEditable(false);
+    mOscReceiveIpEditor.onFocusLost = [this] { mOscReceiveIpEditor.moveCaretToEnd(); };
     addAndMakeVisible(&mOscReceiveIpEditor);
 
     mOscReceivePortEditor.setLookAndFeel(&mGrisLookAndFeel);

@@ -32,6 +32,9 @@ TextEd::TextEd(GrisLookAndFeel & glaf) : mGrisLookAndFeel(glaf)
 //==============================================================================
 void TextEd::mouseDown(const juce::MouseEvent & event)
 {
+    if (!mIsEditable)
+        return;
+
     // Prevent simple clicks from starting edit mode or mouse selection
     if (event.getNumberOfClicks() == 1 || isReadOnly()) {
         unfocusAllComponents();
@@ -42,7 +45,7 @@ void TextEd::mouseDown(const juce::MouseEvent & event)
 //==============================================================================
 void TextEd::mouseDoubleClick(const juce::MouseEvent & /*event*/)
 {
-    if (!isEnabled())
+    if (!isEnabled() || !mIsEditable)
         return;
 
     auto popupEditor{ std::make_unique<juce::TextEditor>("TextEdEditor") };
@@ -51,7 +54,7 @@ void TextEd::mouseDoubleClick(const juce::MouseEvent & /*event*/)
     popupEditor->addListener(this);
     popupEditor->setMultiLine(false);
     popupEditor->setSize(getWidth() + 20, 20);
-    popupEditor->setInputRestrictions(12, "0123456789,.");
+    popupEditor->setInputFilter(getInputFilter(), false);
     popupEditor->setText(getText(), false);
     popupEditor->selectAll();
 
@@ -83,6 +86,12 @@ void TextEd::textEditorEscapeKeyPressed(juce::TextEditor & ed)
     if (callOutBox != nullptr) {
         callOutBox->dismiss();
     }
+}
+
+//==============================================================================
+void TextEd::setEditable(bool isEditable)
+{
+    mIsEditable = isEditable;
 }
 
 } // namespace gris
