@@ -27,7 +27,7 @@
 
 namespace gris
 {
-constexpr double SMOOTH_COEFFICIENT{ 0.5 };
+constexpr double SMOOTH_COEFFICIENT{ 0.2 };
 //==============================================================================
 class Smooth
 {
