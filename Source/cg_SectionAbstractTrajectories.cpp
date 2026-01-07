@@ -728,13 +728,13 @@ void SectionAbstractTrajectories::setSpeedLinkState(bool state)
 //==============================================================================
 void SectionAbstractTrajectories::updatePositionSpeedSliderVal(float value)
 {
-    mPositionCycleSpeedSlider.setValue(value, juce::sendNotification);
+    mPositionCycleSpeedSlider.setValue(value, juce::dontSendNotification);
 }
 
 //==============================================================================
 void SectionAbstractTrajectories::updateElevationSpeedSliderVal(float value)
 {
-    mElevationCycleSpeedSlider.setValue(value, juce::sendNotification);
+    mElevationCycleSpeedSlider.setValue(value, juce::dontSendNotification);
 }
 
 //==============================================================================
