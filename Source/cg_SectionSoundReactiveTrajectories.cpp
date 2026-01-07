@@ -1119,7 +1119,6 @@ SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFe
     mAudioAnalysisActivateButton.setButtonText("Activate");
     mAudioAnalysisActivateButton.setClickingTogglesState(true);
     mAudioAnalysisActivateButton.onClick = [this] {
-        activateButtonChangedStartedCallback();
         auto state{ mAudioAnalysisActivateButton.getToggleState() };
         if (juce::ModifierKeys::getCurrentModifiers().isShiftDown() && state) {
             mAPVTS.state.setProperty("audioAnalysisActivateButtonAlwaysOn", true, nullptr);
@@ -1129,11 +1128,6 @@ SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFe
             mAudioAnalysisActivateButton.setName("");
         }
         mAudioProcessor.setAudioAnalysisState(state);
-        auto * parameter{ mAPVTS.getParameter(Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE) };
-        auto const gestureLock{ mAudioProcessor.getChangeGestureManager().getScopedLock(
-            Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE) };
-        parameter->setValueNotifyingHost(state ? 1.0f : 0.0f);
-        activateButtonChangedEndedCallback();
     };
 
     //==============================================================================
@@ -2213,27 +2207,6 @@ void SectionSoundReactiveTrajectories::updateChannelMixCombo()
     }
     mChannelMixCombo.setSelectedId(selectedId, juce::dontSendNotification);
     mAudioProcessor.setChannelForAudioAnalysis(selectedId);
-}
-
-//==============================================================================
-void SectionSoundReactiveTrajectories::updateSoundReactiveTrajectoriesActivate(float value)
-{
-    auto const state{ value != 0.0f };
-    if (mAudioAnalysisActivateButton.isShowing()) {
-        mAudioAnalysisActivateButton.setToggleState(state, juce::sendNotification);
-    }
-}
-
-//==============================================================================
-void SectionSoundReactiveTrajectories::activateButtonChangedStartedCallback()
-{
-    mAudioProcessor.getChangeGestureManager().beginGesture(Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE);
-}
-
-//==============================================================================
-void SectionSoundReactiveTrajectories::activateButtonChangedEndedCallback()
-{
-    mAudioProcessor.getChangeGestureManager().endGesture(Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE);
 }
 
 //==============================================================================

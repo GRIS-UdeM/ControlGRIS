@@ -265,14 +265,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     mPositionActivateButton.setExplicitFocusOrder(1);
     mPositionActivateButton.setButtonText("Activate OSC");
     mPositionActivateButton.onClick = [this] {
-        oscActivateToggleChangedStartedCallback();
-        auto const state{ mPositionActivateButton.getToggleState() };
         mListeners.call([&](Listener & l) { l.oscStateChangedCallback(mPositionActivateButton.getToggleState()); });
-        // automation
-        auto * parameter{ mProcessor.getValueTreeState().getParameter(Automation::Ids::OSC_ACTIVATE) };
-        auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(Automation::Ids::OSC_ACTIVATE) };
-        parameter->setValueNotifyingHost(state ? 1.0f : 0.0f);
-        oscActivateToggleChangedEndedCallback();
     };
     addAndMakeVisible(&mPositionActivateButton);
 }
@@ -311,27 +304,6 @@ void SectionGeneralSettings::setFirstSourceId(SourceId const firstSourceId)
 void SectionGeneralSettings::setActivateButtonState(bool const shouldBeOn)
 {
     mPositionActivateButton.setToggleState(shouldBeOn, juce::NotificationType::dontSendNotification);
-}
-
-//==============================================================================
-void SectionGeneralSettings::updateOSCActivate(float value)
-{
-    auto const state{ value != 0.0f };
-    if (mPositionActivateButton.isShowing()) {
-        mPositionActivateButton.setToggleState(state, juce::dontSendNotification);
-    }
-}
-
-//==============================================================================
-void SectionGeneralSettings::oscActivateToggleChangedStartedCallback()
-{
-    mProcessor.getChangeGestureManager().beginGesture(Automation::Ids::OSC_ACTIVATE);
-}
-
-//==============================================================================
-void SectionGeneralSettings::oscActivateToggleChangedEndedCallback()
-{
-    mProcessor.getChangeGestureManager().endGesture(Automation::Ids::OSC_ACTIVATE);
 }
 
 //==============================================================================

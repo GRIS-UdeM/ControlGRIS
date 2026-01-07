@@ -156,10 +156,6 @@ juce::String extern const POSITION_PRESET;
 juce::String extern const ELEVATION_MODE;
 juce::String extern const POSITION_SPEED_SLIDER;
 juce::String extern const ELEVATION_SPEED_SLIDER;
-juce::String extern const ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE;
-juce::String extern const ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE;
-juce::String extern const SOUND_REACTIVE_TRAJECTORIES_ACTIVATE;
-juce::String extern const OSC_ACTIVATE;
 } // namespace Ids
 
 enum class Enum {
@@ -173,11 +169,7 @@ enum class Enum {
     positionPreset,
     elevationMode,
     positionSpeedSlider,
-    elevationSpeedSlider,
-    abstractTrajectoriesPositionActivate,
-    abstractTrajectoriesElevationActivate,
-    soundReactiveTrajectoriesActivate,
-    oscActivate
+    elevationSpeedSlider
 };
 
 Enum idToEnum(juce::String const & name);

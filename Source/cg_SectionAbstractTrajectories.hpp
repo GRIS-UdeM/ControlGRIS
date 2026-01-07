@@ -194,13 +194,6 @@ public:
     void elevationSpeedSliderChangedStartedCallback();
     void elevationSpeedSliderChangedEndedCallback();
 
-    void updateAbstractTrajectoriesPositionActivate(float value);
-    void updateAbstractTrajectoriesElevationActivate(float value);
-    void positionActivateButtonChangedStartedCallback();
-    void positionActivateButtonChangedEndedCallback();
-    void elevationActivateButtonChangedStartedCallback();
-    void elevationActivateButtonChangedEndedCallback();
-
     enum class SymmetricLinkComboState { enabled, disabled };
 
     void addListener(Listener * l) { mListeners.add(l); }
