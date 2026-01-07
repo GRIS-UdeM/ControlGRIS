@@ -89,8 +89,13 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mDurationEditor.setInputRestrictions(10, "0123456789.");
     mDurationEditor.onFocusLost = [this] {
         mDurationEditor.moveCaretToEnd();
+        auto newVal{ mDurationEditor.getText().getDoubleValue() };
+        if (newVal == 0.0) {
+            newVal = 1.0;
+            mDurationEditor.setText(juce::String(newVal), juce::dontSendNotification);
+        }
         mListeners.call([&](Listener & l) {
-            l.trajectoryCycleDurationChangedCallback(mDurationEditor.getText().getDoubleValue(),
+            l.trajectoryCycleDurationChangedCallback(newVal,
                                                      mDurationUnitCombo.getSelectedId());
         });
         unfocusAllComponents();
