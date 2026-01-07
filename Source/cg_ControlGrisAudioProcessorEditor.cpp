@@ -379,30 +379,6 @@ void ControlGrisAudioProcessorEditor::updateElevationSpeedSliderVal(float value)
 }
 
 //==============================================================================
-void ControlGrisAudioProcessorEditor::updateAbstractTrajectoriesPositionActivate(float value)
-{
-    mSectionAbstractTrajectories.updateAbstractTrajectoriesPositionActivate(value);
-}
-
-//==============================================================================
-void ControlGrisAudioProcessorEditor::updateAbstractTrajectoriesElevationActivate(float value)
-{
-    mSectionAbstractTrajectories.updateAbstractTrajectoriesElevationActivate(value);
-}
-
-//==============================================================================
-void ControlGrisAudioProcessorEditor::updateSoundReactiveTrajectoriesActivate(float value)
-{
-    mSectionSoundReactiveTrajectories.updateSoundReactiveTrajectoriesActivate(value);
-}
-
-//==============================================================================
-void ControlGrisAudioProcessorEditor::updateOSCActivate(float value)
-{
-    mSectionGeneralSettings.updateOSCActivate(value);
-}
-
-//==============================================================================
 void ControlGrisAudioProcessorEditor::setShowTrajectories(bool shouldShowTrajectories)
 {
     mPositionField.setShowTrajectory(shouldShowTrajectories);

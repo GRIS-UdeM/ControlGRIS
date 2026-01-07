@@ -92,27 +92,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
                                     juce::String("Elevation Speed Slider"),
                                     juce::NormalisableRange(0.0f, 1.0f, 0.01f),
                                     0.5f,
-                                    Attributes()),
-        std::make_unique<Parameter>(juce::ParameterID{ Automation::Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE, 1 },
-                                    juce::String("Abstract Position Activate"),
-                                    juce::NormalisableRange(0.0f, 1.0f, 1.0f),
-                                    0.0f,
-                                    Attributes().withDiscrete(true).withAutomatable(true)),
-        std::make_unique<Parameter>(juce::ParameterID{ Automation::Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE, 1 },
-                                    juce::String("Abstract Elevation Activate"),
-                                    juce::NormalisableRange(0.0f, 1.0f, 1.0f),
-                                    0.0f,
-                                    Attributes().withDiscrete(true).withAutomatable(true)),
-        std::make_unique<Parameter>(juce::ParameterID{ Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE, 1 },
-                                    juce::String("Sound Reactive Activate"),
-                                    juce::NormalisableRange(0.0f, 1.0f, 1.0f),
-                                    0.0f,
-                                    Attributes().withDiscrete(true).withAutomatable(true)),
-        std::make_unique<Parameter>(juce::ParameterID{ Automation::Ids::OSC_ACTIVATE, 1 },
-                                    juce::String("OSC Activate"),
-                                    juce::NormalisableRange(0.0f, 1.0f, 1.0f),
-                                    1.0f,
-                                    Attributes().withDiscrete(true).withAutomatable(true)));
+                                    Attributes()));
 
     return layout;
 }
@@ -195,6 +175,10 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     mAudioProcessorValueTreeState.state.setProperty("deviationPerCycle", 0, nullptr);
     mAudioProcessorValueTreeState.state.setProperty("cycleDuration", 5, nullptr);
     mAudioProcessorValueTreeState.state.setProperty("durationUnit", 1, nullptr);
+    mAudioProcessorValueTreeState.state.setProperty("abstractPositionActivate", 0.0, nullptr);
+    mAudioProcessorValueTreeState.state.setProperty("abstractElevationActivate", 0.0, nullptr);
+    mAudioProcessorValueTreeState.state.setProperty("soundReactiveActivate", 0.0, nullptr);
+    mAudioProcessorValueTreeState.state.setProperty("oscActivate", true, nullptr);
 
     mSources.init(this);
     mPositionSourceLinkEnforcer.numberOfSourcesChanged();
@@ -247,10 +231,6 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
     mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::ELEVATION_MODE, this);
     mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::POSITION_SPEED_SLIDER, this);
     mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::ELEVATION_SPEED_SLIDER, this);
-    mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE, this);
-    mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE, this);
-    mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE, this);
-    mAudioProcessorValueTreeState.addParameterListener(Automation::Ids::OSC_ACTIVATE, this);
 
     // The timer's callback send OSC messages periodically.
     //-----------------------------------------------------
@@ -340,46 +320,6 @@ void ControlGrisAudioProcessor::parameterChanged(juce::String const & parameterI
             auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
             if (editor != nullptr) {
                 editor->updateElevationSpeedSliderVal(value);
-            }
-        });
-    }
-
-    if (parameterId.compare(Automation::Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE) == 0) {
-        auto const value{ static_cast<float>(newValue) };
-        juce::MessageManager::callAsync([this, value] {
-            auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-            if (editor != nullptr) {
-                editor->updateAbstractTrajectoriesPositionActivate(value);
-            }
-        });
-    }
-
-    if (parameterId.compare(Automation::Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE) == 0) {
-        auto const value{ static_cast<float>(newValue) };
-        juce::MessageManager::callAsync([this, value] {
-            auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-            if (editor != nullptr) {
-                editor->updateAbstractTrajectoriesElevationActivate(value);
-            }
-        });
-    }
-
-    if (parameterId.compare(Automation::Ids::SOUND_REACTIVE_TRAJECTORIES_ACTIVATE) == 0) {
-        auto const value{ static_cast<float>(newValue) };
-        juce::MessageManager::callAsync([this, value] {
-            auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-            if (editor != nullptr) {
-                editor->updateSoundReactiveTrajectoriesActivate(value);
-            }
-        });
-    }
-
-    if (parameterId.compare(Automation::Ids::OSC_ACTIVATE) == 0) {
-        auto const value{ static_cast<float>(newValue) };
-        juce::MessageManager::callAsync([this, value] {
-            auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
-            if (editor != nullptr) {
-                editor->updateOSCActivate(value);
             }
         });
     }
@@ -1654,6 +1594,7 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
         setSpatMode(spatMode);
         setOscPortNumber(valueTree.getProperty("oscPortNumber", 18032));
         setOscAddress(valueTree.getProperty("oscAddress", "127.0.0.1"));
+        setOscActive(valueTree.getProperty("oscActivate", true));
         setNumberOfSources(valueTree.getProperty("numberOfSources", 1), false);
         setFirstSourceId(SourceId{ valueTree.getProperty("firstSourceId", 1) });
         setOscOutputPluginId(valueTree.getProperty("oscOutputPluginId", 1));

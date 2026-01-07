@@ -228,18 +228,11 @@ public:
     void updateElevationMode(ElevationMode mode);
     void updatePositionSpeedSliderVal(float value);
     void updateElevationSpeedSliderVal(float value);
-    void updateAbstractTrajectoriesPositionActivate(float value);
-    void updateAbstractTrajectoriesElevationActivate(float value);
-    void updateSoundReactiveTrajectoriesActivate(float value);
 
     void setShowTrajectories(bool shouldShowTrajectories);
 
     void elevationModeChangedStartedCallback();
     void elevationModeChangedEndedCallback();
-
-    void updateOSCActivate(float value);
-    void oscActivateToggleChangedStartedCallback();
-    void oscActivateToggleChangedEndedCallback();
 
     void updateAudioAnalysisNumInputChannels();
 

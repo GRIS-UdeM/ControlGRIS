@@ -181,7 +181,6 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mPositionActivateButton.setButtonText("Activate");
     mPositionActivateButton.setClickingTogglesState(true);
     mPositionActivateButton.onClick = [this] {
-        positionActivateButtonChangedStartedCallback();
         auto state{ mPositionActivateButton.getToggleState() };
         if (juce::ModifierKeys::getCurrentModifiers().isShiftDown() && state) {
             mAPVTS.state.setProperty("positionActivateButtonAlwaysOn", true, nullptr);
@@ -197,12 +196,6 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
         }
         mListeners.call(
             [&](Listener & l) { l.positionTrajectoryStateChangedCallback(mPositionActivateButton.getToggleState()); });
-        // automation
-        auto * parameter{ mAPVTS.getParameter(Automation::Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE) };
-        auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(
-            Automation::Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE) };
-        parameter->setValueNotifyingHost(state ? 1.0f : 0.0f);
-        positionActivateButtonChangedEndedCallback();
     };
 
     mPositionBackAndForthToggle.setButtonText("Back & Forth");
@@ -260,7 +253,6 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
     mElevationActivateButton.setButtonText("Activate");
     mElevationActivateButton.setClickingTogglesState(true);
     mElevationActivateButton.onClick = [this] {
-        elevationActivateButtonChangedStartedCallback();
         auto state{ mElevationActivateButton.getToggleState() };
         if (juce::ModifierKeys::getCurrentModifiers().isShiftDown() && state) {
             mAPVTS.state.setProperty("elevationActivateButtonAlwaysOn", true, nullptr);
@@ -277,12 +269,6 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
         mListeners.call([&](Listener & l) {
             l.elevationTrajectoryStateChangedCallback(mElevationActivateButton.getToggleState());
         });
-        // automation
-        auto * parameter{ mAPVTS.getParameter(Automation::Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE) };
-        auto const gestureLock{ mProcessor.getChangeGestureManager().getScopedLock(
-            Automation::Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE) };
-        parameter->setValueNotifyingHost(state ? 1.0f : 0.0f);
-        elevationActivateButtonChangedEndedCallback();
     };
 
     mElevationBackAndForthToggle.setButtonText("Back & Forth");
@@ -759,48 +745,6 @@ void SectionAbstractTrajectories::elevationSpeedSliderChangedStartedCallback()
 void SectionAbstractTrajectories::elevationSpeedSliderChangedEndedCallback()
 {
     mProcessor.getChangeGestureManager().endGesture(Automation::Ids::ELEVATION_SPEED_SLIDER);
-}
-
-//==============================================================================
-void SectionAbstractTrajectories::updateAbstractTrajectoriesPositionActivate(float value)
-{
-    auto const state{ value != 0.0f };
-    if (mPositionActivateButton.isShowing()) {
-        mPositionActivateButton.setToggleState(state, juce::sendNotification);
-    }
-}
-
-//==============================================================================
-void SectionAbstractTrajectories::updateAbstractTrajectoriesElevationActivate(float value)
-{
-    auto const state{ value != 0.0f };
-    if (mElevationActivateButton.isShowing()) {
-        mElevationActivateButton.setToggleState(state, juce::sendNotification);
-    }
-}
-
-//==============================================================================
-void SectionAbstractTrajectories::positionActivateButtonChangedStartedCallback()
-{
-    mProcessor.getChangeGestureManager().beginGesture(Automation::Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE);
-}
-
-//==============================================================================
-void SectionAbstractTrajectories::positionActivateButtonChangedEndedCallback()
-{
-    mProcessor.getChangeGestureManager().endGesture(Automation::Ids::ABSTRACT_TRAJECTORIES_POSITION_ACTIVATE);
-}
-
-//==============================================================================
-void SectionAbstractTrajectories::elevationActivateButtonChangedStartedCallback()
-{
-    mProcessor.getChangeGestureManager().beginGesture(Automation::Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE);
-}
-
-//==============================================================================
-void SectionAbstractTrajectories::elevationActivateButtonChangedEndedCallback()
-{
-    mProcessor.getChangeGestureManager().endGesture(Automation::Ids::ABSTRACT_TRAJECTORIES_ELEVATION_ACTIVATE);
 }
 
 //==============================================================================

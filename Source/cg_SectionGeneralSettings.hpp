@@ -93,10 +93,6 @@ public:
     void setOscAddress(juce::String const & address);
     void setActivateButtonState(bool shouldBeOn);
 
-    void updateOSCActivate(float value);
-    void oscActivateToggleChangedStartedCallback();
-    void oscActivateToggleChangedEndedCallback();
-
     void addListener(Listener * l) { mListeners.add(l); }
     void removeListener(Listener * l) { mListeners.remove(l); }
     //==============================================================================
