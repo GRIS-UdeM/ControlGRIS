@@ -95,8 +95,7 @@ SectionAbstractTrajectories::SectionAbstractTrajectories(GrisLookAndFeel & grisL
             mDurationEditor.setText(juce::String(newVal), juce::dontSendNotification);
         }
         mListeners.call([&](Listener & l) {
-            l.trajectoryCycleDurationChangedCallback(newVal,
-                                                     mDurationUnitCombo.getSelectedId());
+            l.trajectoryCycleDurationChangedCallback(newVal, mDurationUnitCombo.getSelectedId());
         });
         unfocusAllComponents();
     };

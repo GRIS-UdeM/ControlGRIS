@@ -2064,7 +2064,7 @@ void SectionSoundReactiveTrajectories::setSpatMode(SpatMode spatMode)
         mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 });
         mXYParamLinked
             ? mParameterAzimuthXOffsetSlider.setNormalisableRange(
-                  juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 })
+                juce::NormalisableRange<double>{ -360.0, 360.0, 0.01 })
             : mParameterAzimuthXOffsetSlider.setNormalisableRange(juce::NormalisableRange<double>{ -1.0, 1.0, 0.01 });
 
         updateParameterCombo(mParameterXDescriptorCombo, "LastUsedXDescriptor");
