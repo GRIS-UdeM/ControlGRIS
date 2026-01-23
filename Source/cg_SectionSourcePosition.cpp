@@ -118,6 +118,7 @@ CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent, GrisLookA
     initSlider(mYSlider, -1.0);
     initSlider(mZSlider, 0.0);
 
+    mXSlider.setDefaultNumDecimalPlacesToDisplay(3);
     mXSlider.onValueChange = [this] {
         mCurrentX = static_cast<float>(mXSlider.getValue());
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
@@ -129,6 +130,7 @@ CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent, GrisLookA
                                             std::nullopt);
         });
     };
+    mYSlider.setDefaultNumDecimalPlacesToDisplay(3);
     mYSlider.onValueChange = [this] {
         mCurrentY = static_cast<float>(mYSlider.getValue() * -1.0);
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
@@ -140,6 +142,7 @@ CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent, GrisLookA
                                             std::nullopt);
         });
     };
+    mZSlider.setDefaultNumDecimalPlacesToDisplay(3);
     mZSlider.onValueChange = [this] {
         mCurrentZ = static_cast<float>(mZSlider.getValue());
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
