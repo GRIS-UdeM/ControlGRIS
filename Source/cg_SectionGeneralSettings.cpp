@@ -24,7 +24,143 @@
 namespace gris
 {
 //==============================================================================
+SourcesTableListBoxModel::SourcesTableListBoxModel(GrisLookAndFeel & grisLookAndFeel,
+                                                   ControlGrisAudioProcessor & processor,
+                                                   SourcesTableListComponent & parentComponent)
+    : mGrisLookAndFeel(grisLookAndFeel)
+    , mProcessor(processor)
+    , mSourcesTableListComponent(parentComponent)
+{
+}
 
+//==============================================================================
+int SourcesTableListBoxModel::getNumRows()
+{
+    return mProcessor.getSources().size();
+}
+
+//==============================================================================
+void SourcesTableListBoxModel::paintRowBackground(juce::Graphics & g,
+                                                  int rowNumber,
+                                                  int width,
+                                                  int height,
+                                                  bool rowIsSelected)
+{
+    g.setColour(mGrisLookAndFeel.getBackgroundColor());
+    g.fillAll();
+}
+
+//==============================================================================
+void SourcesTableListBoxModel::paintCell(juce::Graphics & g,
+                                         int rowNumber,
+                                         int columnId,
+                                         int width,
+                                         int height,
+                                         bool rowIsSelected)
+{
+    g.setColour(mGrisLookAndFeel.getBackgroundColor());
+    g.fillAll();
+    g.setColour(mGrisLookAndFeel.getGreyColor());
+    g.drawRect(0, 0, width, height);
+
+    auto & sources{ mProcessor.getSources() };
+    if (columnId == 1) {
+        g.setColour(mGrisLookAndFeel.getLightColor());
+        for (auto & src : sources) {
+            if (rowNumber == src.getIndex().get()) {
+                g.drawText(juce::String(src.getId().get()), 0, 0, width, height, juce::Justification::centred);
+            }
+        }
+    }
+    if (columnId == 2) {
+        for (auto & src : sources) {
+            if (rowNumber == src.getIndex().get()) {
+                auto srcColour{ src.getColour() };
+                g.setColour(srcColour);
+                g.fillAll();
+            }
+        }
+    }
+}
+
+//==============================================================================
+void SourcesTableListBoxModel::cellClicked(int rowNumber, int columnId, const juce::MouseEvent & event)
+{
+    if (columnId == 2) {
+        SourceIndex srcIndex{ rowNumber };
+        auto & src{ mProcessor.getSources()[srcIndex] };
+        auto srcColour{ src.getColour() };
+        auto cellScreenBounds
+            = mSourcesTableListComponent.getTableListBox().getCellComponent(columnId, rowNumber)->getScreenBounds();
+        auto colourSelector{ std::make_unique<juce::ColourSelector>(juce::ColourSelector::showColourAtTop
+                                                                        | juce::ColourSelector::showSliders
+                                                                        | juce::ColourSelector::showColourspace,
+                                                                    4,
+                                                                    4) };
+        colourSelector->setName("source colour");
+        colourSelector->setCurrentColour(srcColour);
+        colourSelector->addChangeListener(this);
+        colourSelector->setColour(juce::ColourSelector::backgroundColourId, juce::Colours::transparentBlack);
+        colourSelector->setSize(300, 400);
+        juce::CallOutBox::launchAsynchronously(std::move(colourSelector), cellScreenBounds, nullptr);
+
+        mEditedColourSrcIndex = src.getIndex();
+    }
+}
+
+//==============================================================================
+void SourcesTableListBoxModel::changeListenerCallback(juce::ChangeBroadcaster * source)
+{
+    JUCE_ASSERT_MESSAGE_THREAD;
+
+    auto * colourSelector{ dynamic_cast<juce::ColourSelector *>(source) };
+    jassert(colourSelector);
+    if (colourSelector == nullptr) {
+        jassertfalse;
+        return;
+    }
+
+    auto & editedSrc{ mProcessor.getSources()[mEditedColourSrcIndex] };
+    auto colour = colourSelector->getCurrentColour();
+    auto & generalSettings = mSourcesTableListComponent.getSectionGeneralSettings();
+
+    editedSrc.setColour(colour);
+    mSourcesTableListComponent.repaint();
+    generalSettings.updateSourcesColour(mEditedColourSrcIndex);
+}
+
+//==============================================================================
+SourcesTableListComponent::SourcesTableListComponent(GrisLookAndFeel & grisLookAndFeel,
+                                                     ControlGrisAudioProcessor & processor,
+                                                     SectionGeneralSettings & sectionGeneralSettings)
+    : mGrisLookAndFeel(grisLookAndFeel)
+    , mProcessor(processor)
+    , mSectionGeneralSettings(sectionGeneralSettings)
+    , mSourcesTableModel(grisLookAndFeel, processor, *this)
+    , mSourcesTableListBox("SourcesTableListBox", &mSourcesTableModel)
+{
+    constexpr int COL_WIDTH{ 100 };
+    auto tableHeaderComponent{ std::make_unique<juce::TableHeaderComponent>() };
+    tableHeaderComponent->addColumn("Source number", 1, COL_WIDTH);
+    tableHeaderComponent->addColumn("Source colour", 2, COL_WIDTH);
+    mSourcesTableListBox.setHeader(std::move(tableHeaderComponent));
+    mSourcesTableListBox.setBounds(0, 0, 210, 200);
+    addAndMakeVisible(&mSourcesTableListBox);
+}
+
+//==============================================================================
+juce::TableListBox & SourcesTableListComponent::getTableListBox()
+{
+    return mSourcesTableListBox;
+}
+
+//==============================================================================
+SectionGeneralSettings & SourcesTableListComponent::getSectionGeneralSettings()
+{
+    return mSectionGeneralSettings;
+}
+
+//==============================================================================
 // TODO: handle negative values when _minValue is negative
 /**
  * @class NumberRangeInputFilter
@@ -262,6 +398,24 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
     };
     addAndMakeVisible(&mFirstSourceIdEditor);
 
+    mSourcesColourEditButton.setButtonText("Edit source colours");
+    mSourcesColourEditButton.setLookAndFeel(&mGrisLookAndFeel);
+    mSourcesColourEditButton.onClick = [this] {
+        auto popupTableList{ std::make_unique<SourcesTableListComponent>(mGrisLookAndFeel, mProcessor, *this) };
+        constexpr auto TABLE_HEADER_HEIGHT{ 28 };
+        constexpr auto TABLE_ROW_HEIGHT{ 22 };
+        auto tableHeight{ (mProcessor.getSources().size() * TABLE_ROW_HEIGHT) + TABLE_HEADER_HEIGHT };
+        tableHeight = tableHeight > 200 ? 200 : tableHeight;
+
+        popupTableList->setSize(200, tableHeight);
+
+        auto & box = juce::CallOutBox::launchAsynchronously(std::move(popupTableList),
+                                                            mSourcesColourEditButton.getScreenBounds(),
+                                                            nullptr);
+        box.setLookAndFeel(&mGrisLookAndFeel);
+    };
+    addAndMakeVisible(&mSourcesColourEditButton);
+
     mPositionActivateButton.setExplicitFocusOrder(1);
     mPositionActivateButton.setButtonText("Activate OSC");
     mPositionActivateButton.onClick = [this] {
@@ -324,7 +478,15 @@ void SectionGeneralSettings::resized()
     mFirstSourceIdLabel.setBounds(5, 100, 130, 10);
     mFirstSourceIdEditor.setBounds(115, 97, 24, 15);
 
+    mSourcesColourEditButton.setBounds(178, 74, 95, 17);
+
     mPositionActivateButton.setBounds(175, 100, 150, 15);
+}
+
+//==============================================================================
+void SectionGeneralSettings::updateSourcesColour(SourceIndex sourceIndex)
+{
+    mListeners.call([&](Listener & l) { l.sourcesColourChangedCallback(sourceIndex); });
 }
 
 } // namespace gris

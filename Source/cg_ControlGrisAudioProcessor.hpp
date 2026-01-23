@@ -76,6 +76,8 @@ class ControlGrisAudioProcessor final
     int mCurrentOscInputPort{ 8000 };
     int mCurrentOscOutputPort{ 9000 };
     juce::String mCurrentOscOutputAddress{ "192.168.1.100" };
+    bool mShouldSendOSCSourceColour{};
+    SourceIndex mSourceIndexOSCColour;
     bool mNeedsInitialization{ true };
     PersistentStorage mPersistentStorage;
 
@@ -318,6 +320,7 @@ public:
     [[nodiscard]] bool createOscOutputConnection(juce::String const & oscAddress, int oscPort);
     [[nodiscard]] bool disconnectOscOutput(juce::String const & oscAddress, int oscPort);
     [[nodiscard]] bool getOscOutputConnected() const { return mOscOutputConnected; }
+    void setShouldSendOSCSourceColour(SourceIndex sourceIndex);
     void sendOscOutputMessage();
     void setOscOutputPluginId(int pluginId);
     [[nodiscard]] int getOscOutputPluginId() const;

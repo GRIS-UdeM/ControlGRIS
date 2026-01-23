@@ -356,6 +356,13 @@ void Source::setColorFromIndex(int const numTotalSources)
 }
 
 //==============================================================================
+void Source::setColour(juce::Colour colour)
+{
+    mColour = colour;
+    notifyGuiListeners();
+}
+
+//==============================================================================
 void Source::notifyGuiListeners()
 {
     auto callback = [=](Source::Listener & listener) { listener.update(); };

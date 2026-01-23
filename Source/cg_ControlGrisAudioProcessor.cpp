@@ -588,6 +588,23 @@ void ControlGrisAudioProcessor::sendOscMessage()
             jassert(success);
         }
     }
+
+    if (mShouldSendOSCSourceColour) {
+        juce::OSCAddressPattern const oscPattern("/spat/serv");
+        juce::OSCMessage message(oscPattern);
+
+        const auto source{ mSources[mSourceIndexOSCColour] };
+        juce::OSCColour colour{};
+        message.clear();
+        message.addString("colour");
+        message.addInt32(source.getId().get() - 1); // osc id starts at 0
+        message.addColour(colour.fromInt32(source.getColour().getARGB()));
+
+        [[maybe_unused]] auto const success{ mOscSender.send(message) };
+        jassert(success);
+
+        mShouldSendOSCSourceColour = false;
+    }
 }
 
 //==============================================================================
@@ -805,6 +822,13 @@ bool ControlGrisAudioProcessor::disconnectOscOutput(juce::String const & oscAddr
     mAudioProcessorValueTreeState.state.setProperty("oscOutputConnected", getOscOutputConnected(), nullptr);
 
     return !mOscOutputConnected;
+}
+
+//==============================================================================
+void ControlGrisAudioProcessor::setShouldSendOSCSourceColour(SourceIndex sourceIndex)
+{
+    mSourceIndexOSCColour = sourceIndex;
+    mShouldSendOSCSourceColour = true;
 }
 
 //==============================================================================
@@ -1549,14 +1573,17 @@ void ControlGrisAudioProcessor::getStateInformation(juce::MemoryBlock & destData
         juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };
         juce::Identifier const elevationId{ juce::String{ "p_elevation_" } + id };
         juce::Identifier const distanceId{ juce::String{ "p_distance_" } + id };
+        juce::Identifier const colourId{ juce::String{ "colour_" } + id };
         auto const & source{ mSources[sourceIndex] };
         auto const normalizedAzimuth{ source.getNormalizedAzimuth().get() };
         auto const normalizedElevation{ source.getNormalizedElevation().get() };
         auto const distance{ source.getDistance() };
+        auto const colour{ source.getColour().toString() };
 
         mAudioProcessorValueTreeState.state.setProperty(azimuthId, normalizedAzimuth, nullptr);
         mAudioProcessorValueTreeState.state.setProperty(elevationId, normalizedElevation, nullptr);
         mAudioProcessorValueTreeState.state.setProperty(distanceId, distance, nullptr);
+        mAudioProcessorValueTreeState.state.setProperty(colourId, colour, nullptr);
     }
 
     mAudioProcessorValueTreeState.state.setProperty("soundTrajSelTab", mSelectedSoundTrajectoriesTabIdx, nullptr);
@@ -1620,15 +1647,18 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
             juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };
             juce::Identifier const elevationId{ juce::String{ "p_elevation_" } + id };
             juce::Identifier const distanceId{ juce::String{ "p_distance_" } + id };
+            juce::Identifier const colourId{ juce::String{ "colour_" } + id };
             auto & source{ mSources[sourceIndex] };
 
             const Radians azimuth{ valueTree.getProperty(azimuthId) };
             const Radians elevation{ valueTree.getProperty(elevationId) };
             const float distance{ valueTree.getProperty(distanceId) };
+            const juce::String colour{ valueTree.getProperty(colourId) };
 
             source.setAzimuth(azimuth, Source::OriginOfChange::userAnchorMove);
             source.setElevation(elevation, Source::OriginOfChange::userAnchorMove);
             source.setDistance(distance, Source::OriginOfChange::userAnchorMove);
+            source.setColour(juce::Colour::fromString(colour));
         }
 
         // Load saved fixed positions.

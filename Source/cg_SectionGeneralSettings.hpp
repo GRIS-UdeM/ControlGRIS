@@ -30,6 +30,83 @@
 
 namespace gris
 {
+class SourcesTableListComponent;
+class SectionGeneralSettings;
+//==============================================================================
+class SourcesTableListBoxModel
+    : public juce::TableListBoxModel
+    , private juce::ChangeListener
+{
+public:
+    //==============================================================================
+    explicit SourcesTableListBoxModel(GrisLookAndFeel & grisLookAndFeel,
+                                      ControlGrisAudioProcessor & processor,
+                                      SourcesTableListComponent & parentComponent);
+    //==============================================================================
+    SourcesTableListBoxModel() = delete;
+    ~SourcesTableListBoxModel() override = default;
+
+    SourcesTableListBoxModel(const SourcesTableListBoxModel & other) = delete;
+    SourcesTableListBoxModel(SourcesTableListBoxModel && other) = delete;
+
+    SourcesTableListBoxModel & operator=(const SourcesTableListBoxModel & other) = delete;
+    SourcesTableListBoxModel & operator=(SourcesTableListBoxModel && other) = delete;
+
+    //==============================================================================
+    int getNumRows() override;
+    void paintRowBackground(juce::Graphics &, int rowNumber, int width, int height, bool rowIsSelected) override;
+    void paintCell(juce::Graphics &, int rowNumber, int columnId, int width, int height, bool rowIsSelected) override;
+    void cellClicked(int rowNumber, int columnId, const juce::MouseEvent & event) override;
+    void changeListenerCallback(juce::ChangeBroadcaster * source) override;
+
+private:
+    //==============================================================================
+    GrisLookAndFeel & mGrisLookAndFeel;
+    ControlGrisAudioProcessor & mProcessor;
+    SourcesTableListComponent & mSourcesTableListComponent;
+
+    SourceIndex mEditedColourSrcIndex;
+
+    //==============================================================================
+    JUCE_LEAK_DETECTOR(SourcesTableListBoxModel)
+};
+
+//==============================================================================
+class SourcesTableListComponent : public juce::Component
+{
+public:
+    //==============================================================================
+    explicit SourcesTableListComponent(GrisLookAndFeel & grisLookAndFeel,
+                                       ControlGrisAudioProcessor & processor,
+                                       SectionGeneralSettings & sectionGeneralSettings
+                                       /*juce::AudioProcessorValueTreeState & apvts*/);
+    //==============================================================================
+    SourcesTableListComponent() = delete;
+    ~SourcesTableListComponent() override = default;
+
+    SourcesTableListComponent(const SourcesTableListComponent & other) = delete;
+    SourcesTableListComponent(SourcesTableListComponent && other) = delete;
+
+    SourcesTableListComponent & operator=(SourcesTableListComponent const &) = delete;
+    SourcesTableListComponent & operator=(SourcesTableListComponent &&) = delete;
+
+    //==============================================================================
+    juce::TableListBox & getTableListBox();
+    SectionGeneralSettings & getSectionGeneralSettings();
+
+private:
+    //==============================================================================
+    GrisLookAndFeel & mGrisLookAndFeel;
+    ControlGrisAudioProcessor & mProcessor;
+    SectionGeneralSettings & mSectionGeneralSettings;
+
+    SourcesTableListBoxModel mSourcesTableModel;
+    juce::TableListBox mSourcesTableListBox;
+
+    //==============================================================================
+    JUCE_LEAK_DETECTOR(SourcesTableListComponent)
+};
+
 //==============================================================================
 class SectionGeneralSettings final : public juce::Component
 {
@@ -44,6 +121,7 @@ public:
         virtual void oscStateChangedCallback(bool state) = 0;
         virtual void numberOfSourcesChangedCallback(int numOfSources) = 0;
         virtual void firstSourceIdChangedCallback(SourceId firstSourceId) = 0;
+        virtual void sourcesColourChangedCallback(SourceIndex sourceIndex) = 0;
     };
 
 private:
@@ -67,6 +145,8 @@ private:
 
     juce::Label mFirstSourceIdLabel;
     TextEd mFirstSourceIdEditor{ mGrisLookAndFeel };
+
+    juce::TextButton mSourcesColourEditButton;
 
     juce::ToggleButton mPositionActivateButton;
 
@@ -95,6 +175,8 @@ public:
 
     void addListener(Listener * l) { mListeners.add(l); }
     void removeListener(Listener * l) { mListeners.remove(l); }
+
+    void updateSourcesColour(SourceIndex sourceIndex);
     //==============================================================================
     // overrides
     void resized() override;
