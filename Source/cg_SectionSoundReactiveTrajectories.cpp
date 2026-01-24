@@ -1372,7 +1372,7 @@ SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFe
     // update the datagraph at 60fps
     startTimer(timerParamID::datagraphUpdate, 17);
 
-    addAndMakeVisible(&mClickTimerButton);
+//    addAndMakeVisible(&mClickTimerButton);
     mClickTimerButton.setButtonText("click me!");
     mClickTimerButton.onClick = [this] {
         if (mParameterToShow) {
