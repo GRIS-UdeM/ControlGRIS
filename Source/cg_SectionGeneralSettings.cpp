@@ -86,6 +86,24 @@ void SourcesTableListBoxModel::paintCell(juce::Graphics & g,
 //==============================================================================
 void SourcesTableListBoxModel::cellClicked(int rowNumber, int columnId, const juce::MouseEvent & event)
 {
+    auto const isRightButton{ event.mods.isRightButtonDown() };
+
+    if (isRightButton && columnId == 2) {
+        SourceIndex srcIndex{ rowNumber };
+        SourceIndex nextSrcIndex{ rowNumber + 1 };
+        if (getNumRows() > nextSrcIndex.get()) {
+            auto & generalSettings = mSourcesTableListComponent.getSectionGeneralSettings();
+            auto & src{ mProcessor.getSources()[srcIndex] };
+            auto srcColour{ src.getColour() };
+            auto & nextSrc{ mProcessor.getSources()[nextSrcIndex] };
+
+            nextSrc.setColour(srcColour);
+            mSourcesTableListComponent.repaint();
+            generalSettings.updateSourcesColour(nextSrcIndex);
+        }
+        return;
+    }
+
     if (columnId == 2) {
         SourceIndex srcIndex{ rowNumber };
         auto & src{ mProcessor.getSources()[srcIndex] };
