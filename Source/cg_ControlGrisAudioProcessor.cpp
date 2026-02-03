@@ -610,7 +610,7 @@ void ControlGrisAudioProcessor::sendOscMessage()
         juce::OSCAddressPattern const oscPattern("/spat/serv");
         juce::OSCMessage message(oscPattern);
 
-        for (auto& source : mSources) {
+        for (auto & source : mSources) {
             juce::OSCColour colour{};
             message.clear();
             message.addString("colour");
