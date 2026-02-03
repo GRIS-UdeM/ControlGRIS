@@ -146,6 +146,7 @@ public:
         virtual void numberOfSourcesChangedCallback(int numOfSources) = 0;
         virtual void firstSourceIdChangedCallback(SourceId firstSourceId) = 0;
         virtual void sourcesColourChangedCallback(SourceIndex sourceIndex) = 0;
+        virtual void allSourcesColourChangedCallback() = 0;
     };
 
 private:
@@ -201,6 +202,7 @@ public:
     void removeListener(Listener * l) { mListeners.remove(l); }
 
     void updateSourcesColour(SourceIndex sourceIndex);
+    void updateAllSourcesColour();
     //==============================================================================
     // overrides
     void resized() override;

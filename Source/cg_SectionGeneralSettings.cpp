@@ -188,8 +188,8 @@ void SourcesTableListComponent::TableHeader::columnClicked(int columnId, const j
         for (auto & source : sources) {
             source.setColorFromIndex(numSources);
             mSourcesTableListComponent.repaint();
-            mSourcesTableListComponent.mSectionGeneralSettings.updateSourcesColour(source.getIndex());
         }
+        mSourcesTableListComponent.mSectionGeneralSettings.updateAllSourcesColour();
     }
 }
 
@@ -532,6 +532,11 @@ void SectionGeneralSettings::resized()
 void SectionGeneralSettings::updateSourcesColour(SourceIndex sourceIndex)
 {
     mListeners.call([&](Listener & l) { l.sourcesColourChangedCallback(sourceIndex); });
+}
+
+void SectionGeneralSettings::updateAllSourcesColour()
+{
+    mListeners.call([&](Listener & l) { l.allSourcesColourChangedCallback(); });
 }
 
 } // namespace gris

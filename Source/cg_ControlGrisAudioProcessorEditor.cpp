@@ -544,6 +544,15 @@ void ControlGrisAudioProcessorEditor::sourcesColourChangedCallback(SourceIndex s
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::allSourcesColourChangedCallback()
+{
+    mPositionField.rebuildSourceComponents(mProcessor.getSources().size());
+    mElevationField.rebuildSourceComponents(mProcessor.getSources().size());
+    mSectionSourcePosition.repaint();
+    mProcessor.setShouldSendOSCAllSourceColour();
+}
+
+//==============================================================================
 // SectionSourcePosition::Listener callbacks.
 void ControlGrisAudioProcessorEditor::sourceSelectionChangedCallback(SourceIndex const sourceIndex)
 {

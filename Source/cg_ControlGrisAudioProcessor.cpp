@@ -605,6 +605,24 @@ void ControlGrisAudioProcessor::sendOscMessage()
 
         mShouldSendOSCSourceColour = false;
     }
+
+    if (mShouldSendOSCAllSourcesColour) {
+        juce::OSCAddressPattern const oscPattern("/spat/serv");
+        juce::OSCMessage message(oscPattern);
+
+        for (auto& source : mSources) {
+            juce::OSCColour colour{};
+            message.clear();
+            message.addString("colour");
+            message.addInt32(source.getId().get() - 1); // osc id starts at 0
+            message.addColour(colour.fromInt32(source.getColour().getARGB()));
+
+            [[maybe_unused]] auto const success{ mOscSender.send(message) };
+            jassert(success);
+        }
+
+        mShouldSendOSCAllSourcesColour = false;
+    }
 }
 
 //==============================================================================
@@ -829,6 +847,12 @@ void ControlGrisAudioProcessor::setShouldSendOSCSourceColour(SourceIndex sourceI
 {
     mSourceIndexOSCColour = sourceIndex;
     mShouldSendOSCSourceColour = true;
+}
+
+//==============================================================================
+void ControlGrisAudioProcessor::setShouldSendOSCAllSourceColour()
+{
+    mShouldSendOSCAllSourcesColour = true;
 }
 
 //==============================================================================
