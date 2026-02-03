@@ -573,7 +573,7 @@ void ControlGrisAudioProcessor::sendOscMessage()
             auto const elevation{ source.getElevation().getAsRadians() };
             auto const azimuthSpan{ source.getAzimuthSpan() * 2.0f };
             auto const elevationSpan{ source.getElevationSpan() * 0.5f };
-            auto const distance{ mSpatMode == SpatMode::cube ? source.getDistance() / 0.6f : source.getDistance() };
+            auto const distance{ source.getDistance() };
 
             message.clear();
             message.addInt32(source.getId().get() - 1); // osc id starts at 0
