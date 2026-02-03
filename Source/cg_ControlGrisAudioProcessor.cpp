@@ -1653,7 +1653,7 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
             const Radians azimuth{ valueTree.getProperty(azimuthId) };
             const Radians elevation{ valueTree.getProperty(elevationId) };
             const float distance{ valueTree.getProperty(distanceId) };
-            const juce::String colour{ valueTree.getProperty(colourId) };
+            const juce::String colour{ valueTree.getProperty(colourId).toString() };
 
             source.setAzimuth(azimuth, Source::OriginOfChange::userAnchorMove);
             source.setElevation(elevation, Source::OriginOfChange::userAnchorMove);
