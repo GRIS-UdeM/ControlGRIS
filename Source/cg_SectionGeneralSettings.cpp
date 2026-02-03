@@ -158,12 +158,39 @@ SourcesTableListComponent::SourcesTableListComponent(GrisLookAndFeel & grisLookA
     , mSourcesTableListBox("SourcesTableListBox", &mSourcesTableModel)
 {
     constexpr int COL_WIDTH{ 100 };
-    auto tableHeaderComponent{ std::make_unique<juce::TableHeaderComponent>() };
-    tableHeaderComponent->addColumn("Source number", 1, COL_WIDTH);
-    tableHeaderComponent->addColumn("Source colour", 2, COL_WIDTH);
+    auto tableHeaderComponent{ std::make_unique<TableHeader>(*this) };
+    tableHeaderComponent
+        ->addColumn("Source number", 1, COL_WIDTH, COL_WIDTH, COL_WIDTH, juce::TableHeaderComponent::notSortable);
+    tableHeaderComponent
+        ->addColumn("Source colour", 2, COL_WIDTH, COL_WIDTH, COL_WIDTH, juce::TableHeaderComponent::notSortable);
+    tableHeaderComponent->setPopupMenuActive(false);
+
     mSourcesTableListBox.setHeader(std::move(tableHeaderComponent));
     mSourcesTableListBox.setBounds(0, 0, 210, 200);
     addAndMakeVisible(&mSourcesTableListBox);
+}
+
+//==============================================================================
+SourcesTableListComponent::TableHeader::TableHeader(SourcesTableListComponent & parent)
+    : mSourcesTableListComponent(parent)
+{
+}
+
+//==============================================================================
+void SourcesTableListComponent::TableHeader::columnClicked(int columnId, const juce::ModifierKeys & mods)
+{
+    auto const isRightButton{ mods.isRightButtonDown() };
+
+    if (isRightButton && columnId == 2) {
+        // reset all colours
+        auto & sources{ mSourcesTableListComponent.mProcessor.getSources() };
+        auto numSources{ sources.size() };
+        for (auto & source : sources) {
+            source.setColorFromIndex(numSources);
+            mSourcesTableListComponent.repaint();
+            mSourcesTableListComponent.mSectionGeneralSettings.updateSourcesColour(source.getIndex());
+        }
+    }
 }
 
 //==============================================================================

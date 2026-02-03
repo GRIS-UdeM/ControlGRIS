@@ -74,12 +74,36 @@ private:
 //==============================================================================
 class SourcesTableListComponent : public juce::Component
 {
+    //==============================================================================
+    class TableHeader : public juce::TableHeaderComponent
+    {
+    public:
+        //==============================================================================
+        TableHeader() = delete;
+        ~TableHeader() override = default;
+
+        TableHeader(const TableHeader & other) = delete;
+        TableHeader(TableHeader && other) = delete;
+
+        TableHeader & operator=(TableHeader const &) = delete;
+        TableHeader & operator=(TableHeader &&) = delete;
+
+        //==============================================================================
+        explicit TableHeader(SourcesTableListComponent & parent);
+
+        //==============================================================================
+        void columnClicked(int columnId, const juce::ModifierKeys & mods) override;
+
+    private:
+        //==============================================================================
+        SourcesTableListComponent & mSourcesTableListComponent;
+    };
+
 public:
     //==============================================================================
     explicit SourcesTableListComponent(GrisLookAndFeel & grisLookAndFeel,
                                        ControlGrisAudioProcessor & processor,
-                                       SectionGeneralSettings & sectionGeneralSettings
-                                       /*juce::AudioProcessorValueTreeState & apvts*/);
+                                       SectionGeneralSettings & sectionGeneralSettings);
     //==============================================================================
     SourcesTableListComponent() = delete;
     ~SourcesTableListComponent() override = default;
