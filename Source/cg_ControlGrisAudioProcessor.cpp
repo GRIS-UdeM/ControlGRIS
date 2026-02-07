@@ -1597,17 +1597,17 @@ void ControlGrisAudioProcessor::getStateInformation(juce::MemoryBlock & destData
         juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };
         juce::Identifier const elevationId{ juce::String{ "p_elevation_" } + id };
         juce::Identifier const distanceId{ juce::String{ "p_distance_" } + id };
-        juce::Identifier const colourId{ juce::String{ "colour_" } + id };
+        //        juce::Identifier const colourId{ juce::String{ "colour_" } + id };
         auto const & source{ mSources[sourceIndex] };
         auto const normalizedAzimuth{ source.getNormalizedAzimuth().get() };
         auto const normalizedElevation{ source.getNormalizedElevation().get() };
         auto const distance{ source.getDistance() };
-        auto const colour{ source.getColour().toString() };
+        //        auto const colour{ source.getColour().toString() };
 
         mAudioProcessorValueTreeState.state.setProperty(azimuthId, normalizedAzimuth, nullptr);
         mAudioProcessorValueTreeState.state.setProperty(elevationId, normalizedElevation, nullptr);
         mAudioProcessorValueTreeState.state.setProperty(distanceId, distance, nullptr);
-        mAudioProcessorValueTreeState.state.setProperty(colourId, colour, nullptr);
+        //        mAudioProcessorValueTreeState.state.setProperty(colourId, colour, nullptr);
     }
 
     mAudioProcessorValueTreeState.state.setProperty("soundTrajSelTab", mSelectedSoundTrajectoriesTabIdx, nullptr);
@@ -1671,18 +1671,18 @@ void ControlGrisAudioProcessor::setStateInformation(void const * data, int const
             juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };
             juce::Identifier const elevationId{ juce::String{ "p_elevation_" } + id };
             juce::Identifier const distanceId{ juce::String{ "p_distance_" } + id };
-            juce::Identifier const colourId{ juce::String{ "colour_" } + id };
+            //            juce::Identifier const colourId{ juce::String{ "colour_" } + id };
             auto & source{ mSources[sourceIndex] };
 
             const Radians azimuth{ valueTree.getProperty(azimuthId) };
             const Radians elevation{ valueTree.getProperty(elevationId) };
             const float distance{ valueTree.getProperty(distanceId) };
-            const juce::String colour{ valueTree.getProperty(colourId).toString() };
+            //            const juce::String colour{ valueTree.getProperty(colourId).toString() };
 
             source.setAzimuth(azimuth, Source::OriginOfChange::userAnchorMove);
             source.setElevation(elevation, Source::OriginOfChange::userAnchorMove);
             source.setDistance(distance, Source::OriginOfChange::userAnchorMove);
-            source.setColour(juce::Colour::fromString(colour));
+            //            source.setColour(juce::Colour::fromString(colour));
         }
 
         // Load saved fixed positions.

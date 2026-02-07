@@ -459,7 +459,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
                                                             nullptr);
         box.setLookAndFeel(&mGrisLookAndFeel);
     };
-    addAndMakeVisible(&mSourcesColourEditButton);
+    //    addAndMakeVisible(&mSourcesColourEditButton);
 
     mPositionActivateButton.setExplicitFocusOrder(1);
     mPositionActivateButton.setButtonText("Activate OSC");

@@ -279,7 +279,8 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
             l.elevationSourceLinkChangedCallback(static_cast<ElevationSourceLink>(mZSourceLinkCombo.getSelectedId()));
         });
 
-        if ((mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3) && mSpatMode == SpatMode::cube) {
+        if ((mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3)
+            && mSpatMode == SpatMode::cube) {
             mZSourceLinkScaleLabel.setVisible(true);
             mZSourceLinkScaleSlider.setVisible(true);
             mZSourceLinkCombo.setBounds(120, 102 + titleHeight, 96, 15);
