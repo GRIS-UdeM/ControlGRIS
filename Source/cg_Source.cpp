@@ -381,12 +381,12 @@ void Sources::setSize(int const size)
         }
     }
 
-    // keep colours of exesting sources
-    juce::Array<juce::Colour> sourcesColours;
-    for (int i{}; i < mSize; ++i) {
-        auto & source{ get(i) };
-        sourcesColours.add(source.getColour());
-    }
+    //    // keep colours of exesting sources
+    //    juce::Array<juce::Colour> sourcesColours;
+    //    for (int i{}; i < mSize; ++i) {
+    //        auto & source{ get(i) };
+    //        sourcesColours.add(source.getColour());
+    //    }
 
     mSize = size;
     auto const azimuthSpan{ mPrimarySource.getAzimuthSpan() };
@@ -397,12 +397,12 @@ void Sources::setSize(int const size)
         source.setElevationSpan(elevationSpan);
     }
 
-    // setting colours of exesting sources
-    auto numColours{ sourcesColours.size() };
-    for (int i{}; i < numColours; ++i) {
-        auto & source{ get(i) };
-        source.setColour(sourcesColours[i]);
-    }
+    //    // setting colours of exesting sources
+    //    auto numColours{ sourcesColours.size() };
+    //    for (int i{}; i < numColours; ++i) {
+    //        auto & source{ get(i) };
+    //        source.setColour(sourcesColours[i]);
+    //    }
 }
 
 } // namespace gris
