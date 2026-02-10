@@ -200,8 +200,7 @@ ControlGrisAudioProcessor::ControlGrisAudioProcessor()
         // Gives the source an initial id...
         auto & source{ mSources.get(i) };
         source.setId(SourceId{ i + mFirstSourceId.get() });
-        // .. and colour
-        source.setColorFromIndex(mSources.size());
+        // (colour will be defined in getStateInformation)
         // .. and coordinates.
         auto const azimuth{ i % 2 == 0 ? Degrees{ -45.0f } : Degrees{ 45.0f } };
         source.setCoordinates(Radians{ azimuth },
@@ -1592,6 +1591,20 @@ juce::AudioProcessorEditor * ControlGrisAudioProcessor::createEditor()
 //==============================================================================
 void ControlGrisAudioProcessor::getStateInformation(juce::MemoryBlock & destData)
 {
+    if (!mAudioProcessorValueTreeState.state.hasProperty(juce::String("colour_0"))) {
+        for (int i{}; i < mSources.size(); ++i) {
+            auto & source{ mSources[i] };
+            source.setColorFromIndex(mSources.size());
+            mAudioProcessorValueTreeState.state.setProperty(juce::String("colour_") + juce::String(i),
+                                                            source.getColour().toString(),
+                                                            nullptr);
+        }
+        auto * editor{ dynamic_cast<ControlGrisAudioProcessorEditor *>(getActiveEditor()) };
+        if (editor != nullptr) {
+            juce::MessageManager::callAsync([=] { editor->updateAllSourcesColour(); });
+        }
+    }
+
     for (int sourceIndex{}; sourceIndex < mSources.MAX_NUMBER_OF_SOURCES; ++sourceIndex) {
         juce::String const id{ sourceIndex };
         juce::Identifier const azimuthId{ juce::String{ "p_azimuth_" } + id };

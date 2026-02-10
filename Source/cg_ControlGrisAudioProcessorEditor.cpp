@@ -379,6 +379,14 @@ void ControlGrisAudioProcessorEditor::updateElevationSpeedSliderVal(float value)
 }
 
 //==============================================================================
+void ControlGrisAudioProcessorEditor::updateAllSourcesColour()
+{
+    mPositionField.rebuildSourceComponents(mProcessor.getSources().size());
+    mElevationField.rebuildSourceComponents(mProcessor.getSources().size());
+    mSectionSourcePosition.repaint();
+}
+
+//==============================================================================
 void ControlGrisAudioProcessorEditor::setShowTrajectories(bool shouldShowTrajectories)
 {
     mPositionField.setShowTrajectory(shouldShowTrajectories);

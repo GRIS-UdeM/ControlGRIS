@@ -231,6 +231,8 @@ public:
     void updatePositionSpeedSliderVal(float value);
     void updateElevationSpeedSliderVal(float value);
 
+    void updateAllSourcesColour();
+
     void setShowTrajectories(bool shouldShowTrajectories);
 
     void elevationModeChangedStartedCallback();
