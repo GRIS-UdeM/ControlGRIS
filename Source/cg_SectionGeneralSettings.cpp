@@ -108,8 +108,6 @@ void SourcesTableListBoxModel::cellClicked(int rowNumber, int columnId, const ju
         SourceIndex srcIndex{ rowNumber };
         auto & src{ mProcessor.getSources()[srcIndex] };
         auto srcColour{ src.getColour() };
-        auto cellScreenBounds
-            = mSourcesTableListComponent.getTableListBox().getCellComponent(columnId, rowNumber)->getScreenBounds();
         auto colourSelector{ std::make_unique<juce::ColourSelector>(juce::ColourSelector::showColourAtTop
                                                                         | juce::ColourSelector::showSliders
                                                                         | juce::ColourSelector::showColourspace,
@@ -120,7 +118,18 @@ void SourcesTableListBoxModel::cellClicked(int rowNumber, int columnId, const ju
         colourSelector->addChangeListener(this);
         colourSelector->setColour(juce::ColourSelector::backgroundColourId, juce::Colours::transparentBlack);
         colourSelector->setSize(300, 400);
-        juce::CallOutBox::launchAsynchronously(std::move(colourSelector), cellScreenBounds, nullptr);
+
+        auto cellScreenBounds{
+            mSourcesTableListComponent.getTableListBox().getCellComponent(columnId, rowNumber)->getScreenBounds()
+        };
+        auto * editor = mSourcesTableListComponent.getTopLevelComponent();
+        auto bounds{ juce::Rectangle<int>(cellScreenBounds.getX() - editor->getScreenX(),
+                                          cellScreenBounds.getY() - editor->getScreenY(),
+                                          cellScreenBounds.getWidth(),
+                                          cellScreenBounds.getHeight()) };
+        juce::CallOutBox::launchAsynchronously(std::move(colourSelector),
+                                               bounds,
+                                               mSourcesTableListComponent.getTopLevelComponent());
 
         mEditedColourSrcIndex = src.getIndex();
     }
@@ -454,10 +463,12 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
 
         popupTableList->setSize(200, tableHeight);
 
-        auto & box = juce::CallOutBox::launchAsynchronously(std::move(popupTableList),
-                                                            mSourcesColourEditButton.getScreenBounds(),
-                                                            nullptr);
-        box.setLookAndFeel(&mGrisLookAndFeel);
+        auto * editor = getTopLevelComponent();
+        auto bounds{ juce::Rectangle<int>(mSourcesColourEditButton.getScreenX() - editor->getScreenX(),
+                                          mSourcesColourEditButton.getScreenY() - editor->getScreenY(),
+                                          mSourcesColourEditButton.getWidth(),
+                                          mSourcesColourEditButton.getHeight()) };
+        juce::CallOutBox::launchAsynchronously(std::move(popupTableList), bounds, getTopLevelComponent());
     };
     addAndMakeVisible(&mSourcesColourEditButton);
 
