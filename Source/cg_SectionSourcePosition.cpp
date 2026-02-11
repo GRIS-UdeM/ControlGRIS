@@ -118,6 +118,7 @@ CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent, GrisLookA
     initSlider(mYSlider, -1.0);
     initSlider(mZSlider, 0.0);
 
+    mXSlider.setDefaultNumDecimalPlacesToDisplay(3);
     mXSlider.onValueChange = [this] {
         mCurrentX = static_cast<float>(mXSlider.getValue());
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
@@ -129,6 +130,7 @@ CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent, GrisLookA
                                             std::nullopt);
         });
     };
+    mYSlider.setDefaultNumDecimalPlacesToDisplay(3);
     mYSlider.onValueChange = [this] {
         mCurrentY = static_cast<float>(mYSlider.getValue() * -1.0);
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
@@ -140,6 +142,7 @@ CubeControls::CubeControls(SectionSourcePosition & sourceBoxComponent, GrisLookA
                                             std::nullopt);
         });
     };
+    mZSlider.setDefaultNumDecimalPlacesToDisplay(3);
     mZSlider.onValueChange = [this] {
         mCurrentZ = static_cast<float>(mZSlider.getValue());
         mSourceBoxComponent.mListeners.call([&](SectionSourcePosition::Listener & l) {
@@ -276,7 +279,8 @@ SectionSourcePosition::SectionSourcePosition(GrisLookAndFeel & grisLookAndFeel,
             l.elevationSourceLinkChangedCallback(static_cast<ElevationSourceLink>(mZSourceLinkCombo.getSelectedId()));
         });
 
-        if (mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3) {
+        if ((mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3)
+            && mSpatMode == SpatMode::cube) {
             mZSourceLinkScaleLabel.setVisible(true);
             mZSourceLinkScaleSlider.setVisible(true);
             mZSourceLinkCombo.setBounds(120, 102 + titleHeight, 96, 15);
@@ -380,7 +384,7 @@ void SectionSourcePosition::resized()
         mZSourceLinkLabel.setVisible(true);
         mZSourceLinkCombo.setVisible(true);
         mZSourceLinkLabel.setBounds(5, 106 + titleHeight, 150, 10);
-        if (mZSourceLinkCombo.getSelectedItemIndex() == 3 || mZSourceLinkCombo.getSelectedItemIndex() == 4) {
+        if (mZSourceLinkCombo.getSelectedItemIndex() == 2 || mZSourceLinkCombo.getSelectedItemIndex() == 3) {
             mZSourceLinkScaleLabel.setVisible(true);
             mZSourceLinkScaleSlider.setVisible(true);
             mZSourceLinkCombo.setBounds(120, 102 + titleHeight, 96, 15);

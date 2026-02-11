@@ -156,6 +156,8 @@ public:
     void oscStateChangedCallback(bool state) override;
     void numberOfSourcesChangedCallback(int numOfSources) override;
     void firstSourceIdChangedCallback(SourceId firstSourceId) override;
+    void sourcesColourChangedCallback(SourceIndex sourceIndex) override;
+    void allSourcesColourChangedCallback() override;
 
     // SectionSourcePosition::Listeners
     void sourceSelectionChangedCallback(SourceIndex sourceIndex) override;
