@@ -60,6 +60,7 @@ public:
     void paint(juce::Graphics & g) final;
 
     juce::Colour getColour() const { return mColour; }
+    void setColour(juce::Colour colour) { mColour = colour; }
     virtual void updatePositionInParent() {} // TEMP
 protected:
     //==============================================================================

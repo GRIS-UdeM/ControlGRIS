@@ -195,7 +195,7 @@ void NumSlider::mouseDoubleClick(const juce::MouseEvent & /*event*/)
     sliderEditor->setMultiLine(false);
     sliderEditor->setSize(60, 20);
     if (getRange().getStart() < 0) {
-        sliderEditor->setInputRestrictions(5, "0123456789,.-");
+        sliderEditor->setInputRestrictions(6, "0123456789,.-");
     } else {
         sliderEditor->setInputRestrictions(5, "0123456789,.");
     }

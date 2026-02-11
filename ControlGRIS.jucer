@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="m50y5Z" name="ControlGRIS" projectType="audioplug" pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3"
-              version="2.0.1" bundleIdentifier="ca.umontreal.musique.gris.controlgris.pkg"
+              version="2.0.2" bundleIdentifier="ca.umontreal.musique.gris.controlgris.pkg"
               companyName="UdeM" aaxIdentifier="com.udem.GRIS.ControlGris"
               pluginManufacturer="UdeM" pluginManufacturerCode="UdeM" pluginCode="Xzz2"
               cppLanguageStandard="latest" projectLineFeed="&#10;" jucerFormatVersion="1"
@@ -296,14 +296,13 @@
                bigIcon="P6dbot">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS2" osxArchitecture="Native"
-                       auBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"
                        enablePluginBinaryCopyStep="1" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/macos/Debug" usePrecompiledHeaderFile="1"
-                       precompiledHeaderFile="Source/PCH.h"/>
+                       precompiledHeaderFile="Source/PCH.h" aaxBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="ControlGRIS2" osxArchitecture="Native"
                        recommendedWarnings="LLVM" enablePluginBinaryCopyStep="1" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/macos/Release" usePrecompiledHeaderFile="1"
-                       precompiledHeaderFile="Source/PCH.h"/>
+                       precompiledHeaderFile="Source/PCH.h" aaxBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="submodules/StructGRIS/submodules/JUCE/modules"/>

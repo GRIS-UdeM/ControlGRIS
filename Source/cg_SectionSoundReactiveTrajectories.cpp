@@ -255,13 +255,6 @@ SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFe
     mParameterAziXYSpanOffsetSlider.setDefaultReturnValue(0.0);
     mParameterEleZSpanOffsetSlider.setDefaultReturnValue(0.0);
 
-    mParameterAzimuthRangeSlider.setNumDecimalPlacesToDisplay(3);
-    mParameterElevationRangeSlider.setNumDecimalPlacesToDisplay(3);
-    mParameterXRangeSlider.setNumDecimalPlacesToDisplay(3);
-    mParameterYRangeSlider.setNumDecimalPlacesToDisplay(3);
-    mParameterZRangeSlider.setNumDecimalPlacesToDisplay(3);
-    mParameterAzimuthOrXYSpanRangeSlider.setNumDecimalPlacesToDisplay(3);
-    mParameterElevationOrZSpanRangeSlider.setNumDecimalPlacesToDisplay(3);
     mParameterAzimuthXOffsetSlider.setNumDecimalPlacesToDisplay(2);
     mParameterYOffsetSlider.setNumDecimalPlacesToDisplay(2);
     mParameterElevationZOffsetSlider.setNumDecimalPlacesToDisplay(2);
@@ -1379,7 +1372,7 @@ SectionSoundReactiveTrajectories::SectionSoundReactiveTrajectories(GrisLookAndFe
     // update the datagraph at 60fps
     startTimer(timerParamID::datagraphUpdate, 17);
 
-    addAndMakeVisible(&mClickTimerButton);
+    //    addAndMakeVisible(&mClickTimerButton);
     mClickTimerButton.setButtonText("click me!");
     mClickTimerButton.onClick = [this] {
         if (mParameterToShow) {

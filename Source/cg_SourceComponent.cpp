@@ -27,7 +27,7 @@ namespace gris
 //==============================================================================
 SourceComponent::SourceComponent(juce::Colour const colour, juce::String const & icon) : mColour(colour), mIcon(icon)
 {
-    if (colour == juce::Colours::black) {
+    if (colour == juce::Colours::black && colour.getAlpha() == 0.0f) {
         jassertfalse;
     }
     constexpr auto dimension = SOURCE_FIELD_COMPONENT_DIAMETER + MAX_LINE_THICKNESS * 2.0f;

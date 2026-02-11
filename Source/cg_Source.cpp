@@ -356,6 +356,13 @@ void Source::setColorFromIndex(int const numTotalSources)
 }
 
 //==============================================================================
+void Source::setColour(juce::Colour colour)
+{
+    mColour = colour;
+    notifyGuiListeners();
+}
+
+//==============================================================================
 void Source::notifyGuiListeners()
 {
     auto callback = [=](Source::Listener & listener) { listener.update(); };
@@ -374,6 +381,13 @@ void Sources::setSize(int const size)
         }
     }
 
+    //    // keep colours of exesting sources
+    //    juce::Array<juce::Colour> sourcesColours;
+    //    for (int i{}; i < mSize; ++i) {
+    //        auto & source{ get(i) };
+    //        sourcesColours.add(source.getColour());
+    //    }
+
     mSize = size;
     auto const azimuthSpan{ mPrimarySource.getAzimuthSpan() };
     auto const elevationSpan{ mPrimarySource.getElevationSpan() };
@@ -382,6 +396,13 @@ void Sources::setSize(int const size)
         source.setAzimuthSpan(azimuthSpan);
         source.setElevationSpan(elevationSpan);
     }
+
+    //    // setting colours of exesting sources
+    //    auto numColours{ sourcesColours.size() };
+    //    for (int i{}; i < numColours; ++i) {
+    //        auto & source{ get(i) };
+    //        source.setColour(sourcesColours[i]);
+    //    }
 }
 
 } // namespace gris
