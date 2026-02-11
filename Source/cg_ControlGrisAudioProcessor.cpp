@@ -589,9 +589,6 @@ void ControlGrisAudioProcessor::sendOscMessage()
     }
 
     if (mShouldSendOSCSourceColour) {
-        juce::OSCAddressPattern const oscPattern("/spat/serv");
-        juce::OSCMessage message(oscPattern);
-
         const auto source{ mSources[mSourceIndexOSCColour] };
         juce::OSCColour colour{};
         message.clear();
@@ -606,9 +603,6 @@ void ControlGrisAudioProcessor::sendOscMessage()
     }
 
     if (mShouldSendOSCAllSourcesColour) {
-        juce::OSCAddressPattern const oscPattern("/spat/serv");
-        juce::OSCMessage message(oscPattern);
-
         for (auto & source : mSources) {
             juce::OSCColour colour{};
             message.clear();
