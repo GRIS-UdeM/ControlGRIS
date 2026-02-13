@@ -356,6 +356,50 @@ void Source::setColorFromIndex(int const numTotalSources)
 }
 
 //==============================================================================
+void Source::setRandomColour(std::vector<Source> & sourcesWithColoursToKeep)
+{
+    std::vector<double> sourcesHue;
+    double bestGap{ -1.0 };
+    double newHue{ 0.0 };
+
+    for (auto & src : sourcesWithColoursToKeep) {
+        if (&src != &*this) {
+            sourcesHue.push_back(src.getColour().getHue());
+        }
+    }
+    std::sort(sourcesHue.begin(), sourcesHue.end());
+
+    // check for biggest gap
+    for (size_t i{ 1 }; i < sourcesHue.size(); ++i) {
+        double gap{ sourcesHue[i] - sourcesHue[i - 1] };
+        if (gap > bestGap) {
+            bestGap = gap;
+            newHue = (sourcesHue[i] + sourcesHue[i - 1]) / 2.0;
+        }
+    }
+
+    // wrap-around gap check
+    double wrapGap{ sourcesHue.front() + 1.0 - sourcesHue.back() };
+    if (wrapGap > bestGap) {
+        bestGap = wrapGap;
+        newHue = sourcesHue.back() + wrapGap / 2.0;
+        if (newHue >= 1.0) {
+            newHue -= 1.0;
+        }
+    }
+
+    mColour = juce::Colour::fromHSV(newHue, 1.0f, 1.0f, 0.85f);
+    notifyGuiListeners();
+}
+
+//==============================================================================
+void Source::setRandomColour()
+{
+    mColour = juce::Colour::fromHSV(mRand.nextDouble(), 1.0f, 1.0f, 0.85f);
+    notifyGuiListeners();
+}
+
+//==============================================================================
 void Source::setColour(juce::Colour colour)
 {
     mColour = colour;
@@ -381,28 +425,37 @@ void Sources::setSize(int const size)
         }
     }
 
-    //    // keep colours of exesting sources
-    //    juce::Array<juce::Colour> sourcesColours;
-    //    for (int i{}; i < mSize; ++i) {
-    //        auto & source{ get(i) };
-    //        sourcesColours.add(source.getColour());
-    //    }
+    // keep colours of exesting sources
+    juce::Array<juce::Colour> sourcesColoursToKeep;
+    for (int i{}; i < mSize; ++i) {
+        auto & source{ get(i) };
+        sourcesColoursToKeep.add(source.getColour());
+    }
 
     mSize = size;
     auto const azimuthSpan{ mPrimarySource.getAzimuthSpan() };
     auto const elevationSpan{ mPrimarySource.getElevationSpan() };
-    for (auto & source : *this) {
-        source.setColorFromIndex(size);
+    for (int i{}; i < mSize; ++i) {
+        auto & source{ get(i) };
+
+        // Colour
+        if (mSize < sourcesColoursToKeep.size()) {
+            source.setColour(sourcesColoursToKeep[i]);
+        } else if (mSize > sourcesColoursToKeep.size()) {
+            if (source.getIndex().get() + 1 <= sourcesColoursToKeep.size()) {
+                source.setColour(sourcesColoursToKeep[i]);
+            } else {
+                std::vector<Source> srcs{};
+                for (int j{}; j < i; ++j) {
+                    srcs.push_back(get(j));
+                }
+                source.setRandomColour(srcs);
+            }
+        }
+
         source.setAzimuthSpan(azimuthSpan);
         source.setElevationSpan(elevationSpan);
     }
-
-    //    // setting colours of exesting sources
-    //    auto numColours{ sourcesColours.size() };
-    //    for (int i{}; i < numColours; ++i) {
-    //        auto & source{ get(i) };
-    //        source.setColour(sourcesColours[i]);
-    //    }
 }
 
 } // namespace gris
