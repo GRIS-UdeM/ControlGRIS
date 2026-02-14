@@ -295,14 +295,16 @@
     <XCODE_MAC targetFolder="Builds/MacOSX" hardenedRuntime="1" externalLibraries="flucoma_VERSION_LIB&#10;fmt&#10;foonathan_memory-0.7.3"
                bigIcon="P6dbot">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS2" osxArchitecture="Native"
-                       enablePluginBinaryCopyStep="1" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
+        <CONFIGURATION isDebug="1" name="Debug" targetName="ControlGRIS2" enablePluginBinaryCopyStep="1"
+                       headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/macos/Debug" usePrecompiledHeaderFile="1"
-                       precompiledHeaderFile="Source/PCH.h" aaxBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGRIS2" osxArchitecture="Native"
-                       recommendedWarnings="LLVM" enablePluginBinaryCopyStep="1" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
+                       precompiledHeaderFile="Source/PCH.h" aaxBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"
+                       macOSDeploymentTarget="11.5" osxCompatibility="11.5 SDK"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="ControlGRIS2" recommendedWarnings="LLVM"
+                       enablePluginBinaryCopyStep="1" headerPath="../../Source/libs/include&#10;../../Source/libs/include/flucoma&#10;../../Source/libs/include/Eigen&#10;../../Source/libs/include/hisstools&#10;../../Source/libs/include/Spectra&#10;../../Source/libs/include/tl&#10;../../Source/libs/include/nlohmann&#10;../../Source/libs/include/fmt&#10;../../Source/libs/include/foonathan&#10;../../Source/libs/include/foonathan/memory"
                        libraryPath="../../Source/libs/lib/flucoma/macos/Release" usePrecompiledHeaderFile="1"
-                       precompiledHeaderFile="Source/PCH.h" aaxBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"/>
+                       precompiledHeaderFile="Source/PCH.h" aaxBinaryLocation="$(HOME)/Library/Audio/Plug-Ins/Components/"
+                       macOSDeploymentTarget="11.5" osxCompatibility="11.5 SDK"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="submodules/StructGRIS/submodules/JUCE/modules"/>
