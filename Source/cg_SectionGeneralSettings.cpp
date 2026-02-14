@@ -110,7 +110,8 @@ void SourcesTableListBoxModel::cellClicked(int rowNumber, int columnId, const ju
         auto srcColour{ src.getColour() };
         auto colourSelector{ std::make_unique<juce::ColourSelector>(juce::ColourSelector::showColourAtTop
                                                                         | juce::ColourSelector::showSliders
-                                                                        | juce::ColourSelector::showColourspace,
+                                                                        | juce::ColourSelector::showColourspace
+                                                                        | juce::ColourSelector::editableColour,
                                                                     4,
                                                                     4) };
         colourSelector->setName("source colour");
