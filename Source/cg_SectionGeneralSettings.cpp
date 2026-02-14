@@ -471,7 +471,7 @@ SectionGeneralSettings::SectionGeneralSettings(GrisLookAndFeel & grisLookAndFeel
                                           mSourcesColourEditButton.getHeight()) };
         juce::CallOutBox::launchAsynchronously(std::move(popupTableList), bounds, getTopLevelComponent());
     };
-    //    addAndMakeVisible(&mSourcesColourEditButton);
+        addAndMakeVisible(&mSourcesColourEditButton);
 
     mPositionActivateButton.setExplicitFocusOrder(1);
     mPositionActivateButton.setButtonText("Activate OSC");
